@@ -4,6 +4,8 @@
 - [x] wet powder concrete
     - [x] delay on water keep track for x second before turn in to concrete
 - [x] composter (poisonous potato, rotten flesh, spider ...)
+- [x] carried chest
+    - [x] support other container
 - [ ] /README.md
 
 ## picker
