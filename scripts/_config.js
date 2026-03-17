@@ -108,8 +108,13 @@ export const SETTINGS = Object.freeze({
         PARTICLE_FILL_SUCCESS: "minecraft:crop_growth_emitter",
         SOUND_FILL_SUCCESS: Object.freeze({
             ID: "block.composter.fill_success",
-            VOLUME: 1.0,
-            PITCH: [0.2, 0.9] // random from 0.2 to 0.9
+            VOLUME: 1.3,
+            PITCH: 1.0 // random from 0.2 to 0.9
+        }),
+        SOUND_FILL_BONEMEAL: Object.freeze({
+            ID: "item.bone_meal.use",
+            VOLUME: 2.0,
+            PITCH: [0.9, 1.1]
         }),
         SOUND_READY: Object.freeze({
             ID: "block.composter.ready",
@@ -117,8 +122,8 @@ export const SETTINGS = Object.freeze({
             PITCH: 1.0
         }),
         SOUND_FILL: Object.freeze({
-            ID: "block.composter.ready",
-            VOLUME: 1.0,
+            ID: "block.composter.fill",
+            VOLUME: 1.3,
             PITCH: 0.8
         }),
         VANILA_COMPOSTE: Object.freeze(new Set([
@@ -329,6 +334,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:golden_carrot': 0.65,
             'minecraft:glistering_melon_slice': 0.65,
             'minecraft:popped_chorus_fruit': 0.85,
+            'minecraft:mushroom_stew': 0.85,
             'minecraft:suspicious_stew': 0.85,
             'minecraft:beetroot_soup': 0.85,
             // 'minecraft:golden_carrot': 0.85,

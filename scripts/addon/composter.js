@@ -2,7 +2,7 @@ import { BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentS
 import { SETTINGS } from "../_config"
 import { checkRandom, clamp } from "../lib"
 import { RUNTIME } from "../_store"
-const { DEBUG, SLICE_PREFIX, COMPOSTER: { BLOCK_TYPEID, ITEMS, SOUND_FILL_SUCCESS, SOUND_FILL, SOUND_READY, DELAY_BEFORE_READY, HOPPER_TYPEID, HOPPER_INTERVAL_TICK, VANILA_COMPOSTE, DATA_LOSS_DYP, PARTICLE_FILL_SUCCESS, DATA_COMPOSTER_LOCATION } } = SETTINGS
+const { DEBUG, SLICE_PREFIX, COMPOSTER: { BLOCK_TYPEID, ITEMS, SOUND_FILL_SUCCESS, SOUND_FILL, SOUND_READY, DELAY_BEFORE_READY, HOPPER_TYPEID, HOPPER_INTERVAL_TICK, VANILA_COMPOSTE, DATA_LOSS_DYP, PARTICLE_FILL_SUCCESS, DATA_COMPOSTER_LOCATION, SOUND_FILL_BONEMEAL } } = SETTINGS
 
 const clamp8 = (n) => clamp(n, 0, 8)
 const composterSet = new Set()
@@ -78,12 +78,13 @@ export const composter_playerInteractWithBlock = (data) => {
         const success = Math.random() <= chance
         const loc = block.center()
 
+        playSound(player.dimension, SOUND_FILL_BONEMEAL, loc)
         if (success) {
-            playSound(player.dimension, SOUND_FILL_SUCCESS, player.location)
+            playSound(player.dimension, SOUND_FILL_SUCCESS, loc)
             setLevel(block, state + 1)
             player.dimension.spawnParticle(PARTICLE_FILL_SUCCESS, loc)
             if (state === 6) maybeFinish(block, player.dimension, loc)
-        } else playSound(player.dimension, SOUND_FILL, player.location)
+        } else playSound(player.dimension, SOUND_FILL, loc)
 
         if (player.matches({ gameMode: GameMode.Creative })) return
 
@@ -148,27 +149,57 @@ export const composter_pending = () => {
         const container = hopper.getComponent(BlockComponentTypes.Inventory)?.container
         if (!container) continue
 
+        let foundBowl = {
+            slot: -1,
+            amount: 0
+        }
         for (let i = 0; i < container.size; i++) {
             const item = container.getItem(i)
             if (!item) continue
             const itemID = item.typeId
+            if (item.typeId.endsWith('_stew') || item.typeId.endsWith('_soup')) {
+                foundBowl.amount += 1
+                if (foundBowl.slot === -1) {
+                    foundBowl.slot = i
+                }
+            }
             if (VANILA_COMPOSTE.has(itemID)) return
             const chance = ITEMS[itemID]
             if (!chance) continue
-
             const success = Math.random() <= chance
             const loc = block.center()
 
-            // reduce item
-            if (item.amount > 1) container.setItem(i, new ItemStack(item.typeId, item.amount - 1))
-            else container.setItem(i, undefined)
+            if (item.amount > 1) {
+                container.setItem(i, new ItemStack(item.typeId, item.amount - 1))
+            } else {
+                if (item.typeId.endsWith('_stew') || item.typeId.endsWith('_soup')) {
+                    container.setItem(i, undefined)
 
+                    let bowlSlot = -1, emptySlot = -1
+                    for (let j = 0; j < container.size; j++) {
+                        if (j === i) continue
+                        const slot = container.getItem(j)
+                        if (!slot) { if (emptySlot === -1) emptySlot = j }
+                        else if (slot.typeId === 'minecraft:bowl' && slot.amount < 64) { bowlSlot = j; break }
+                    }
+
+                    if (bowlSlot !== -1) {
+                        const existing = container.getItem(bowlSlot)
+                        container.setItem(bowlSlot, new ItemStack('minecraft:bowl', existing.amount + 1))
+                    } else if (emptySlot !== -1) {
+                        container.setItem(emptySlot, new ItemStack('minecraft:bowl', 1))
+                    }
+                } else {
+                    container.setItem(i, undefined)
+                }
+            }
+
+            playSound(dimension, SOUND_FILL_BONEMEAL, loc)
             if (success) {
                 playSound(dimension, SOUND_FILL_SUCCESS, loc)
                 setLevel(block, state + 1)
                 if (state === 6) maybeFinish(block, dimension, loc)
             } else playSound(dimension, SOUND_FILL, loc)
-
             return
         }
     }
