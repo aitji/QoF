@@ -5,6 +5,7 @@ import * as light from "./addon/light"
 import * as anvil from "./addon/anvil"
 import * as powder from "./addon/powder_concrete"
 import * as composter from "./addon/composter"
+import * as chest from "./addon/chest"
 
 // tick
 system.run(() => {
@@ -18,19 +19,18 @@ system.run(() => {
 
     // 1-tick interval
     system.runInterval(() => {
-        const { LIGHT: L, WET_POWDER_CONCRTE: P } = RUNTIME
+        const { LIGHT, WET_POWDER_CONCRTE, CARRIED_CHEST } = RUNTIME
 
-        if (L.ENABLED) {
+        if (LIGHT.ENABLED) {
             light.light_pending()
             light.light_processFrames()
         }
-        if (P.ENABLED) {
-            powder.powder_pending()
-        }
-        if (L.ENABLED) {
-            for (const player of world.getAllPlayers()) {
-                light.light_player(player)
-            }
+
+        if (WET_POWDER_CONCRTE.ENABLED) powder.powder_pending()
+
+        for (const player of world.getAllPlayers()) {
+            if (LIGHT.ENABLED) light.light_player(player)
+            if (CARRIED_CHEST.ENABLED) chest.chest_player(player)
         }
     }, RUNTIME.INTERVAL_DELAY)
 })
@@ -50,6 +50,7 @@ world.afterEvents.entityRemove.subscribe(data => {
 })
 world.afterEvents.playerPlaceBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerPlaceBlock(data)
+    if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerPlaceBlock(data)
 })
 world.beforeEvents.playerBreakBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerBreakBlock(data)
@@ -57,6 +58,7 @@ world.beforeEvents.playerBreakBlock.subscribe(data => {
 world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.REPAIR_ANVIL.ENABLED) anvil.anvil_playerInteractWithBlock(data)
     if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
+    if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
 })
 world.afterEvents.entitySpawn.subscribe(data => {
     if (RUNTIME.WET_POWDER_CONCRTE.ENABLED) powder.powder_entitySpawn(data)

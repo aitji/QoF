@@ -13,6 +13,7 @@ const ADDON_PATH = {
     "repair-anvil": "REPAIR_ANVIL.ENABLED",
     "concrete-powder": "WET_POWDER_CONCRTE.ENABLED",
     "composter": "COMPOSTER.ENABLED",
+    "carried-chest": "CARRIED_CHEST.ENABLED",
 }
 const fmt = {
     ok: (msg) => `§a[Q§fo§aL]§r ${msg}`,
@@ -31,6 +32,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         "repair-anvil",
         "concrete-powder",
         "composter",
+        "carried-chest",
     ])
 
     // qol:toggle [addon] [true|false]
@@ -70,42 +72,6 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
             return {
                 status: CustomCommandStatus.Success,
                 message: `${addon} is now ${next ? 'enabled' : 'disabled'}`,
-            }
-        }
-    )
-
-    // qol:reset [path]
-    customCommandRegistry.registerCommand(
-        {
-            name: "qol:reset",
-            description: "Reset a config path (or ALL settings) back to defaults",
-            permissionLevel: CommandPermissionLevel.GameDirectors,
-            cheatsRequired: false,
-            optionalParameters: [
-                { name: "qol:configPath", type: CustomCommandParamType.Enum },
-            ],
-        },
-        (origin, path) => {
-            if (!path) {
-                // reset everything
-                store_resetAll()
-                system.run(() => world.sendMessage(fmt.ok("All QoL settings reset to defaults.")))
-                return {
-                    status: CustomCommandStatus.Success,
-                    message: "All settings reset to defaults",
-                }
-            }
-
-            const result = store_reset(path)
-            if (!result.ok) return {
-                status: CustomCommandStatus.Failure,
-                message: result.reason,
-            }
-
-            system.run(() => world.sendMessage(fmt.ok(`${path} reset = ${fmt.val(result.value)}`)))
-            return {
-                status: CustomCommandStatus.Success,
-                message: `${path} reset to ${result.value}`,
             }
         }
     )

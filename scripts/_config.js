@@ -197,5 +197,19 @@ export const SETTINGS = {
             'minecraft:rabbit_stew': 1,
             'minecraft:nether_star': 1,
         }
+    },
+    CARRIED_CHEST: {
+        ENABLED: true,
+        CARRY_TAG: "carrying",
+        ENTITY_TYPE: "qol:chest",
+        CHEST_ID: "minecraft:chest",
+        DOUBLE_CHEST_SIZE: 54,
+        SLOWNESS_DURATION: .5 * 20,
+        SLOWNESS_AMPLIFIER: 2,
+        SOUND_PICK_UP: {
+            ID: "armor.equip_leather",
+            VOLUME: 1.0,
+            PITCH: 0.8
+        }
     }
 }
