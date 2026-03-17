@@ -1,0 +1,29 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:polished_diorite_slab_to_full_block"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x",
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:polished_diorite_slab"
+            }
+        },
+        "result": {
+            "item": "minecraft:polished_diorite",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:polished_diorite"
+            }
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:smooth_stone_slab_to_full_block"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x",
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:smooth_stone_slab"
+            }
+        },
+        "result": {
+            "item": "minecraft:smooth_stone",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:smooth_stone"
+            }
+        ]
+    }
+}

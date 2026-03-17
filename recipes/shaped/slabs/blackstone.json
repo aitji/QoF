@@ -1,0 +1,29 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:blackstone_slab_to_full_block"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x",
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:blackstone_slab"
+            }
+        },
+        "result": {
+            "item": "minecraft:blackstone",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:blackstone"
+            }
+        ]
+    }
+}

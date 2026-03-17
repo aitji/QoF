@@ -1,0 +1,29 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:red_nether_brick_slab_to_full_block"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x",
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:red_nether_brick_slab"
+            }
+        },
+        "result": {
+            "item": "minecraft:red_nether_brick",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:red_nether_brick"
+            }
+        ]
+    }
+}

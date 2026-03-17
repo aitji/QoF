@@ -1,0 +1,29 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:pale_oak_slab_to_full_block"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x",
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:pale_oak_slab"
+            }
+        },
+        "result": {
+            "item": "minecraft:pale_oak_planks",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:pale_oak_planks"
+            }
+        ]
+    }
+}
