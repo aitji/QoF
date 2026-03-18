@@ -37,7 +37,7 @@ export const anvil_playerInteractWithBlock = (data) => {
     ) {
         if (!isFirstEvent) {
             const playerDelay = delay[player.id] || 0
-            if (REPAIRABLE_ANVIL[block.typeId]) data.cancel = true
+            if (REPAIRABLE_ANVIL[block.typeId] || itemStack && itemStack.typeId === ITEM_TYPEID) data.cancel = true
             if (playerDelay > system.currentTick) return
         }
 

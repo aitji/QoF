@@ -1,119 +1,95 @@
-// call this "shadow-db" btw
 import { world } from "@minecraft/server"
 import { SETTINGS as DEFAULTS } from "./_config"
 
 const PREFIX = "qol:cfg:"
 
-// helpers
-const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
-const getPath = (obj, path) => path.split('.').reduce((o, k) => (o != null ? o[k] : undefined), obj)
+const clone = o => JSON.parse(JSON.stringify(o))
+const get = (o, p) => p.split('.').reduce((x, k) => x?.[k], o)
 
-function setPath(obj, path, value) {
-    const keys = path.split('.')
-    let cur = obj
-    for (let i = 0; i < keys.length - 1; i++) {
-        if (cur[keys[i]] == null || typeof cur[keys[i]] !== 'object') cur[keys[i]] = {}
-        cur = cur[keys[i]]
+const set = (o, p, v) => {
+    const k = p.split('.')
+    let cur = o
+    while (k.length > 1) {
+        const key = k.shift()
+        cur = cur[key] ??= {}
     }
-    cur[keys[keys.length - 1]] = value
+    cur[k[0]] = v
 }
 
-export let RUNTIME = deepClone(DEFAULTS) // **IN MEMORY
-let _loaded = false
+export let RUNTIME = clone(DEFAULTS)
+let loaded = false
 
 export function store_load() {
-    if (_loaded) return
-    _loaded = true
+    if (loaded) return
+    loaded = true
 
-    const ids = world.getDynamicPropertyIds()
     let count = 0
-
-    for (const id of ids) {
+    for (const id of world.getDynamicPropertyIds()) {
         if (!id.startsWith(PREFIX)) continue
-        const path = id.slice(PREFIX.length)
+
         const raw = world.getDynamicProperty(id)
         if (raw == null) continue
 
         try {
-            const value = JSON.parse(String(raw))
-            const current = getPath(RUNTIME, path)
+            const path = id.slice(PREFIX.length)
+            const val = JSON.parse(String(raw))
+            const cur = get(RUNTIME, path)
 
-            if (current !== undefined && typeof value !== typeof current) continue
-
-            setPath(RUNTIME, path, value)
-            count++
-        } catch (_) { /* malformed DYP, ignore */ }
+            if (cur !== undefined && typeof val === typeof cur) {
+                set(RUNTIME, path, val)
+                count++
+            }
+        } catch { }
     }
-
     return count
 }
 
-/**
- * @param {string} path
- * @param {boolean | number | string} value
- * @returns {{ ok: boolean, oldValue: boolean | number | string, newValue: boolean | number | string }}
- */
 export function store_set(path, value) {
-    const oldValue = getPath(RUNTIME, path)
-    if (oldValue === undefined) return { ok: false, reason: `unknown path: ${path}` }
+    const old = get(RUNTIME, path)
+    if (old === undefined) return { ok: false, reason: `unknown path: ${path}` }
 
-    // type coercion + guard
-    let coerced = value
-    if (typeof oldValue === 'boolean') {
-        if (typeof value === 'boolean') coerced = value
-        else if (value === 'true') coerced = true
-        else if (value === 'false') coerced = false
-        else return { ok: false, reason: `expected boolean for ${path}` }
-    } else if (typeof oldValue === 'number') {
-        coerced = Number(value)
-        if (isNaN(coerced)) return { ok: false, reason: `expected number for ${path}` }
-    } else if (typeof oldValue === 'string') coerced = String(value)
-    else return { ok: false, reason: `${path} is not a primitive — cannot set via command` }
+    let v = value
 
-    setPath(RUNTIME, path, coerced)
-    world.setDynamicProperty(`${PREFIX}${path}`, JSON.stringify(coerced))
+    if (typeof old === "boolean") {
+        if (value === "true") v = true
+        else if (value === "false") v = false
+        else if (typeof value !== "boolean") return { ok: false, reason: `expected boolean` }
+    } else if (typeof old === "number") {
+        v = Number(value)
+        if (isNaN(v)) return { ok: false, reason: `expected number` }
+    } else if (typeof old === "string") {
+        v = String(value)
+    } else return { ok: false, reason: `not primitive` }
 
-    return { ok: true, oldValue, newValue: coerced }
-}
-
-export function store_reset(path) {
-    const defVal = getPath(DEFAULTS, path)
-    if (defVal === undefined) return { ok: false, reason: `unknown path: ${path}` }
-
-    setPath(RUNTIME, path, deepClone(defVal))
-    world.setDynamicProperty(`${PREFIX}${path}`, undefined)
-    return { ok: true, value: defVal }
+    set(RUNTIME, path, v)
+    world.setDynamicProperty(PREFIX + path, JSON.stringify(v))
+    return { ok: true, oldValue: old, newValue: v }
 }
 
 export function store_resetAll() {
-    const ids = world.getDynamicPropertyIds()
-    for (const id of ids)
+    for (const id of world.getDynamicPropertyIds())
         if (id.startsWith(PREFIX))
-            world.setDynamicProperty(id, undefined)
+            world.setDynamicProperty(id)
 
-    RUNTIME = deepClone(DEFAULTS)
+    RUNTIME = clone(DEFAULTS)
     return { ok: true }
 }
 
-/**@returns {Array<{ path: string, value: *, default: * }>}*/
 export function store_listOverrides() {
-    const overrides = []
-    _walk(DEFAULTS, RUNTIME, '', overrides)
-    return overrides
+    const out = []
+    walk(DEFAULTS, RUNTIME, "", out)
+    return out
 }
 
-function _walk(def, run, prefix, out) {
-    for (const k of Object.keys(def)) {
-        const path = prefix ? `${prefix}.${k}` : k
-        const d = def[k]
-        const r = run[k]
+const walk = (d, r, p, out) => {
+    for (const k in d) {
+        const path = p ? p + "." + k : k
+        const dv = d[k]
+        const rv = r[k]
 
-        if (d !== null && typeof d === 'object' && !Array.isArray(d))
-            _walk(d, r ?? {}, path, out)
-        else if (
-            typeof d === 'boolean' ||
-            typeof d === 'number' ||
-            typeof d === 'string'
-        ) if (d !== r) out.push({ path, value: r, default: d })
+        if (dv && typeof dv === "object" && !Array.isArray(dv))
+            walk(dv, rv ?? {}, path, out)
+        else if (dv !== rv)
+            out.push({ path, value: rv, default: dv })
     }
 }

@@ -1,6 +1,6 @@
 import { system, world } from "@minecraft/server"
-import { store_load, RUNTIME } from "./_store"
 import "./commands.js"
+import { store_load, RUNTIME } from "./_store"
 import * as light from "./addon/light"
 import * as anvil from "./addon/anvil"
 import * as powder from "./addon/powder_concrete"

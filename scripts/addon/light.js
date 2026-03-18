@@ -5,10 +5,11 @@ const { DEBUG, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TI
 
 export const isFrame = (b) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
-let AIR, WATER, BASE_LIGHT
+let AIR, WATER, LAVA, BASE_LIGHT
 if (ENABLED) system.run(() => {
     AIR = BlockPermutation.resolve('minecraft:air')
     WATER = BlockPermutation.resolve('minecraft:water')
+    LAVA = BlockPermutation.resolve('minecraft:lava')
     BASE_LIGHT = BlockPermutation.resolve('minecraft:light_block')
     _restoreFromDYP()
 })
@@ -60,6 +61,8 @@ function put_light(block, level, owner, force = false) {
     try {
         if (block.isLiquid && block.permutation.getState('liquid_depth') !== 0) return
         const isWater = block.permutation.matches('minecraft:water')
+        const isLava = block.permutation.matches('minecraft:lava')
+        if (isLava) return
         const ownerId = force ? 'Infinity' : (owner?.id || owner?.name || owner?.nameTag || owner?.typeId || String(owner))
         const k = blockBKey(block)
 
@@ -81,15 +84,16 @@ function put_light(block, level, owner, force = false) {
         if (isLightable(block, isWater)) block.setPermutation(lightPerm(level))
     } catch (_) { }
 }
-
 function spreadLight(block, level, en, height = 2, force = false) {
     const seen = new Set()
     const tryPut = (blo) => {
         if (!blo) return
         const k = blockBKey(blo)
         if (seen.has(k)) return
-        seen.add(k)
-        if (blo.isLiquid || blo.isAir || blo.permutation.matches('minecraft:light_block')) put_light(blo, level, en, force)
+        if (blo.isLiquid || blo.isAir || blo.permutation.matches('minecraft:light_block')) {
+            seen.add(k)
+            put_light(blo, level, en, force)
+        }
     }
     const dirs = ['east', 'west', 'north', 'south']
     for (let i = 0; i < dirs.length; i++) {
@@ -163,7 +167,7 @@ export const light_player = (pl) => {
         if (!en) return
         if (en.typeId === 'minecraft:item'
             // || en.typeId === 'minecraft:armor_stand' // armor stand not support equippable rn
-        ) return processEntity(en, false)
+        ) return processEntity(en)
 
         let lightLevel = 0
         if (en.getComponent(EntityComponentTypes.OnFire)) lightLevel += LIGHT_FIRE_LEVEL * REDUCE_LIGHT
