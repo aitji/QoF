@@ -9,11 +9,11 @@ if (!existsSync(configPath)) {
     process.exit(1)
 }
 
-let config = readFileSync(configPath, "utf8")
+const config = readFileSync(configPath, "utf8")
 const updatedConfig = config.replace(/DEBUG\s*:\s*true/, "DEBUG: false")
 
 if (config !== updatedConfig) {
-    writeFileSync(configPath, updatedConfig, "utf8")
+    writeFileSync(configPath, updatedConfig)
     console.log("Set DEBUG: false in _config.js")
 }
 
@@ -29,6 +29,7 @@ for (const s of manifest.settings || []) {
     if (s.name === "qol:DEBUG" && s.default === true) {
         s.default = false
         changed = true
+        break
     }
 }
 

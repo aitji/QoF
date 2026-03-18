@@ -1,7 +1,9 @@
 import { appendFileSync } from "fs"
 
-const oldVersion = JSON.parse(process.env.OLD_VERSION) // [BIG, UPDATE, PATCH]
-const newVersion = JSON.parse(process.env.NEW_VERSION)
+const parse = v => Array.isArray(v) ? v : String(v).split(".").map(Number)
+
+const oldVersion = parse(JSON.parse(process.env.OLD_VERSION))
+const newVersion = parse(JSON.parse(process.env.NEW_VERSION))
 
 const [oldBig, oldUp, oldPatch] = oldVersion
 const [newBig, newUp, newPatch] = newVersion
