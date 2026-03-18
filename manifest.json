@@ -73,7 +73,7 @@
       "min": 0,
       "max": 20,
       "step": 1,
-      "default": 3
+      "default": 1
     },
     {
       "type": "slider",
@@ -249,7 +249,7 @@
       "type": "toggle",
       "text": "§cDebug mode? §7(Show spam logs in chat/console) §r",
       "name": "qol:DEBUG",
-      "default": false
+      "default": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 import { system, world } from "@minecraft/server"
-import "./commands.js"
-import { store_load, RUNTIME } from "./_store"
+import { RUNTIME } from "./_store"
+
 import * as light from "./addon/light"
 import * as anvil from "./addon/anvil"
 import * as powder from "./addon/powder_concrete"
@@ -11,17 +11,14 @@ import * as chest from "./addon/chest"
 system.run(() => {
     world.scoreboard.getObjective("aitjilib").setScore("api", 1)
 
-    const count = store_load()
-    const { DEBUG, LIGHT, REPAIR_ANVIL, WET_POWDER_CONCRTE, COMPOSTER } = RUNTIME
-
+    const { DEBUG } = RUNTIME
     world.sendMessage('§7qol loaded')
     world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id}`).join('\n')}`)
-    if (count > 0) world.sendMessage(`§8qol: restored ${count} config override(s) from DYP`)
     if (!DEBUG) world.gameRules.sendCommandFeedback = false
 
-    // 1-tick interval
+    // interval
     system.runInterval(() => {
-        const { LIGHT, WET_POWDER_CONCRTE, CARRIED_CHEST } = RUNTIME
+        const { LIGHT, WET_POWDER_CONCRTE, CARRIED_CHEST, COMPOSTER } = RUNTIME
 
         if (LIGHT.ENABLED) {
             light.light_pending()
@@ -29,7 +26,7 @@ system.run(() => {
         }
 
         if (WET_POWDER_CONCRTE.ENABLED) powder.powder_pending()
-        if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending()
+        if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending()
 
         for (const player of world.getAllPlayers()) {
             if (LIGHT.ENABLED) light.light_player(player)
@@ -38,7 +35,7 @@ system.run(() => {
     }, RUNTIME.INTERVAL_DELAY)
 })
 
-// world event
+// debug: barrier clears dynamic properties
 if (RUNTIME.DEBUG) world.beforeEvents.itemUse.subscribe(data => {
     const { itemStack } = data
     if (itemStack.typeId === 'minecraft:barrier') {
