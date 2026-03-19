@@ -350,6 +350,7 @@ export const SETTINGS = Object.freeze({
     CARRIED_CHEST: Object.freeze({
         ENABLED: true,
         CARRY_TAG: "carrying",
+        MAX_DISPLAY: 5,
         APPLY_IMPULSE: Object.freeze({ // only apply via player in water *won't effect [creative] gamemode
             ENABLED: true,
             VECTOR: Object.freeze({ x: 0, y: -0.02, z: 0 }) // if posstive will make player swim up easier
@@ -361,6 +362,7 @@ export const SETTINGS = Object.freeze({
         }),
         ENTITY_TYPE: "qol:chest",
         CHEST_ID: "minecraft:chest",
+        CONTAINER_NAMETAG: "§r§fCarried Container",
         DOUBLE_CHEST_SIZE: 54, // don't edit
         SLOWNESS_DURATION: .5 * 20, // player holding chest will apply slowness effect how long? (tick)
         SLOWNESS_AMPLIFIER: 2, // level of slowness when player holding chest

@@ -1,7 +1,7 @@
-import { world, system, ItemStack, BlockPermutation, EquipmentSlot, ItemLockMode, Player, InputPermissionCategory, PlayerPlaceBlockAfterEvent, GameMode } from "@minecraft/server"
+import { world, system, ItemStack, BlockPermutation, EquipmentSlot, ItemLockMode, Player, InputPermissionCategory, PlayerPlaceBlockAfterEvent, GameMode, EntityDieAfterEvent, Entity, EntityComponentTypes } from "@minecraft/server"
 import { checkRandom } from "../lib"
 import { RUNTIME } from "../_store"
-const { DEBUG, CARRIED_CHEST: { CARRY_TAG, ENTITY_TYPE, CHEST_ID, DOUBLE_CHEST_SIZE, SLOWNESS_DURATION, SLOWNESS_AMPLIFIER, SOUND_PICK_UP, APPLY_IMPULSE, PLAYER_JUMP } } = RUNTIME
+const { DEBUG, CARRIED_CHEST: { CARRY_TAG, ENTITY_TYPE, CHEST_ID, DOUBLE_CHEST_SIZE, SLOWNESS_DURATION, SLOWNESS_AMPLIFIER, SOUND_PICK_UP, APPLY_IMPULSE, PLAYER_JUMP, CONTAINER_NAMETAG, MAX_DISPLAY } } = RUNTIME
 
 const NEIGH = {
   north: { left: "west", right: "east" },
@@ -12,7 +12,8 @@ const NEIGH = {
 
 const blockInDir = (b, d) => ({ north: () => b.north(1), south: () => b.south(1), east: () => b.east(1), west: () => b.west(1) }[d]?.() ?? b)
 const isFaceChest = (b, f) => b?.typeId === CHEST_ID && b.permutation.getState("minecraft:cardinal_direction") === f
-
+/** @returns {String} */
+function reName(item) { return item?.split(":")[1]?.split('_').map(v => v[0]?.toUpperCase() + v?.slice(1)?.toLowerCase())?.join(" ") }
 const setJump = (player, n) => {
   if (!PLAYER_JUMP.NO_JUMP_HOLD_CHEST) return
   if (DEBUG) world.sendMessage(`§7${player.name} jump=${n}`)
@@ -44,6 +45,10 @@ const spawnInv = (player) => {
   return e
 }
 
+/**
+ * @param {Player} player
+ * @returns {Entity|null}
+ */
 const findInv = (player) => {
   const query = { type: ENTITY_TYPE, name: player.name }
   const near = player.dimension.getEntities({ ...query, location: player.location, closest: 1 })
@@ -55,12 +60,50 @@ const findInv = (player) => {
   return null
 }
 
-const buildCarryItem = (blockTypeId, player) => {
+const buildCarryItem = (blockTypeId, player, container) => {
   const it = new ItemStack(blockTypeId, 1)
-  it.nameTag = `§r§fCarried Container`
-  it.setLore([`§r§5${player.name}§r§5's Carried Container`])
-  it.lockMode = ItemLockMode.slot // cannot throw away :p
-  it.keepOnDeath = true
+  it.nameTag = CONTAINER_NAMETAG
+
+  if (!container) {
+    it.setLore([`§r§7${player.name}§r§7's Carried Container`])
+  } else {
+    /**@type {{[typeId: string]: {typeId: string, nameTag: string, amount: number}}}*/
+    const list = {}
+    let total = 0
+    for (let i = 0; i < container.size; i++) {
+      const item = container.getItem(i)
+      if (!item) continue
+
+      total++
+
+      if (!list[item.typeId]) {
+        list[item.typeId] = {
+          typeId: item.typeId,
+          nameTag: item.nameTag ?? null,
+          amount: item.amount
+        }
+      } else {
+        list[item.typeId].amount += item.amount
+      }
+    }
+
+    const entries = Object.values(list)
+    const uniqueTotal = entries.length
+
+    const invText = entries
+      .slice(0, MAX_DISPLAY)
+      .map(i => {
+        const name = i.nameTag || reName(i.typeId) || i.typeId
+        const amount = i.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        return `§r§7${name} x${amount}`
+      })
+
+    if (invText.length === 0) invText.push(`§r§7(empty container)`)
+    if (uniqueTotal > MAX_DISPLAY) invText.push(`§r§7and ${uniqueTotal - MAX_DISPLAY} more...`)
+    it.setLore(invText)
+  }
+
+  it.lockMode = ItemLockMode.slot
   return it
 }
 
@@ -148,8 +191,8 @@ export const chest_playerInteractWithBlock = (data) => {
       const holdingEntity = spawnInv(player)
       holdingEntity.addTag(`type ${blockTypeId}`)
       block2inv(block, holdingEntity)
-
-      const carryItem = buildCarryItem(blockTypeId, player)
+      const holdingContainer = holdingEntity.getComponent('minecraft:inventory')?.container
+      const carryItem = buildCarryItem(blockTypeId, player, holdingContainer)
       player.getComponent("minecraft:equippable").setEquipment(EquipmentSlot.Mainhand, carryItem)
       player.setDynamicProperty('qol:chest.storage', JSON.stringify({ selectedSlotIndex: (player.selectedSlotIndex ?? 0), blockTypeId }))
       player.addTag(CARRY_TAG)
@@ -284,7 +327,7 @@ export const chest_player = (player) => {
       const equ = player.getComponent("minecraft:equippable")
       const item = equ.getEquipment(EquipmentSlot.Mainhand)
 
-      if (item && (item.typeId !== blockTypeId || item.nameTag !== "§r§fCarried Container")) {
+      if (item && (item.typeId !== blockTypeId || item.nameTag !== CONTAINER_NAMETAG)) {
         if (!player.hasTag("qol.chest.alert")) {
           player.sendMessage(`§cHotbar Slot #${slot + 1} need to be empty.`)
         }
@@ -292,9 +335,17 @@ export const chest_player = (player) => {
         return
       }
 
-      if (!item || item.typeId !== blockTypeId || item.nameTag !== "§r§fCarried Container") {
+      if (!item || item.typeId !== blockTypeId || item.nameTag !== CONTAINER_NAMETAG) {
         player.selectedSlotIndex = slot
-        const carryItem = buildCarryItem(blockTypeId, player)
+        const inv = findInv(player)
+        if (!inv) {
+          player.removeTag(CARRY_TAG)
+          player.sendMessage(`§cCould not find saved inventory!`)
+          return
+        }
+
+        const container = inv.getComponent(EntityComponentTypes.Inventory)?.container
+        const carryItem = buildCarryItem(blockTypeId, player, container)
         equ.setEquipment(EquipmentSlot.Mainhand, carryItem)
         player.removeTag('qol.chest.alert')
       }
@@ -303,4 +354,34 @@ export const chest_player = (player) => {
     if (!canJump) jumpSet(true)
     player.removeTag('qol.chest.alert')
   }
+}
+
+/**@param {EntityDieAfterEvent} data*/
+export const chest_entityDie = (data) => {
+  const { deadEntity: player } = data
+  const { location, dimension } = player
+  const container = player.getComponent(EntityComponentTypes.Inventory)?.container
+  if (!player.hasTag(CARRY_TAG)) return
+  /** @type {Entity} */
+  const inv = findInv(player)
+  if (!inv) return player.removeTag(CARRY_TAG)
+  inv.teleport(location, { dimension })
+  inv.kill()
+
+  system.runTimeout(() => {
+    container.clearAll()
+
+    const entities = dimension.getEntities({ maxDistance: 3, type: "minecraft:item", location, closest: DOUBLE_CHEST_SIZE + (container.size + 6) })
+    for (const en of entities) {
+      if (!en || !en.isValid) continue
+      const item = en.getComponent(EntityComponentTypes.Item)?.itemStack
+      if (!item || !item?.nameTag) continue
+      if (item?.nameTag === CONTAINER_NAMETAG) try {
+        const drop = new ItemStack(item?.typeId, (item?.amount || 1))
+        dimension.spawnItem(drop, location)
+        en.remove()
+      } catch (e) { if (DEBUG) world.sendMessage(`§c[chest.js] unexpected error while spawn normal container`) }
+    }
+  }, 1)
+  player.removeTag(CARRY_TAG)
 }

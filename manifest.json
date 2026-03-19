@@ -2,9 +2,9 @@
   "format_version": 3,
   "header": {
     "description": "§7Nice little features to make your game better!",
-    "name": "§fQ§eo§fF §c(1.2.0)",
+    "name": "§fQ§eo§fF §c(1.2.1)",
     "uuid": "bfdc43e4-e4a8-4d50-8883-7d3bdd1667de",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "base_game_version": "1.26.3",
     "min_engine_version": "1.26.3"
   },
@@ -201,6 +201,15 @@
       "text": "§7Allow carrying a container?",
       "name": "qol:CARRIED_CHEST.ENABLED",
       "default": true
+    },
+    {
+      "type": "slider",
+      "text": "§7How Mnay items list will get display inside item lores? §r",
+      "name": "qol:CARRIED_CHEST.MAX_DISPLAY",
+      "min": 0,
+      "max": 27,
+      "step": 1,
+      "default": 5
     },
     {
       "type": "slider",

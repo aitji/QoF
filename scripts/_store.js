@@ -85,6 +85,7 @@ function buildRuntime() {
 
         CARRIED_CHEST: Object.freeze({
             ENABLED: g("qol:CARRIED_CHEST.ENABLED", CH.ENABLED),
+            MAX_DISPLAY: g("qol:CARRIED_CHEST.MAX_DISPLAY", CH.MAX_DISPLAY),
             SLOWNESS_DURATION: g("qol:CARRIED_CHEST.SLOWNESS_DURATION", CH.SLOWNESS_DURATION),
             SLOWNESS_AMPLIFIER: g("qol:CARRIED_CHEST.SLOWNESS_AMPLIFIER", CH.SLOWNESS_AMPLIFIER),
             PLAYER_JUMP: Object.freeze({
@@ -98,6 +99,7 @@ function buildRuntime() {
             APPLY_IMPULSE: CH.APPLY_IMPULSE,
             ENTITY_TYPE: CH.ENTITY_TYPE,
             CHEST_ID: CH.CHEST_ID,
+            CONTAINER_NAMETAG: CH.CONTAINER_NAMETAG,
             DOUBLE_CHEST_SIZE: CH.DOUBLE_CHEST_SIZE,
             SOUND_PICK_UP: CH.SOUND_PICK_UP,
         }),

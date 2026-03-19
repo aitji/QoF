@@ -47,6 +47,10 @@ if (RUNTIME.DEBUG) world.beforeEvents.itemUse.subscribe(data => {
     }
 })
 
+world.afterEvents.entityDie.subscribe(data => {
+    if (RUNTIME.CARRIED_CHEST.ENABLED && !world.gameRules.keepInventory) chest.chest_entityDie(data)
+}, { entityTypes: ['minecraft:player'] })
+
 world.afterEvents.entityRemove.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_entityRemove(data)
     if (RUNTIME.WET_POWDER_CONCRTE.ENABLED) powder.powder_entityRemove(data)
