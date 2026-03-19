@@ -16,7 +16,11 @@ const isFaceChest = (b, f) => b?.typeId === CHEST_ID && b.permutation.getState("
 const setJump = (player, n) => {
   if (!PLAYER_JUMP.NO_JUMP_HOLD_CHEST) return
   if (DEBUG) world.sendMessage(`§7${player.name} jump=${n}`)
-  player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, n)
+  try { player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, n) }
+  catch (e) {
+    if (DEBUG)
+      world.sendMessage(`§7Can't set jump ${player.name} to ${n}:§8 ${e}`)
+  }
 }
 
 const copyInv = (inv) => {
@@ -55,7 +59,7 @@ const buildCarryItem = (blockTypeId, player) => {
   const it = new ItemStack(blockTypeId, 1)
   it.nameTag = `§r§fCarried Container`
   it.setLore([`§r§5${player.name}§r§5's Carried Container`])
-  it.lockMode = ItemLockMode.slot
+  it.lockMode = ItemLockMode.slot // cannot throw away :p
   it.keepOnDeath = true
   return it
 }
@@ -162,16 +166,14 @@ export const chest_playerInteractWithBlock = (data) => {
     } catch (e) {
       try { player.getComponent("minecraft:equippable").setEquipment(EquipmentSlot.Mainhand) } catch (_) { }
       player.removeTag(CARRY_TAG)
-      setJump(player.Jump, true)
+      setJump(player, true)
       player.setDynamicProperty('qol:chest.storage', undefined)
       if (DEBUG) world.sendMessage(`§cContainer pickup error: ${e}`)
     }
   }, 1)
 }
 
-/**
- * @param {PlayerPlaceBlockAfterEvent} data 
- */
+/**@param {PlayerPlaceBlockAfterEvent} data*/
 export const chest_playerPlaceBlock = (data) => {
   const { player, block } = data
   if (!block || !block?.getComponent("minecraft:inventory") || !player.hasTag(CARRY_TAG)) return

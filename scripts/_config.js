@@ -1,5 +1,6 @@
 export const SETTINGS = Object.freeze({
     DEBUG: true,
+    DISABLED_COMMANDFEEDBACK: false,
     INTERVAL_DELAY: 1, // delay for each interval
     SLICE_PREFIX: "minecraft:".length, // 10
     LIGHT: Object.freeze({

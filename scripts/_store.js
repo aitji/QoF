@@ -2,8 +2,10 @@ import { world } from "@minecraft/server"
 import { SETTINGS } from "./_config"
 
 function buildRuntime() {
+    const S = SETTINGS
     let ps = {}
-    try { ps = world.getPackSettings() } catch { }
+    try { ps = world.getPackSettings() }
+    catch (e) { if (S.DEBUG) world.sendMessage(`§cpack setting unable to load, using fallback: ${e}`) }
 
     const g = (name, def) => {
         const v = ps[name]
@@ -11,7 +13,6 @@ function buildRuntime() {
     }
     const r1 = (name, def) => Math.round(g(name, def) * 10) / 10
 
-    const S = SETTINGS
     const L = S.LIGHT
     const A = S.REPAIR_ANVIL
     const W = S.WET_POWDER_CONCRTE
@@ -20,6 +21,7 @@ function buildRuntime() {
 
     return Object.freeze({
         DEBUG: g("qol:DEBUG", S.DEBUG),
+        DISABLED_COMMANDFEEDBACK: g("qol:DISABLED_COMMANDFEEDBACK", S.DISABLED_COMMANDFEEDBACK),
         INTERVAL_DELAY: g("qol:INTERVAL_DELAY", S.INTERVAL_DELAY),
         SLICE_PREFIX: S.SLICE_PREFIX,
 
@@ -27,7 +29,7 @@ function buildRuntime() {
             ENABLED: g("qol:LIGHT.ENABLED", L.ENABLED),
             DECAY_LIGHT_TICK: g("qol:LIGHT.DECAY_LIGHT_TICK", L.DECAY_LIGHT_TICK),
             REDUCE_LIGHT: r1("qol:LIGHT.REDUCE_LIGHT", L.REDUCE_LIGHT),
-            LIGHT_REDUCE_LINEAR: -g("qol:LIGHT.LIGHT_REDUCE_LINEAR", L.LIGHT_REDUCE_LINEAR),
+            LIGHT_REDUCE_LINEAR: g("qol:LIGHT.LIGHT_REDUCE_LINEAR", L.LIGHT_REDUCE_LINEAR),
             LIGHT_RENDER_RADIUS: g("qol:LIGHT.LIGHT_RENDER_RADIUS", L.LIGHT_RENDER_RADIUS),
             LIGHT_RENDER_PER_PLAYER: g("qol:LIGHT.LIGHT_RENDER_PER_PLAYER", L.LIGHT_RENDER_PER_PLAYER),
             LIGHT_FIRE_LEVEL: g("qol:LIGHT.LIGHT_FIRE_LEVEL", L.LIGHT_FIRE_LEVEL),

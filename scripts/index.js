@@ -9,14 +9,15 @@ import * as chest from "./addon/chest"
 
 // tick
 system.run(() => {
-    world.scoreboard.getObjective("aitjilib").setScore("api", 1)
+    world.scoreboard.getObjective("aitjilib").setScore("api", 1) // heartbeat beta-api checker (use in mcfunction)
 
-    const { DEBUG } = RUNTIME
+    const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
+    if (DISABLED_COMMANDFEEDBACK) world.gameRules.sendCommandFeedback = false
     if (DEBUG) {
+        system.beforeEvents.watchdogTerminate.subscribe((d) => (d.cancel = true))
         world.sendMessage('§7qol loaded')
-        world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id}`).join('\n')}`)
+        world.sendMessage(`§7player id:\n§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id}`).join('\n')}`)
     }
-    if (!DEBUG) world.gameRules.sendCommandFeedback = false
 
     // interval
     system.runInterval(() => {
@@ -67,8 +68,7 @@ world.afterEvents.entitySpawn.subscribe(data => {
     if (RUNTIME.WET_POWDER_CONCRTE.ENABLED) powder.powder_entitySpawn(data)
 })
 
-// beta apis check from another of my project
-system.beforeEvents.watchdogTerminate.subscribe((d) => (d.cancel = true))
+// beta apis heartbeat
 system.afterEvents.scriptEventReceive.subscribe(({ id, message }) => {
     if (message !== "qol") return
     const lib = world.scoreboard.getObjective("aitjilib")

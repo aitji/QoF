@@ -136,13 +136,13 @@ export const light_pending = () => {
                     dead.push(k)
                     return
                 }
-                if (isLightable(block, v.isWater)) block.setPermutation(lightPerm(lig + LIGHT_REDUCE_LINEAR))
-                v.time += LIGHT_REDUCE_LINEAR
+                if (isLightable(block, v.isWater)) block.setPermutation(lightPerm(lig - LIGHT_REDUCE_LINEAR))
+                v.time -= LIGHT_REDUCE_LINEAR
                 return
             }
 
             if (isLightable(block, v.isWater)) block.setPermutation(lightPerm(v.level))
-            v.time += LIGHT_REDUCE_LINEAR
+            v.time -= LIGHT_REDUCE_LINEAR
 
         } catch (_) { }
     })

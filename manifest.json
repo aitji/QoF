@@ -250,6 +250,12 @@
       "text": "§cDebug mode? §7(Show spam logs in chat/console) §r",
       "name": "qol:DEBUG",
       "default": false
+    },
+    {
+      "type": "toggle",
+      "text": "§cDisbaled Command Log? §7(sendCommandFeedback gamerule) §r",
+      "name": "qol:DISABLED_COMMANDFEEDBACK",
+      "default": true
     }
   ]
 }
