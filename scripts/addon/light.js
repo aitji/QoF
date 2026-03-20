@@ -264,12 +264,12 @@ export const light_playerInteractWithBlock = (data) => {
                 if (itemStack?.hasTag('minecraft:is_shovel')) {
                     if (block.typeId === 'minecraft:grass_path') return
                     block.setPermutation(BlockPermutation.resolve('minecraft:grass_path'))
-                    reduceDurability('use.gravel', 1.0, [0.8, 1]) // sound, vol, pitch
+                    reduceDurability('use.gravel', 1.0, 0.8) // sound, vol, pitch
                 }
                 if (itemStack?.hasTag('minecraft:is_hoe')) {
                     if (block.typeId === 'minecraft:farmland') return
                     block.setPermutation(BlockPermutation.resolve('minecraft:farmland'))
-                    reduceDurability('use.grass', 1.0, [0.8, 1]) // sound, vol, pitch
+                    reduceDurability('use.grass', 1.0, 0.8) // sound, vol, pitch
                 }
             })
         }

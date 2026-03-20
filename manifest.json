@@ -1,7 +1,7 @@
 {
   "format_version": 3,
   "header": {
-    "description": "§7Nice little features to make your game better!",
+    "description": "§7Nice little features to make your game much better!",
     "name": "§fQ§eo§fF §c(1.2.1)",
     "uuid": "bfdc43e4-e4a8-4d50-8883-7d3bdd1667de",
     "version": "1.2.1",
@@ -145,7 +145,7 @@
     },
     {
       "type": "slider",
-      "text": "§7How many can process at once? §c(can affect performance) §r",
+      "text": "§7How many items can process at once? §c(can affect performance) §r",
       "name": "qol:WET_POWDER_CONCRTE.MAX_PROCESS",
       "min": 1,
       "max": 64,
@@ -167,13 +167,13 @@
     },
     {
       "type": "toggle",
-      "text": "§7Should hoppers work with composter? §c(can affect performance) §r",
+      "text": "§7Should hopper work with composter? §c(can affect performance) §r",
       "name": "qol:COMPOSTER.WORK_WITH_HOPPER",
       "default": true
     },
     {
       "type": "slider",
-      "text": "§7How often§8(game tick)§7 hopper interacts with composter? §r",
+      "text": "§7How often§8(game tick)§7 does the hopper interact with the composter? §r",
       "name": "qol:COMPOSTER.HOPPER_INTERVAL_TICK",
       "min": 1,
       "max": 40,
@@ -182,7 +182,7 @@
     },
     {
       "type": "slider",
-      "text": "§7How long§8(game tick)§7 before compost is ready? §r",
+      "text": "§7How long§8(game tick)§7 before the composter is ready? §r",
       "name": "qol:COMPOSTER.DELAY_BEFORE_READY",
       "min": 1,
       "max": 40,
@@ -204,7 +204,7 @@
     },
     {
       "type": "slider",
-      "text": "§7How Mnay items list will get display inside item lores? §r",
+      "text": "§7How many items list will get display inside item lores? §r",
       "name": "qol:CARRIED_CHEST.MAX_DISPLAY",
       "min": 0,
       "max": 27,
@@ -213,7 +213,7 @@
     },
     {
       "type": "slider",
-      "text": "§7When carrying a container, How long§8(game tick)§7 is slowness duration? §r",
+      "text": "§7When carrying a container, how long§8(game tick)§7 is the slowness duration? §r",
       "name": "qol:CARRIED_CHEST.SLOWNESS_DURATION",
       "min": 0,
       "max": 40,

@@ -1,0 +1,10 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {"identifier": "charcoal-bamboo2"},
+        "tags": ["furnace"],
+        "input": "minecraft:stripped_bamboo_block",
+        "output": "minecraft:charcoal",
+        "unlock": [{"item": "minecraft:stripped_bamboo_block"}]
+    }
+}
