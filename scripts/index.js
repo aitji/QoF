@@ -6,6 +6,7 @@ import * as anvil from "./addon/anvil"
 import * as powder from "./addon/powder_concrete"
 import * as composter from "./addon/composter"
 import * as chest from "./addon/chest"
+import * as offhand from "./addon/offhand"
 
 // tick
 system.run(() => {
@@ -16,12 +17,13 @@ system.run(() => {
     if (DEBUG) {
         system.beforeEvents.watchdogTerminate.subscribe((d) => (d.cancel = true))
         world.sendMessage('§7qol loaded')
-        world.sendMessage(`§7player id:\n§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id}`).join('\n')}`)
+        world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n')}`)
     }
 
     // interval
+    const { LIGHT, WET_POWDER_CONCRTE, CARRIED_CHEST, COMPOSTER } = RUNTIME
     system.runInterval(() => {
-        const { LIGHT, WET_POWDER_CONCRTE, CARRIED_CHEST, COMPOSTER } = RUNTIME
+        const tick = system.currentTick
 
         if (LIGHT.ENABLED) {
             light.light_pending()
@@ -34,6 +36,7 @@ system.run(() => {
         for (const player of world.getAllPlayers()) {
             if (LIGHT.ENABLED) light.light_player(player)
             if (CARRIED_CHEST.ENABLED) chest.chest_player(player)
+            offhand.offhand_player(player, tick)
         }
     }, RUNTIME.INTERVAL_DELAY)
 })
