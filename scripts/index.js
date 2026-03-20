@@ -67,6 +67,7 @@ world.beforeEvents.playerBreakBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerBreakBlock(data)
 })
 world.beforeEvents.playerInteractWithBlock.subscribe(data => {
+    if (RUNTIME.LIGHT.ENABLED) light.light_playerInteractWithBlock(data)
     if (RUNTIME.REPAIR_ANVIL.ENABLED) anvil.anvil_playerInteractWithBlock(data)
     if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
     if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
