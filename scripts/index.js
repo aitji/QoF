@@ -70,9 +70,19 @@ world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.REPAIR_ANVIL.ENABLED) anvil.anvil_playerInteractWithBlock(data)
     if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
     if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
+    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithBlock(data)
+})
+world.beforeEvents.playerInteractWithEntity.subscribe(data => {
+    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithEntity(data)
 })
 world.afterEvents.entitySpawn.subscribe(data => {
     if (RUNTIME.WET_POWDER_CONCRTE.ENABLED) powder.powder_entitySpawn(data)
+})
+world.afterEvents.playerSpawn.subscribe(data => {
+    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerSpawn(data)
+})
+world.afterEvents.playerLeave.subscribe(data => {
+    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerLeave(data)
 })
 
 // beta apis heartbeat

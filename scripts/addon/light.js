@@ -96,11 +96,18 @@ function spreadLight(block, level, en, height = 2, force = false) {
     }
     const dirs = ['east', 'west', 'north', 'south']
     for (let i = 0; i < dirs.length; i++) {
-        let blo = block[dirs[i]](-1)?.above(0)
-        for (let j = 0; j < height - 1; j++) { tryPut(blo); blo = blo?.offset({ x: 0, y: 1, z: 0 }) }
+        try {
+            let blo = block[dirs[i]](-1)?.above(0)
+            for (let j = 0; j < height - 1; j++) { tryPut(blo); blo = blo?.offset({ x: 0, y: 1, z: 0 }) }
+        } catch (e) { continue /** chunk unload nothing crazy*/ }
     }
     let blo = block?.above(0)
-    for (let j = 0; j < height - 1; j++) { tryPut(blo); blo = blo?.offset({ x: 0, y: 1, z: 0 }) }
+    for (let j = 0; j < height - 1; j++) {
+        try {
+            if (height === j) continue
+            tryPut(blo); blo = blo?.offset({ x: 0, y: 1, z: 0 })
+        } catch (e) { continue /** chunk unload nothing crazy*/ }
+    }
     tryPut(block.above(height - 1))
 }
 
@@ -118,7 +125,7 @@ function processEntity(en, isPlayer = false) {
         if (level <= 0) return
 
         spreadLight(en.dimension.getBlock(en.location), level, en, isPlayer ? 3 : 2)
-    } catch (e) { if (DEBUG) world.sendMessage(`§7${e}`) }
+    } catch (e) { if (DEBUG) world.sendMessage(`§7e: ${e}`) }
 }
 
 export const light_pending = () => {

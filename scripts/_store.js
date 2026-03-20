@@ -18,6 +18,7 @@ function buildRuntime() {
     const W = S.WET_POWDER_CONCRTE
     const C = S.COMPOSTER
     const CH = S.CARRIED_CHEST
+    const OH = S.OFFHAND
 
     return Object.freeze({
         DEBUG: g("qol:DEBUG", S.DEBUG),
@@ -103,6 +104,18 @@ function buildRuntime() {
             DOUBLE_CHEST_SIZE: CH.DOUBLE_CHEST_SIZE,
             SOUND_PICK_UP: CH.SOUND_PICK_UP,
         }),
+        OFFHAND: Object.freeze({
+            ENABLED: g("qol:CHEST.ENABLED", C.ENABLED),
+
+            // static
+            ALLOW_REPLACE: OH.ALLOW_REPLACE,
+            NEED_SNEAK: OH.NEED_SNEAK,
+            FACE_TO_TORCH_DIR: OH.FACE_TO_TORCH_DIR,
+            FACE_TO_NEIGHBOUR: OH.FACE_TO_NEIGHBOUR,
+            TORCH_ID: OH.TORCH_ID,
+            LIGHT: OH.LIGHT,
+            PLACE_SOUND: OH.PLACE_SOUND
+        })
     })
 }
 

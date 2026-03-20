@@ -371,5 +371,58 @@ export const SETTINGS = Object.freeze({
             VOLUME: 1.0,
             PITCH: 0.8
         })
+    }),
+    OFFHAND: Object.freeze({
+        ENABLED: true,
+        ALLOW_REPLACE: Object.freeze({
+            'minecraft:short_grass': true,
+            'minecraft:short_dry_grass': true,
+            'minecraft:bush': true,
+            'minecraft:deadbush': true,
+            'minecraft:fern': true,
+            'minecraft:nether_sprouts': true,
+            'minecraft:vine': true,
+            'minecraft:glow_lichen': true,
+
+            // 2 block tall need neig check
+            'minecraft:tall_grass': false,
+            'minecraft:tall_fern': false,
+        }),
+        NEED_SNEAK: Object.freeze({ // o(1) search
+            'minecraft:crafting_table': true,
+            'minecraft:crafter': true,
+            'minecraft:barrel': true,
+            'minecraft:furnace': true,
+            'minecraft:lit_furnace': true,
+            'minecraft:blast_furnace': true,
+            'minecraft:lit_blast_furnace': true,
+            'minecraft:smoker': true,
+            'minecraft:lit_smoker': true,
+            'minecraft:smithing_table': true,
+            'minecraft:noteblock': true,
+        }),
+        FACE_TO_TORCH_DIR: Object.freeze({
+            Up: 'top',
+            Down: 'top',
+            North: 'south',
+            South: 'north',
+            East: 'west',
+            West: 'east',
+        }),
+        FACE_TO_NEIGHBOUR: Object.freeze({
+            Up: (b) => b.above(),
+            Down: (b) => b.below(),
+            North: (b) => b.north(),
+            South: (b) => b.south(),
+            East: (b) => b.east(),
+            West: (b) => b.west(),
+        }),
+        TORCH_ID: "minecraft:torch",
+        LIGHT: 'minecraft:light_block',
+        PLACE_SOUND: Object.freeze({
+            ID: "dig.wood", // new version might be chnage to "place.wood"
+            VOLUME: 1.0,
+            PITCH: 0.8
+        }),
     })
 })
