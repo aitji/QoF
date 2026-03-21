@@ -39,7 +39,7 @@
 
 ## Installation
 
-1. Download the latest `.mcpack` from [Releases](https://github.com/aitji/QoF-BP/releases).
+1. Download the latest `.mcpack` from [Releases](https://github.com/aitji/QoF/releases).
 2. Open the file Minecraft will import it automatically.
 3. Create or open a world, go to **Behavior Packs**, and activate **QoF**.
 4. Under **Experiments**, enable **Beta APIs**.

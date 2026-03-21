@@ -12,7 +12,7 @@
     "authors": ["aitji", "pickerth-12"],
     "product_type": "addon",
     "license": "MIT",
-    "url": "https://github.com/aitji/QoF-BP"
+    "url": "https://github.com/aitji/QoF"
   },
   "dependencies": [
     {"module_name": "@minecraft/server","version": "beta"}
