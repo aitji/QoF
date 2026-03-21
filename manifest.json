@@ -257,7 +257,7 @@
     {
       "type": "toggle",
       "text": "§7Allow offhand?",
-      "name": "qof:CARRIED_CHEST.ENABLED",
+      "name": "qof:OFFHAND.ENABLED", // need to fix
       "default": true
     },
   

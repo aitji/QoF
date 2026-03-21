@@ -249,7 +249,7 @@ export const light_playerInteractWithBlock = (data) => {
                     block.setPermutation(BlockPermutation.resolve('minecraft:grass_path'))
                     toolUsed = true
 
-                    player.dimension.playSound('use.gravel', block.center(), { // todo: config.js
+                    player.dimension.playSound('use.grass', block.center(), { // todo: config.js
                         volume: 1.0,
                         pitch: 0.8
                     })
@@ -259,7 +259,7 @@ export const light_playerInteractWithBlock = (data) => {
                     block.setPermutation(BlockPermutation.resolve('minecraft:farmland'))
                     toolUsed = true
 
-                    player.dimension.playSound('use.grass', block.center(), { // todo: config.js
+                    player.dimension.playSound('use.gravel', block.center(), { // todo: config.js
                         volume: 1.0,
                         pitch: 0.8
                     })

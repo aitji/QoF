@@ -1,29 +1,29 @@
-# QoF Quality of Feature
+# QoF – Quality of Feature
 
 > [!NOTE]
 > A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel. Requires **BetaAPIs** enabled under Experiments.
 
 ## Table of Contents
 
-- [QoF Quality of Feature](#qof-quality-of-feature)
+- [QoF – Quality of Feature](#qof--quality-of-feature)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Installation](#installation)
   - [Modules](#modules)
     - [Dynamic Light](#dynamic-light)
-      - [Light fade soul lantern pickup and drop](#light-fade-soul-lantern-pickup-and-drop)
-      - [Fire light flame arrow and burning entities](#fire-light-flame-arrow-and-burning-entities)
-      - [Water light boating and diving with a light source](#water-light-boating-and-diving-with-a-light-source)
-    - [Anvil Repair](#anvil-repair)
-      - [Full repair loop](#full-repair-loop)
+      - [Fading Light of Soul Lantern when Pickup and Drop](#fading-light-of-soul-lantern-when-pickup-and-drop)
+      - [Light of the Flaming Arrow and Burning Entities](#light-of-the-flaming-arrow-and-burning-entities)
+      - [Water Light when Boating and Diving with a Light Source](#water-light-when-boating-and-diving-with-a-light-source)
+    - [Anvil Repairing](#anvil-repairing)
+      - [Full Repairing Loop](#full-repairing-loop)
     - [Wet Concrete Powder](#wet-concrete-powder)
-      - [Conversion in action](#conversion-in-action)
+      - [Conversion In Action](#conversion-in-action)
     - [Composter+](#composter)
-      - [Hopper integration](#hopper-integration)
-      - [Stew and soup bowl return](#stew-and-soup-bowl-return)
-    - [Carry Container](#carry-container)
-      - [Slowness and double chest](#slowness-and-double-chest)
-  - [Configuration Reference](#configuration-reference)
+      - [Hopper Integration](#hopper-integration)
+      - [Stew \& Soup Bowl Returning](#stew--soup-bowl-returning)
+    - [Carrying Container](#carrying-container)
+      - [Slowness and Double Chest](#slowness-and-double-chest)
+  - [Configuration References](#configuration-references)
   - [Known Limitations \& Notes](#known-limitations--notes)
   - [License](#license)
   - [Credits](#credits)
@@ -31,7 +31,7 @@
 ## Overview
 
 - [x] Dynamic lighting from held and dropped items
-- [x] Repair damaged anvils using iron ingots
+- [x] Repair damaged anvils by using iron ingots
 - [x] Concrete powder hardens when it touches water as an item
 - [x] Composter accepts more items and works with hoppers
 - [x] Pick up and carry containers while keeping their contents
@@ -41,7 +41,7 @@
 
 1. Download the latest `.mcpack` from [Releases](https://github.com/aitji/QoF/releases).
 2. Open the file Minecraft will import it automatically.
-3. Create or open a world, go to **Behavior Packs**, and activate **QoF**.
+3. Create or open a world, then go to **Behavior Packs**, and activate **QoF**.
 4. Under **Experiments**, enable **Beta APIs**.
 5. Launch the world. Settings are available directly in the pack settings panel.
 
@@ -55,36 +55,36 @@
   <img src=".github/img/light-banner.png" alt="Dynamic Light night walk with soul lantern" width="1080">
 </p>
 
-Held items and dropped item emit light based on their type. Light smoothly fades after the source moves away or is removed. Item frames also contribute light based on whatever is placed inside them.
+Held items and dropped items emit light are based on their type. Light smoothly fades after the source moves away or is removed. Item frames also contribute light based on whatever is placed inside them.
 
-**How it works:**
+**How It Works:**
 
 - When a player holds or drops a light-emitting item, a `light_block` is placed at the relevant position each tick.
 - Light level is calculated from the item's base value multiplied by the reduce factor.
 - When the source is gone, light steps down linearly each tick until it reaches zero, then the block is restored to air or water.
 - Nearby entities such as Blaze, Glow Squid, Allay, Vex, and Warden also emit light passively.
 
-#### Light fade soul lantern pickup and drop
+#### Fading Light of Soul Lantern when Pickup and Drop
 
 <img src=".github/img/light-fade.gif" alt="Player picks up soul lantern in mushroom cave, light fades after drop" width="544">
 
 **alt-message** In a mushroom cave, a soul lantern sits on the ground emitting light. The player walks in from the right, picks it up the room goes dark. And then drop it back in the same spot, then walk away.
 
-#### Fire light flame arrow and burning entities
+#### Light of the Flaming Arrow and Burning Entities
 
 <img src=".github/img/light-fire.gif" alt="Player shoots flame arrows into targets, picks up arrow, walks away" width="544">
 
-**alt-message** A flame arrow is fired into a target block. While the arrow burns, it emits light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
+**alt-message** A flaming arrow is fired into a target block. While the arrow is burning, it emits the light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
 
-#### Water light boating and diving with a light source
+#### Water Light when Boating and Diving with a Light Source
 
 <img src=".github/img/light-water.gif" alt="Player holds conduit while swimming in ocean, light visible underwater" width="544">
 
-**alt-message** In the open ocean, the player boats while holding a lantern the water surface glows below. They stop, jump in, switch to a conduit, and swim deeper. The `light_block` is placed inside the water itself, illuminating the seafloor and kelp.
+**alt-message** In the open ocean, the player boats while holding a lantern making the water surface glows below. They stop, jump in, switch to a conduit, and swim deeper. The `light_block` is placed inside the water itself, illuminating the seafloor and kelp.
 
 
 <details>
-  <summary><strong>Items that emit light</strong></summary>
+  <summary><strong>Items that Emit the Light</strong></summary>
 
 | Item | Light Level |
 | - | - |
@@ -149,7 +149,7 @@ Held items and dropped item emit light based on their type. Light smoothly fades
 </details>
 
 <details>
-  <summary><strong>Entities that emit light</strong></summary>
+  <summary><strong>Entities that Emit the Light</strong></summary>
 
 | Entity | Light Level |
 | - | - |
@@ -160,7 +160,7 @@ Held items and dropped item emit light based on their type. Light smoothly fades
 | warden | 6 |
 </details>
 
-### Anvil Repair
+### Anvil Repairing
 <p align="center">
   <img src=".github/img/repair-anvil.png" alt="Anvil Repair repairing at a chipped anvil in a spruce house" width="1080">
 </p>
@@ -173,7 +173,7 @@ Damaged anvils can be repaired by interacting with them while holding an iron in
 Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 ```
 
-#### Full repair loop
+#### Full Repairing Loop
 
 <img src=".github/img/repair-anvil.gif" alt="Player repairs anvil twice, mines it, places damaged one, and walks out" width="544">
 
@@ -183,7 +183,7 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 > Hold the interact button to repair continuously. A short delay between repairs is applied to prevent accidental over-use.
 
 <details>
-  <summary><strong>Repair item & cost</strong></summary>
+  <summary><strong>Repairing Item & Cost</strong></summary>
 
 | Input | Cost | Output |
 | - | - | - |
@@ -199,14 +199,14 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 
 Concrete powder item automatically convert to concrete when they enter water. The conversion happens after a short delay proportional to the stack size, and the resulting concrete item inherits the original item's velocity.
 
-**How it works:**
+**How It Works:**
 
 1. When a concrete powder item entity spawns, QoF begins tracking it.
 2. Once it enters water, a timer starts larger stacks wait slightly longer.
 3. After the timer expires, the powder entity is removed and a concrete item entity is spawned in its place.
 4. A particle and sound effect play on conversion.
 
-#### Conversion in action
+#### Conversion In Action
 
 <img src=".github/img/powder-result.gif" alt="Top-down view: player throws concrete powder into water pool, allay nearby, powder converts to concrete" width="544">
 
@@ -216,19 +216,19 @@ Concrete powder item automatically convert to concrete when they enter water. Th
 
 Expands the composter to accept many more item types not supported in vanilla, including mob drops, cooked food, wool, and various nether materials. Hoppers placed directly above a composter can also feed it automatically.
 
-**How it works:**
+**How It Works:**
 
 1. Player interaction with supported items triggers compost fill with a per-item success chance.
 2. On reaching level 7, a short delay passes before the composter becomes ready (level 8).
 3. Hoppers check for composting items on a configurable interval and process one item per check.
 
-#### Hopper integration
+#### Hopper Integration
 
 <img src=".github/img/composter-work_hopper.gif" alt="Player composts string, places hopper on top, throws rotten flesh in, composter fills automatically" width="544">
 
 **alt-message** The player manually composts some string *`(not in the vanilla list)`*, then places a hopper above the composter and throws in rotten flesh *`(also not in the vanilla list)`*. The hopper feeds the composter automatically until it fills and becomes ready.
 
-#### Stew and soup bowl return
+#### Stew & Soup Bowl Returning
 
 <img src=".github/img/composter-stew.gif" alt="Player composts stew and soup items, receives empty bowls back" width="544">
 
@@ -238,7 +238,7 @@ Expands the composter to accept many more item types not supported in vanilla, i
 > Enabling hopper integration with many composters and hoppers in a loaded area may affect performance. Tune the hopper interval setting if needed.
 
 <details>
-  <summary><strong>Additional compostable items (QoF only)</strong></summary>
+  <summary><strong>Additional Compostable Items (QoF Only)</strong></summary>
 
 These are items added by QoF on top of the vanilla compost table. Vanilla items are handled by Minecraft natively and are excluded here to avoid double-processing.
 
@@ -323,24 +323,24 @@ These are items added by QoF on top of the vanilla compost table. Vanilla items 
 | nether_star | 100% |
 </details>
 
-### Carry Container
+### Carrying Container
 
 Allows players to pick up chests and other containers while preserving their contents. Sneaking and interacting with a container picks it up. Placing the carried item puts the container back down with all items restored.
 
-**Behavior while carrying:**
+**Behavior while Carrying:**
 
 - [x] Slowness is applied continuously.
 - [x] Jumping is disabled by default (configurable).
 - [x] Jumping in water or lava can be allowed independently.
 - [x] Creative mode players are exempt from jump restrictions.
 
-Full carry flow
+Full Carry Flow
 
 <img src=".github/img/chest-flow.gif" alt="Player puts cod in barrel, picks it up, walks to composter area, places barrel on hopper" width="544">
 
 **alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene slowness visible and place it on top of a hopper. The barrel lands with its contents intact.
 
-#### Slowness and double chest
+#### Slowness and Double Chest
 
 <img src=".github/img/chest-slownessdouble.gif" alt="Player picks up chest near sheep, walks slowly, places it into double chest formation" width="544">
 
@@ -350,7 +350,7 @@ The player runs in, picks up a chest next to a black sheep, then visibly slows d
 > ~~Double chest support is partially implemented. Picking up one half of a double chest will attempt to preserve both halves, but edge cases may result in item loss. Always **back up world** before tranfer the important chests before carrying them.~~ 100% work, We has been extensively tested!
 
 <details>
-  <summary><strong>Supported containers</strong></summary>
+  <summary><strong>Supported Containers</strong></summary>
 
 Any block that has a `minecraft:inventory` component can be picked up. Common examples include:
 
@@ -367,19 +367,19 @@ Any block that has a `minecraft:inventory` component can be picked up. Common ex
 | smoker | yes`*` |
 | brewing_stand | yes |
 | crafter | no |
-| Shulker | yes |
+| shulker | yes |
 
 > [!NOTE]
 > ~~(Shulker boxes, Crafter & Brewing Stand) are also inventory blocks and should work, but have not been extensively tested.~~
 > `*` for furnace item will 100% correct, But heat state will be loss.
 </details>
 
-## Configuration Reference
+## Configuration References
 
 All settings are accessible through the pack settings panel in-game. No manual file editing is required.
 
 <details>
-  <summary><strong>Full settings table</strong></summary>
+  <summary><strong>Full Settings Table</strong></summary>
 
 | Setting | Key | Type | Default | Description |
 |---|---|---|---|---|
@@ -393,7 +393,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 | Render radius | `qof:LIGHT.LIGHT_RENDER_RADIUS` | Slider | `32` | Max distance (blocks) to detect light sources around the player. |
 | Sources per player | `qof:LIGHT.LIGHT_RENDER_PER_PLAYER` | Slider | `12` | Max number of light-emitting entities processed per player per tick. |
 | Fire light level | `qof:LIGHT.LIGHT_FIRE_LEVEL` | Slider | `10` | Base light level emitted by burning entities before the reduce factor is applied. |
-| **Anvil Repair** | | | | |
+| **Anvil Repairing** | | | | |
 | Enabled | `qof:REPAIR_ANVIL.ENABLED` | Toggle | `true` | |
 | Repair hold delay | `qof:REPAIR_ANVIL.REPAIR_HELD_DELAY` | Slider | `7` | Ticks between repeated repair interactions when holding the button. |
 | **Wet Concrete Powder** | | | | |
@@ -405,7 +405,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 | Hopper integration | `qof:COMPOSTER.WORK_WITH_HOPPER` | Toggle | `true` | Allows hoppers facing down into a composter to feed it. |
 | Hopper interval | `qof:COMPOSTER.HOPPER_INTERVAL_TICK` | Slider | `8` | Ticks between each hopper-to-composter feed attempt. |
 | Ready delay | `qof:COMPOSTER.DELAY_BEFORE_READY` | Slider | `17` | Ticks after reaching level 7 before the composter becomes ready. |
-| **Carry Container** | | | | |
+| **Carrying Container** | | | | |
 | Enabled | `qof:CARRIED_CHEST.ENABLED` | Toggle | `true` | |
 | Slowness duration | `qof:CARRIED_CHEST.SLOWNESS_DURATION` | Slider | `10` | Ticks each slowness effect application lasts while carrying. |
 | Slowness level | `qof:CARRIED_CHEST.SLOWNESS_AMPLIFIER` | Slider | `2` | Amplifier level of the applied slowness effect. |
@@ -425,7 +425,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 - `Limitations` Armor stands do not support the equippable component in the current API. Items held by armor stands do not emit dynamic light only item frames are supported for static placed sources.
 - Very high render radius or sources-per-player values will increase tick time noticeably. Keep defaults unless your world has very few active players.
 
-**Anvil Repair**
+**Anvil Repairing**
 
 - The repair consumes the item from the selected hotbar slot within the same tick. If the player switches slots between the interact and the internal run tick, a fallback `/clear` command is used. In very rare cases this fallback may fail silently and reverting the anvil.
 
@@ -439,7 +439,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 - Hopper feed processes one item per interval tick. High-throughput automatic farms will be rate-limited by the hopper interval setting.
 - `Limitations` We have a system that prevents custom list items from being processed when vanilla items are already being processed. However, if our custom list items are processed first and vanilla items are in the next slots, the vanilla items will be processed at the same time as ours in the hopper.
 
-**Carry Container**
+**Carrying Container**
 
 - Double chest carrying is experimental. Items from both halves are preserved through an intermediate entity, but timing edge cases during placement may cause one half to fail to restore.
 - Only the player who picked up the container can place it back. Other players cannot interact with the carried item slot.
