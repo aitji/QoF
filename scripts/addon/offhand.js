@@ -1,4 +1,4 @@
-import { Block, BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, system, world } from "@minecraft/server"
+import { Block, BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
 import { checkRandom, RUNTIME } from "../lib"
 const { DEBUG, CARRIED_CHEST, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND } } = RUNTIME
 
@@ -133,11 +133,25 @@ function canPlaceTorchOn(block) {
     if (replace === false) return block.below()?.isSolid ?? false
     return false
 }
+
+const delay = {}
+/**
+ * @param {PlayerInteractWithBlockBeforeEvent} data 
+ * @returns 
+ */
 export const offhand_playerInteractWithBlock = (data) => {
-    const { player, block, blockFace, itemStack } = data
+    const { player, block, blockFace, isFirstEvent } = data
+
+    // anti torch offhand item dupe
+    if (!isFirstEvent) {
+        const playerDelay = delay[player.id] || 0
+        if (playerDelay > system.currentTick) return
+    }
+    delay[player.id] = system.currentTick + 4 // vanilla delay ;todo: make this config
 
     const equ = player.getComponent(EntityComponentTypes.Equippable)
     const offhandItem = equ.getEquipment(EquipmentSlot.Offhand)
+    const mainhandItem = equ.getEquipment(EquipmentSlot.Mainhand)
 
     const reduceItem = () => {
         if (player.matches({ gameMode: GameMode.Creative }))
@@ -149,15 +163,18 @@ export const offhand_playerInteractWithBlock = (data) => {
             })
 
             if (offhandItem.amount <= 1) {
-                // clear item
                 equ.setEquipment(EquipmentSlot.Offhand, undefined)
             } else player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${offhandItem.typeId} ${offhandItem.amount - 1}`)
         } catch (e) { if (DEBUG) console.warn('[OFFHAND] unknown case:', e) }
     }
 
-    if (offhandItem?.typeId !== TORCH_ID) return
     const cache = FACE_TO_NEIGHBOUR[blockFace]
-    if (itemStack && block && cache.typeId !== block.typeId) return
+    if (offhandItem?.typeId !== TORCH_ID) return
+    const mainhandIsBlock = (() => {
+        try { return mainhandItem && BlockPermutation.resolve(mainhandItem.typeId) !== undefined }
+        catch { return false }
+    })()
+    if (block && cache.typeId !== block.typeId && mainhandIsBlock) return
     if (block.isLiquid) return
 
     const isSolidOrLight = block.isSolid || block.permutation.matches(LIGHT)

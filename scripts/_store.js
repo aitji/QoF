@@ -108,7 +108,7 @@ function buildRuntime() {
             SOUND_PICK_UP: CH.SOUND_PICK_UP,
         }),
         OFFHAND: Object.freeze({
-            ENABLED: g("qof:CHEST.ENABLED", OH.ENABLED),
+            ENABLED: g("qof:OFFHAND.ENABLED", OH.ENABLED),
             // need more customization
 
             // static

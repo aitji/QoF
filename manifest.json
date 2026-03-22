@@ -290,7 +290,7 @@
       "type": "toggle",
       "text": "§cDebug mode? §7(Show spam logs in chat/console) §r",
       "name": "qof:DEBUG",
-      "default": false
+      "default": true
     },
     {
       "type": "toggle",
@@ -302,7 +302,7 @@
       "type": "toggle",
       "text": "§cDisbaled HeartBeat §7(script will never responed to mcfunction) §r",
       "name": "qof:DISABLED_HEARTBEAT",
-      "default": true
+      "default": false
     }
   ]
 }

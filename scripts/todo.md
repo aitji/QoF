@@ -12,7 +12,7 @@ this file is only for top priority todo, if something like refactor some code or
 - [x] /README.md
 - [x] offhand items
 - [x] BUG!!: fix hoe/shovel cannot use with dynamic light
-- [x] Harvest crop
+- [x] harvest crop
 
 ## picker
 - [x] update light level to new version

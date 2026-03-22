@@ -22,7 +22,7 @@ export const crop_playerBreakBlock = (data) => {
                     if (changed) equippable?.setEquipment(EquipmentSlot.Mainhand, newItem)
                     const apply = () => dimension.getBlock(location).setPermutation(BlockPermutation.resolve(typeId))
 
-                    if (LOSS_SEED) return apply()
+                    if (!LOSS_SEED) return apply()
                     const container = player.getComponent(EntityComponentTypes.Inventory).container
                     const slot = container.find(new ItemStack(seed, 1))
                     if (slot) {
