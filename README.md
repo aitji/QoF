@@ -459,12 +459,12 @@ Made by (aitji & pickerth-12)
 
   README INFO
 Version: v1.2.0
-Last updated: 18 Mar 2026
+Last updated: 25 Mar 2026
 Has README Update: False
 
   PACK INFO
 Last Release: v1.2.0
 Last Pre-Release: v1.2.3
-Minecraft: 26.0+
-Dependencies: ^2.6.0-beta.1.26.3-stable
+Minecraft: 26.0 ... 26.10
+Dependencies: ^2.7.0-beta.1.26.10-stable
 ```
