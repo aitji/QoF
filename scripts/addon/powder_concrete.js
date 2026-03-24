@@ -102,7 +102,7 @@ export const powder_pending = () => {
                     try { concrete.remove() }
                     catch {
                         try { concrete.kill() }
-                        catch { /** nvm then ; you luck */ }
+                        catch { /** nvm then ; you lucky -.- */ }
                     }
                 }
             }
