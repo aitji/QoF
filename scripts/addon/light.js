@@ -292,7 +292,7 @@ export const light_playerInteractWithBlock = (data) => {
             }
 
             // all logic
-            if (toolUsed) {
+            if (toolUsed && !player.matches({ gameMode: GameMode.Creative })) {
                 const { changed, item } = applyItemDamage(player, itemStack)
                 if (changed) {
                     const equ = getEqu(player)
