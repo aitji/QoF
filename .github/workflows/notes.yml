@@ -28,67 +28,62 @@ jobs:
           if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
             CHANGED=$(git diff --name-only HEAD -- '.github/changelog/*.md')
           elif ! git cat-file -e "$BEFORE" 2>/dev/null; then
-            echo "Warning: BEFORE commit $BEFORE not found, falling back to HEAD diff"
+            echo "Warning: BEFORE commit $BEFORE not found, fallback diff"
             CHANGED=$(git diff --name-only HEAD~1 HEAD -- '.github/changelog/*.md' 2>/dev/null || \
                       git diff --name-only HEAD -- '.github/changelog/*.md')
           else
             CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" -- '.github/changelog/*.md')
           fi
 
-          CHANGED=$(echo "$CHANGED" | grep -v '^$' || true)
+          echo "$CHANGED" | grep -v '^$' > changed_files.txt || true
 
-          echo "Changed files: $CHANGED"
-
-          {
-            echo "files<<EOF"
-            echo "$CHANGED"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+          echo "Changed files:"
+          cat changed_files.txt || true
 
       - name: Update each matching release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -z "${{ steps.changed.outputs.files }}" ]; then
-            echo "No changelog files changed, nothing to do"
+          if [ ! -s changed_files.txt ]; then
+            echo "No changelog files changed"
             exit 0
           fi
 
-          for FILE in ${{ steps.changed.outputs.files }}; do
+          while IFS= read -r FILE; do
 
             case "$FILE" in
               .github/changelog/*.md) ;;
               *)
-                echo "Skipping unexpected path: $FILE"
+                echo "Skip unexpected path: $FILE"
                 continue
                 ;;
             esac
 
             if [ ! -f "$FILE" ]; then
-              echo "File $FILE no longer exists (deleted?), skipping"
+              echo "File removed, skip: $FILE"
               continue
             fi
 
             if [ ! -s "$FILE" ]; then
-              echo "File $FILE is empty, skipping to avoid wiping release notes"
+              echo "File empty, skip: $FILE"
               continue
             fi
 
             BASENAME=$(basename "$FILE" .md)
 
             if ! echo "$BASENAME" | grep -qE '^v[0-9]+\.[0-9]+(\.[0-9]+)?$'; then
-              echo "Filename $BASENAME does not look like a version tag, skipping"
+              echo "Invalid version filename: $BASENAME"
               continue
             fi
 
             TAG="$BASENAME"
 
             if ! gh release view "$TAG" --json tagName > /dev/null 2>&1; then
-              echo "No release found for tag $TAG, skipping"
+              echo "Release not found: $TAG"
               continue
             fi
 
-            echo "Updating release $TAG with notes from $FILE"
+            echo "Updating release $TAG using $FILE"
             gh release edit "$TAG" --notes-file "$FILE"
 
-          done
+          done < changed_files.txt
