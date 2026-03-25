@@ -460,8 +460,8 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Credits
 
-- [aitji](https://github.com/aitji) scripting & design
-- [pickerth-12](https://github.com/pickerth-12) design, json & molang
+- @aitji scripting & design
+- @pickerth-12 design, json & molang
 
 ```
 ©2026 QoF™ Licensed under the MIT License
