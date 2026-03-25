@@ -8,6 +8,7 @@
 - [QoF – Quality of Feature](#qof--quality-of-feature)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
+  - [Changelog](#changelog)
   - [Installation](#installation)
   - [Modules](#modules)
     - [Dynamic Light](#dynamic-light)
@@ -36,6 +37,15 @@
 - [x] Composter accepts more items and works with hoppers
 - [x] Pick up and carry containers while keeping their contents
 - [ ] And many more to comes!
+
+## Changelog
+
+- QoF [v1.2.0](https://github.com/aitji/QoF/releases/tag/v1.2.0)
+  - `Pre-Releases` QoF [v1.2.1](https://github.com/aitji/QoF/releases/tag/v1.2.1)
+  - `Pre-Releases` QoF [v1.2.2](https://github.com/aitji/QoF/releases/tag/v1.2.2)
+  - `Pre-Releases` QoF [v1.2.3](https://github.com/aitji/QoF/releases/tag/v1.2.3)
+- QoF [v1.1.0](https://github.com/aitji/QoF/releases/tag/v1.1.0)
+  - `Pre-Releases` QoF [v1.1.1](https://github.com/aitji/QoF/releases/tag/v1.1.1)
 
 ## Installation
 
@@ -459,12 +469,12 @@ Made by (aitji & pickerth-12)
 
   README INFO
 Version: v1.2.0
-Last updated: 18 Mar 2026
+Last updated: 25 Mar 2026
 Has README Update: False
 
   PACK INFO
 Last Release: v1.2.0
 Last Pre-Release: v1.2.3
-Minecraft: 26.0+
-Dependencies: ^2.6.0-beta.1.26.3-stable
+Minecraft: 26.0 ... 26.10
+Dependencies: ^2.7.0-beta.1.26.10-stable
 ```

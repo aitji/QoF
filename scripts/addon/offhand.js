@@ -1,5 +1,5 @@
 import { Block, BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
-import { checkRandom, RUNTIME } from "../lib"
+import { checkRandom, getDistance, RUNTIME } from "../lib"
 const { DEBUG, CARRIED_CHEST, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND } } = RUNTIME
 
 const DOUBLE_SNEAK_WINDOW_MOBILE = 20
@@ -127,12 +127,28 @@ export const offhand_playerInteractWithEntity = (event) => {
 
 function canPlaceTorchOn(block) {
     if (block.isAir) return true
+    // if (block.isLiquid) return false // block is alr NOT liquid
     if (block.permutation.matches(LIGHT)) return true
     const replace = ALLOW_REPLACE[block.typeId]
     if (replace === true) return true
     if (replace === false) return block.below()?.isSolid ?? false
     return false
 }
+
+const ITEMBUTBLOCK = Object.freeze({ // aka, skip item ; todo: add to config
+    "minecraft:water_bucket": true,
+    "minecraft:axolotl_bucket": true,
+    "minecraft:cod_bucket": true,
+    "minecraft:lava_bucket": true,
+    "minecraft:powder_snow_bucket": true,
+    "minecraft:pufferfish_bucket": true,
+    "minecraft:salmon_bucket": true,
+    "minecraft:tadpole_bucket": true,
+    "minecraft:tropical_fish_bucket": true,
+    "minecraft:bucket": true, // edge case, not a block but need to skip
+    "minecraft:redstone": true,
+    "minecraft:redstone_torch": true,
+})
 
 const delay = {}
 /**
@@ -141,8 +157,6 @@ const delay = {}
  */
 export const offhand_playerInteractWithBlock = (data) => {
     const { player, block, blockFace, isFirstEvent } = data
-
-    // anti torch offhand item dupe
     if (!isFirstEvent) {
         const playerDelay = delay[player.id] || 0
         if (playerDelay > system.currentTick) return
@@ -154,24 +168,27 @@ export const offhand_playerInteractWithBlock = (data) => {
     const mainhandItem = equ.getEquipment(EquipmentSlot.Mainhand)
 
     const reduceItem = () => {
-        if (player.matches({ gameMode: GameMode.Creative }))
-            return
+        if (player.matches({ gameMode: GameMode.Creative })) return
         try {
             player.dimension.playSound(PLACE_SOUND.ID, block.center(), {
                 volume: checkRandom(PLACE_SOUND.VOLUME),
                 pitch: checkRandom(PLACE_SOUND.PITCH)
             })
 
-            if (offhandItem.amount <= 1) {
-                equ.setEquipment(EquipmentSlot.Offhand, undefined)
-            } else player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${offhandItem.typeId} ${offhandItem.amount - 1}`)
+            if (offhandItem.amount <= 1) equ.setEquipment(EquipmentSlot.Offhand, undefined)
+            else player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${offhandItem.typeId} ${offhandItem.amount - 1}`)
         } catch (e) { if (DEBUG) console.warn('[OFFHAND] unknown case:', e) }
     }
 
     const cache = FACE_TO_NEIGHBOUR[blockFace]
     if (offhandItem?.typeId !== TORCH_ID) return
     const mainhandIsBlock = (() => {
-        try { return mainhandItem && BlockPermutation.resolve(mainhandItem.typeId) !== undefined }
+        const typeId = mainhandItem?.typeId ?? ''
+        if (ITEMBUTBLOCK[typeId] === true) return true
+        const distance = getDistance(block.center(), player.location)
+        if (distance < 1) return false
+
+        try { return mainhandItem && BlockPermutation.resolve(typeId) !== undefined }
         catch { return false }
     })()
     if (block && cache.typeId !== block.typeId && mainhandIsBlock) return
@@ -200,7 +217,7 @@ export const offhand_playerInteractWithBlock = (data) => {
 
     system.run(() => {
         if (replace === false && !(block.below()?.isSolid)) return
-        block.setPermutation(BlockPermutation.resolve(TORCH_ID).withState('torch_facing_direction', 'top'))
+        if (canPlaceTorchOn(block)) block.setPermutation(BlockPermutation.resolve(TORCH_ID).withState('torch_facing_direction', 'top'))
         reduceItem()
     })
 }
