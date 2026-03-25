@@ -27,28 +27,68 @@ jobs:
 
           if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
             CHANGED=$(git diff --name-only HEAD -- '.github/changelog/*.md')
+          elif ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            echo "Warning: BEFORE commit $BEFORE not found, falling back to HEAD diff"
+            CHANGED=$(git diff --name-only HEAD~1 HEAD -- '.github/changelog/*.md' 2>/dev/null || \
+                      git diff --name-only HEAD -- '.github/changelog/*.md')
           else
             CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" -- '.github/changelog/*.md')
           fi
 
+          CHANGED=$(echo "$CHANGED" | grep -v '^$' || true)
+
           echo "Changed files: $CHANGED"
-          echo "files=$CHANGED" >> $GITHUB_OUTPUT
+
+          {
+            echo "files<<EOF"
+            echo "$CHANGED"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
       - name: Update each matching release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for FILE in ${{ steps.changed.outputs.files }}; do
-            BASENAME=$(basename "$FILE" .md)
-            VERSION="${BASENAME#v}"
-            TAG="v${VERSION}"
+          if [ -z "${{ steps.changed.outputs.files }}" ]; then
+            echo "No changelog files changed, nothing to do"
+            exit 0
+          fi
 
-            RELEASE=$(gh release view "$TAG" --json tagName 2>/dev/null || echo "")
-            if [ -z "$RELEASE" ]; then
+          for FILE in ${{ steps.changed.outputs.files }}; do
+
+            case "$FILE" in
+              .github/changelog/*.md) ;;
+              *)
+                echo "Skipping unexpected path: $FILE"
+                continue
+                ;;
+            esac
+
+            if [ ! -f "$FILE" ]; then
+              echo "File $FILE no longer exists (deleted?), skipping"
+              continue
+            fi
+
+            if [ ! -s "$FILE" ]; then
+              echo "File $FILE is empty, skipping to avoid wiping release notes"
+              continue
+            fi
+
+            BASENAME=$(basename "$FILE" .md)
+
+            if ! echo "$BASENAME" | grep -qE '^v[0-9]+\.[0-9]+(\.[0-9]+)?$'; then
+              echo "Filename $BASENAME does not look like a version tag, skipping"
+              continue
+            fi
+
+            TAG="$BASENAME"
+
+            if ! gh release view "$TAG" --json tagName > /dev/null 2>&1; then
               echo "No release found for tag $TAG, skipping"
               continue
             fi
 
-            echo "Updating release $TAG with body from $FILE"
+            echo "Updating release $TAG with notes from $FILE"
             gh release edit "$TAG" --notes-file "$FILE"
+
           done
