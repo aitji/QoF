@@ -45,6 +45,32 @@ jobs:
           NEW_VERSION: ${{ env.NEW_VERSION }}
         run: node .github/scripts/check-version.js
 
+      - name: Read changelog
+        if: steps.check.outputs.changed == 'true'
+        id: changelog
+        run: |
+          VERSION="${{ steps.check.outputs.version_string }}"
+
+          MINOR_VERSION=$(echo "$VERSION" | cut -d. -f1-2)
+
+          EXACT_FILE=".github/changelog/v${VERSION}.md"
+          MINOR_FILE=".github/changelog/v${MINOR_VERSION}.md"
+
+          if [ -f "$EXACT_FILE" ]; then
+            echo "Found exact changelog: $EXACT_FILE"
+            CHANGELOG_SOURCE="$EXACT_FILE"
+          elif [ -f "$MINOR_FILE" ]; then
+            echo "Found minor fallback changelog: $MINOR_FILE"
+            CHANGELOG_SOURCE="$MINOR_FILE"
+          else
+            echo "No changelog found for v${VERSION} or v${MINOR_VERSION}, using auto-generated notes"
+            echo "has_changelog=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          cat "$CHANGELOG_SOURCE" > /tmp/changelog_body.md
+          echo "has_changelog=true" >> $GITHUB_OUTPUT
+
       - name: Set DEBUG to false
         if: steps.check.outputs.changed == 'true'
         run: node .github/scripts/set-debug.js
@@ -63,8 +89,19 @@ jobs:
             -x "node_modules/*"
           echo "Created: $PACK_NAME"
 
-      - name: Create GitHub Release
-        if: steps.check.outputs.changed == 'true'
+      - name: Create GitHub Release (with changelog)
+        if: steps.check.outputs.changed == 'true' && steps.changelog.outputs.has_changelog == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ steps.check.outputs.version_string }}"
+          name: "QoF v${{ steps.check.outputs.version_string }}"
+          prerelease: ${{ steps.check.outputs.release_type == 'prerelease' }}
+          files: ${{ steps.check.outputs.pack_name }}
+          body_path: /tmp/changelog_body.md
+          generate_release_notes: false
+
+      - name: Create GitHub Release (auto notes)
+        if: steps.check.outputs.changed == 'true' && steps.changelog.outputs.has_changelog == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v${{ steps.check.outputs.version_string }}"
