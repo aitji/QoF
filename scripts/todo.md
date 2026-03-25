@@ -17,8 +17,9 @@ this file is only for top priority todo, if something like refactor some code or
   - [x] fix seeds not work on farmlands
   - [x] support edge case for offhand like buckets
 - [x] harvest crop
-- [ ] piston is change state to air when extract it will del piston...
-- [ ] changelog/*.md ??
+- [ ] ongoing problem ; might ship without fix this
+  - [ ] piston is change state to air when extract it will del piston ; still doesn't idea how to fix "cleanly" tho
+- [x] add changelog/*.md and github action bot pull file and update it
 
 ## picker
 - [x] update light level to new version
