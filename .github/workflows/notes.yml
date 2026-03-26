@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - .github/changelog/**.md
+      - .github/changelogs/**.md
 
 jobs:
   update-notes:
@@ -19,20 +19,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get changed changelog files
+      - name: Get changed changelogs files
         id: changed
         run: |
           BEFORE="${{ github.event.before }}"
           AFTER="${{ github.sha }}"
 
           if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            CHANGED=$(git diff --name-only HEAD -- '.github/changelog/*.md')
+            CHANGED=$(git diff --name-only HEAD -- '.github/changelogs/*.md')
           elif ! git cat-file -e "$BEFORE" 2>/dev/null; then
             echo "Warning: BEFORE commit $BEFORE not found, fallback diff"
-            CHANGED=$(git diff --name-only HEAD~1 HEAD -- '.github/changelog/*.md' 2>/dev/null || \
-                      git diff --name-only HEAD -- '.github/changelog/*.md')
+            CHANGED=$(git diff --name-only HEAD~1 HEAD -- '.github/changelogs/*.md' 2>/dev/null || \
+                      git diff --name-only HEAD -- '.github/changelogs/*.md')
           else
-            CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" -- '.github/changelog/*.md')
+            CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" -- '.github/changelogs/*.md')
           fi
 
           echo "$CHANGED" | grep -v '^$' > changed_files.txt || true
@@ -45,14 +45,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ ! -s changed_files.txt ]; then
-            echo "No changelog files changed"
+            echo "No changelogs files changed"
             exit 0
           fi
 
           while IFS= read -r FILE; do
 
             case "$FILE" in
-              .github/changelog/*.md) ;;
+              .github/changelogs/*.md) ;;
               *)
                 echo "Skip unexpected path: $FILE"
                 continue
