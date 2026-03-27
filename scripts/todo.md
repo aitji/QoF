@@ -17,8 +17,8 @@ this file is only for top priority todo, if something like refactor some code or
   - [x] fix seeds not work on farmlands
   - [x] support edge case for offhand like buckets
 - [x] harvest crop
-- [ ] ongoing problem ; might ship without fix this
-  - [ ] (24-Mar-2026) piston is change state to air when extract it will del piston
+- [x] ongoing problem ; might ship without fix this
+  - [x] (24-Mar-2026) piston is change state to air when extract it will del piston
         ; (25-Mar-2026) still doesn't idea how to fix "cleanly" tho\
         ; (26-Mar-2026) found problem! vanilla light block is pushable by piston (???) idk why they not [pop] it\
         ; (27-Mar-2026) i found workaround, how? i create `qof:light_block` that have all vanilla components but it popped on piston moving\
@@ -69,14 +69,17 @@ elytra+firework (any level): peak 8000+ bytes (150+ dyp)\
 - [x] [aitji/composter] and add composte list
 - [x] entity loot drops
 - [x] recipes
-- [ ] add more config in manifest pack
-  - [ ] offhand's settings
-    - [x] update _config.js
-    - [x] update _store.js
-    - [x] update manifest.json
-    - [ ] still need to add more tho -aitji
-  - [ ] crop.js
-    - [x] update _config.js
-    - [x] update _store.js
-    - [x] update manifest.json
-    - [ ] still need to add more tho -aitji
+- [ ] assign by aitji (gl)
+  - [ ] bug/error
+    - [ ] syntax error: blocks/light_block.json | Unexpected version for the loaded data
+  - [ ] add more config in manifest pack
+    - [ ] offhand's settings
+      - [x] update _config.js
+      - [x] update _store.js
+      - [x] update manifest.json
+      - [ ] still need to add more tho -aitji
+    - [ ] crop.js
+      - [x] update _config.js
+      - [x] update _store.js
+      - [x] update manifest.json
+      - [ ] still need to add more tho -aitji
