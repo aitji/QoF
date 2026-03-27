@@ -3,7 +3,7 @@ name: Update Release Notes
 on:
   push:
     branches:
-      - main
+      - behavior_packs
     paths:
       - .github/changelogs/**.md
 
