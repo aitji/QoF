@@ -18,6 +18,7 @@ this file is only for top priority todo, if something like refactor some code or
   - [x] support edge case for offhand like buckets
 - [x] harvest crop
 - [x] ongoing problem ; might ship without fix this
+  - [x] composter not work with piston
   - [x] (24-Mar-2026) piston is change state to air when extract it will del piston
         ; (25-Mar-2026) still doesn't idea how to fix "cleanly" tho\
         ; (26-Mar-2026) found problem! vanilla light block is pushable by piston (???) idk why they not [pop] it\
@@ -25,6 +26,7 @@ this file is only for top priority todo, if something like refactor some code or
           \ trade off: it show error that it missing geometry because i use invaild geometry so it doesn't have a block but will inculde the resoure pack to fix that, if didn't install error just pop up once IF player enabled console gui log, great deal i take that
   - [x] player break block are showing light block particle ; after block become air it got replace to light block and minecraft decide to render it
 - [x] add changelog/*.md and github action bot pull file and update it
+- [ ] picker is on vacation ; make everything config-able tmr(28 Mar 2026)
 
 ### concern about dyp
 

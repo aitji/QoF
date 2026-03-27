@@ -1,15 +1,15 @@
-import { BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, PlayerInteractWithBlockBeforeEvent, PlayerPlaceBlockAfterEvent, system, world } from "@minecraft/server"
+import { BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, PistonActivateAfterEvent, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
 import { checkRandom, clamp, RUNTIME } from "../lib"
 const { DEBUG, SLICE_PREFIX, COMPOSTER: { BLOCK_TYPEID, ITEMS, SOUND_FILL_SUCCESS, SOUND_FILL, SOUND_READY, DELAY_BEFORE_READY, HOPPER_TYPEID, HOPPER_INTERVAL_TICK, DATA_LOSS_DYP, PARTICLE_FILL_SUCCESS, DATA_COMPOSTER_LOCATION, SOUND_FILL_BONEMEAL } } = RUNTIME
 
 const clamp8 = (n) => clamp(n, 0, 8)
-const composterSet = new Set()
+let composterSet = new Set()
 system.run(() => {
     if (!RUNTIME.COMPOSTER.ENABLED || !RUNTIME.COMPOSTER.WORK_WITH_HOPPER) return
     const raw = world.getDynamicProperty(DATA_COMPOSTER_LOCATION)
     if (raw) {
         composterSet.clear()
-        for (const v of JSON.parse(raw)) composterSet.add(v)
+        composterSet = new Set(JSON.parse(raw))
     }
 
     const data = JSON.parse(world.getDynamicProperty(DATA_LOSS_DYP) ?? '{}')
@@ -60,13 +60,21 @@ const maybeFinish = (block, playerOrDim, loc) => {
         // ---
     }, DELAY_BEFORE_READY)
 }
-
+/** @param {PlayerInteractWithBlockBeforeEvent} data */
 export const composter_playerInteractWithBlock = (data) => {
     const { player, block, itemStack } = data
     if (player.isSneaking || !itemStack || block.typeId !== BLOCK_TYPEID) return
 
     const itemID = itemStack.typeId
     const chance = ITEMS[itemID]
+    const dimension = block.dimension
+
+    const value = `${dimension.id.substring(SLICE_PREFIX)}:${block.x}:${block.y}:${block.z}`
+    if (!composterSet.has(value)) {
+        composterSet.add(value)
+        world.setDynamicProperty(DATA_COMPOSTER_LOCATION, JSON.stringify([...composterSet]))
+    }
+
     if (!chance) return
 
     const state = block.permutation.getState('composter_fill_level')
@@ -121,19 +129,63 @@ export const composter_playerPlaceBlock = (data) => {
     world.setDynamicProperty(DATA_COMPOSTER_LOCATION, JSON.stringify([...composterSet]))
 }
 
-let trackTick = system.currentTick + HOPPER_INTERVAL_TICK
-export const composter_pending = () => {
-    if (trackTick > system.currentTick) return
-    trackTick = system.currentTick + HOPPER_INTERVAL_TICK
-    let changed = false
+const directionMap = Object.freeze({
+    0: { x: 0, y: -1, z: 0 },
+    1: { x: 0, y: 1, z: 0 },
+    2: { x: 0, y: 0, z: -1 },
+    3: { x: 0, y: 0, z: 1 },
+    4: { x: -1, y: 0, z: 0 },
+    5: { x: 1, y: 0, z: 0 },
+})
 
-    for (const v of composterSet) {
+/** @param {PistonActivateAfterEvent} data */
+export const composter_pistonActivate = (data) => {
+    const { block, dimension, piston, isExpanding } = data
+    const facing_direction = block.permutation.getState("facing_direction")
+    const locations = piston.getAttachedBlocksLocations()
+
+    const dir = directionMap[facing_direction]
+    const pull = isExpanding ? -1 : 1
+
+    const moves = locations.map(loc => ({
+        oldValue: `${dimension.id.substring(SLICE_PREFIX)}:${loc.x}:${loc.y}:${loc.z}`,
+        newValue: `${dimension.id.substring(SLICE_PREFIX)}:${loc.x + dir.x * pull}:${loc.y + dir.y * pull}:${loc.z + dir.z * pull}`
+    }))
+
+    system.run(() => { // this is might be still lossy track tho, but who move composter?
+        const raw = world.getDynamicProperty(DATA_COMPOSTER_LOCATION)
+        if (!raw) return
+
+        composterSet.clear()
+        for (const v of JSON.parse(raw)) composterSet.add(v)
+        for (const { oldValue, newValue } of moves) {
+            if (!composterSet.delete(oldValue)) continue
+            composterSet.add(newValue)
+        }
+
+        world.setDynamicProperty(DATA_COMPOSTER_LOCATION, JSON.stringify([...composterSet]))
+    })
+}
+
+let trackTick = system.currentTick + HOPPER_INTERVAL_TICK
+export const composter_pending = (tick) => {
+    if (trackTick > tick) return
+    trackTick = tick + HOPPER_INTERVAL_TICK
+    let changed = false
+    const applyEarly = () => { if (changed) world.setDynamicProperty(DATA_COMPOSTER_LOCATION, JSON.stringify([...composterSet])) }
+
+    for (const v of [...composterSet]) {
         const [dim, xs, ys, zs] = v.split(':')
         const x = +xs, y = +ys, z = +zs
         const dimension = world.getDimension(dim)
         const block = dimension.getBlock({ x, y, z })
+
         if (!block || !block.isValid) continue
-        if (block.isAir || block.typeId !== BLOCK_TYPEID) { composterSet.delete(v); changed = true; continue }
+        if (block.isAir || block.typeId !== BLOCK_TYPEID) {
+            composterSet.delete(v)
+            changed = true
+            continue
+        }
 
         const state = block.permutation.getState('composter_fill_level')
         if (state >= 7) continue
@@ -148,11 +200,7 @@ export const composter_pending = () => {
         const container = hopper.getComponent(BlockComponentTypes.Inventory)?.container
         if (!container) continue
 
-        let foundBowl = {
-            slot: -1,
-            amount: 0
-        }
-
+        let foundBowl = { slot: -1, amount: 0 }
         let firstChanceItem = -1
         let bowlSlot = -1
         let emptySlot = -1
@@ -167,7 +215,7 @@ export const composter_pending = () => {
             }
 
             const com = item.getComponent(ItemComponentTypes.Compostable)
-            if (com?.compostingChance) return
+            if (com?.compostingChance) return applyEarly() // i'm bail
 
             if (firstChanceItem === -1) {
                 const isStew = item.typeId.endsWith('_stew') || item.typeId.endsWith('_soup')
@@ -184,7 +232,7 @@ export const composter_pending = () => {
             if (bowlSlot === -1 && item.typeId === 'minecraft:bowl' && item.amount < 64) bowlSlot = i
         }
 
-        if (firstChanceItem === -1) return
+        if (firstChanceItem === -1) return applyEarly()
 
         const item = container.getItem(firstChanceItem)
         const itemID = item.typeId
@@ -217,5 +265,5 @@ export const composter_pending = () => {
         } else playSound(dimension, SOUND_FILL, loc)
     }
 
-    if (changed) world.setDynamicProperty(DATA_COMPOSTER_LOCATION, JSON.stringify([...composterSet]))
+    applyEarly()
 }

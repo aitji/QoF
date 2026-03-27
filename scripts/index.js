@@ -49,7 +49,7 @@ system.run(() => {
         }
 
         if (WET_POWDER_CONCRTE.ENABLED) powder.powder_pending()
-        if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending()
+        if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending(tick)
 
         for (const player of world.getAllPlayers()) {
             if (LIGHT.ENABLED) light.light_player(player, tick)
