@@ -7,8 +7,8 @@
 				"texture_width": 16,
 				"texture_height": 16,
 				"visible_bounds_width": 2,
-				"visible_bounds_height": 3,
-				"visible_bounds_offset": [0, 0.5, 0]
+				"visible_bounds_height": 2,
+				"visible_bounds_offset": [0, 1, 0]
 			},
 			"bones": [
 				{
@@ -17,14 +17,14 @@
 					"cubes": [
 						{
 							"origin": [0, 0, 0],
-							"size": [0, 0, 0],
+							"size": [0.01, 0.01, 0.01],
 							"uv": {
-								"north": {"uv": [0, 0], "uv_size": [16, 16]},
-								"east": {"uv": [0, 0], "uv_size": [16, 16]},
-								"south": {"uv": [0, 0], "uv_size": [16, 16]},
-								"west": {"uv": [0, 0], "uv_size": [16, 16]},
-								"up": {"uv": [0, 0], "uv_size": [16, 16], "material_instance": "y_side"},
-								"down": {"uv": [16, 16], "uv_size": [-16, -16], "material_instance": "y_side"}
+								"north": {"uv": [0,0], "uv_size": [0,0]},
+								"east": {"uv": [0,0], "uv_size": [0,0]},
+								"south": {"uv": [0,0], "uv_size": [0,0]},
+								"west": {"uv": [0,0], "uv_size": [0,0]},
+								"up": {"uv": [0,0], "uv_size": [0,0]},
+								"down": {"uv": [0,0], "uv_size": [0,0]}
 							}
 						}
 					]

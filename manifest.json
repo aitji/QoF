@@ -9,17 +9,12 @@
         "base_game_version": "1.26.3",
         "min_engine_version": "1.26.3"
     },
-    "metadata": {
-        "authors": ["aitji", "pickerth-12"],
-        "license": "MIT",
-        "url": "https://github.com/aitji/QoF"
-    },
     "modules": [
         {
             "description": "§7Nice little features to make your game much better! Resource Pack Helper",
             "type": "resources",
             "uuid": "743f6949-53be-44b6-b326-398005028819",
-            "version": [1, 2, 3]
+            "version": "1.2.3"
         }
     ],
     "settings": [
@@ -35,7 +30,7 @@
         {
             "type": "toggle",
             "text": "§cCompatibility§r with addon/scripts",
-            "name": "qofrp:",
+            "name": "qof:compatibility",
             "default": true
         }
     ]
