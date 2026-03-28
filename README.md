@@ -24,6 +24,14 @@
       - [Stew \& Soup Bowl Returning](#stew--soup-bowl-returning)
     - [Carrying Container](#carrying-container)
       - [Slowness and Double Chest](#slowness-and-double-chest)
+    - [Offhand](#offhand)
+      - [Swap and Torch Placement](#swap-and-torch-placement)
+    - [Harvest](#harvest)
+      - [Auto Replanting in Action](#auto-replanting-in-action)
+    - [Mob Loot+](#mob-loot)
+      - [Loot Showcase](#loot-showcase)
+    - [Recipe+](#recipe)
+      - [Recipe Showcase](#recipe-showcase)
   - [Configuration References](#configuration-references)
   - [Known Limitations \& Notes](#known-limitations--notes)
   - [License](#license)
@@ -36,24 +44,29 @@
 - [x] Concrete powder hardens when it touches water as an item
 - [x] Composter accepts more items and works with hoppers
 - [x] Pick up and carry containers while keeping their contents
-- [ ] And many more to comes!
+- [x] Swap mainhand and offhand with a double sneak, place torches from offhand
+- [x] Hold a hoe to harvest crops with automatic seed replanting
+- [x] Extra mob drops from Goat, Silverfish, Sniffer, and Piglin Brute
+- [x] Extra crafting and smelting recipes for more accessible item obtaining
+- [ ] And many more to come later
 
 ## Changelog
 
-- QoF [v1.2.0](https://github.com/aitji/QoF/releases/tag/v1.2.0)
+- QoF [v1.3.0](https://github.com/aitji/QoF/releases/tag/v1.3.0)
   - `Pre-Releases` QoF [v1.2.1](https://github.com/aitji/QoF/releases/tag/v1.2.1)
   - `Pre-Releases` QoF [v1.2.2](https://github.com/aitji/QoF/releases/tag/v1.2.2)
   - `Pre-Releases` QoF [v1.2.3](https://github.com/aitji/QoF/releases/tag/v1.2.3)
-- QoF [v1.1.0](https://github.com/aitji/QoF/releases/tag/v1.1.0)
+- QoF [v1.2.0](https://github.com/aitji/QoF/releases/tag/v1.2.0)
   - `Pre-Releases` QoF [v1.1.1](https://github.com/aitji/QoF/releases/tag/v1.1.1)
+- QoF [v1.1.0](https://github.com/aitji/QoF/releases/tag/v1.1.0)
 
 ## Installation
 
 1. Download the latest `.mcpack` from [Releases](https://github.com/aitji/QoF/releases).
-2. Open the file Minecraft will import it automatically.
+2. Open the file and Minecraft will import it automatically.
 3. Create or open a world, then go to **Behavior Packs**, and activate **QoF**.
 4. Under **Experiments**, enable **Beta APIs**.
-5. Launch the world. Settings are available directly in the pack settings panel.
+5. Launch the world. Settings are available in the pack settings panel inside the world settings.
 
 > [!IMPORTANT]
 > Beta APIs **must be enabled** or the pack will not function at all.
@@ -61,18 +74,38 @@
 ## Modules
 
 ### Dynamic Light
+
 <p align="center">
   <img src=".github/img/light-banner.png" alt="Dynamic Light night walk with soul lantern" width="1080">
 </p>
 
-Held items and dropped items emit light are based on their type. Light smoothly fades after the source moves away or is removed. Item frames also contribute light based on whatever is placed inside them.
+Held items and dropped items emit light based on their type. Light smoothly fades after the source moves away or is removed. Item frames also contribute light based on whatever is placed inside them.
 
 **How It Works:**
 
-- When a player holds or drops a light-emitting item, a `light_block` is placed at the relevant position each tick.
+- When a player holds or drops a light-emitting item, a `qof:light_block` is placed at the relevant position each tick.
 - Light level is calculated from the item's base value multiplied by the reduce factor.
 - When the source is gone, light steps down linearly each tick until it reaches zero, then the block is restored to air or water.
 - Nearby entities such as Blaze, Glow Squid, Allay, Vex, and Warden also emit light passively.
+- Some items are prevented from emitting light underwater (e.g. torches, lanterns, campfires). Sea Pickle **only** emits light underwater.
+
+| Item               | Reaction                        | Level |
+| ------------------ | ------------------------------- | ----- |
+| Campfire           | Won't emit light underwater     | 15    |
+| Lantern            | Won't emit light underwater     | 15    |
+| Lava Bucket        | Won't emit light underwater     | 15    |
+| All Copper Lantern | Won't emit light underwater     | 15    |
+|                    |                                 | <br>  |
+| Torch              | Won't emit light underwater     | 14    |
+| Copper Torch       | Won't emit light underwater     | 14    |
+|                    |                                 | <br>  |
+| Soul Campfire      | Won't emit light underwater     | 10    |
+| Soul Lantern       | Won't emit light underwater     | 10    |
+| Soul Torch         | Won't emit light underwater     | 10    |
+|                    |                                 | <br>  |
+| Redstone Torch     | Won't emit light underwater     | 7     |
+|                    |                                 | <br>  |
+| Sea Pickle         | **Only** emits light underwater | 6     |
 
 #### Fading Light of Soul Lantern when Pickup and Drop
 
@@ -84,93 +117,95 @@ Held items and dropped items emit light are based on their type. Light smoothly 
 
 <img src=".github/img/light-fire.gif" alt="Player shoots flame arrows into targets, picks up arrow, walks away" width="544">
 
-**alt-message** A flaming arrow is fired into a target block. While the arrow is burning, it emits the light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
+**alt-message** A flaming arrow is fired into a target block. While the arrow is burning, it emits light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
 
 #### Water Light when Boating and Diving with a Light Source
 
 <img src=".github/img/light-water.gif" alt="Player holds conduit while swimming in ocean, light visible underwater" width="544">
 
-**alt-message** In the open ocean, the player boats while holding a lantern making the water surface glows below. They stop, jump in, switch to a conduit, and swim deeper. The `light_block` is placed inside the water itself, illuminating the seafloor and kelp.
-
+**alt-message** In the open ocean, the player boats while holding a lantern making the water surface glow below. They stop, jump in, switch to a conduit, and swim deeper. The `qof:light_block` is placed inside the water itself, illuminating the seafloor and kelp.
 
 <details>
   <summary><strong>Items that Emit the Light</strong></summary>
 
-| Item | Light Level |
-| - | - |
-| | <div align="center"><b>Level 15</b></div> |
-| beacon | 15 |
-| campfire | 15 |
-| conduit | 15 |
-| ochre_froglight | 15 |
-| pearlescent_froglight | 15 |
-| verdant_froglight | 15 |
-| glowstone | 15 |
-| lit_pumpkin | 15 |
-| lantern | 15 |
-| lava_bucket | 15 |
-| sea_lantern | 15 |
-| shroomlight | 15 |
-| copper_lantern | 15 |
-| waxed_copper_lantern | 15 |
-| exposed_copper_lantern | 15 |
-| waxed_exposed_copper_lantern | 15 |
-| weathered_copper_lantern | 15 |
-| waxed_weathered_copper_lantern | 15 |
-| oxidized_copper_lantern | 15 |
-| waxed_oxidized_copper_lantern | 15 |
-| | <div align="center"><b>Level 14</b></div> |
-| end_rod | 14 |
-| glow_berries | 14 |
-| torch | 14 |
-| copper_torch | 14 |
-| | <div align="center"><b>Level 10</b></div> |
-| crying_obsidian | 10 |
-| soul_campfire | 10 |
-| soul_lantern | 10 |
-| soul_torch | 10 |
-| | <div align="center"><b>Level 7</b></div> |
-| enchanting_table | 7 |
-| ender_chest | 7 |
-| glow_lichen | 7 |
-| redstone_torch | 7 |
-| | <div align="center"><b>Level 6</b></div> |
-| sculk_catalyst | 6 |
-| sea_pickle | 6 |
-| vault | 6 |
-| | <div align="center"><b>Level 5</b></div> |
-| amethyst_cluster | 5 |
-| | <div align="center"><b>Level 4</b></div> |
-| large_amethyst_bud | 4 |
-| trial_spawner | 4 |
-| | <div align="center"><b>Level 3</b></div> |
-| magma | 3 |
-| | <div align="center"><b>Level 2</b></div> |
-| medium_amethyst_bud | 2 |
-| firefly_bush | 2 |
-| | <div align="center"><b>Level 1</b></div> |
-| brewing_stand | 1 |
-| brown_mushroom | 1 |
-| calibrated_sculk_sensor | 1 |
-| dragon_egg | 1 |
-| end_portal_frame | 1 |
-| sculk_sensor | 1 |
-| small_amethyst_bud | 1 |
+| Item                           | Light Level                               |
+| ------------------------------ | ----------------------------------------- |
+|                                | <div align="center"><b>Level 15</b></div> |
+| Beacon                         | 15                                        |
+| Campfire                       | 15                                        |
+| Conduit                        | 15                                        |
+| Ochre Froglight                | 15                                        |
+| Pearlescent Froglight          | 15                                        |
+| Verdant Froglight              | 15                                        |
+| Glowstone                      | 15                                        |
+| Lit Pumpkin                    | 15                                        |
+| Lantern                        | 15                                        |
+| Lava Bucket                    | 15                                        |
+| Sea Lantern                    | 15                                        |
+| ShroomLight                    | 15                                        |
+| Copper Lantern                 | 15                                        |
+| Waxed Copper Lantern           | 15                                        |
+| Exposed Copper Lantern         | 15                                        |
+| Waxed Exposed Copper Lantern   | 15                                        |
+| Weathered Copper Lantern       | 15                                        |
+| Waxed Weathered Copper Lantern | 15                                        |
+| Oxidized Copper Lantern        | 15                                        |
+| Waxed Oxidized Copper Lantern  | 15                                        |
+|                                | <div align="center"><b>Level 14</b></div> |
+| End Rod                        | 14                                        |
+| Glow Berries                   | 14                                        |
+| Torch                          | 14                                        |
+| Copper Torch                   | 14                                        |
+|                                | <div align="center"><b>Level 10</b></div> |
+| Crying Obsidian                | 10                                        |
+| Soul Campfire                  | 10                                        |
+| Soul Lantern                   | 10                                        |
+| Soul Torch                     | 10                                        |
+|                                | <div align="center"><b>Level 7</b></div>  |
+| Enchanting Table               | 7                                         |
+| Ender Chest                    | 7                                         |
+| Glow Lichen                    | 7                                         |
+| Redstone Torch                 | 7                                         |
+|                                | <div align="center"><b>Level 6</b></div>  |
+| Sculk Catalyst                 | 6                                         |
+| Sea Pickle                     | 6                                         |
+| Vault                          | 6                                         |
+|                                | <div align="center"><b>Level 5</b></div>  |
+| Amethyst Cluster               | 5                                         |
+|                                | <div align="center"><b>Level 4</b></div>  |
+| Large Amethyst Bud             | 4                                         |
+| Trial Spawner                  | 4                                         |
+|                                | <div align="center"><b>Level 3</b></div>  |
+| Magma                          | 3                                         |
+|                                | <div align="center"><b>Level 2</b></div>  |
+| Medium Amethyst Bud            | 2                                         |
+| Firefly Bush                   | 2                                         |
+|                                | <div align="center"><b>Level 1</b></div>  |
+| Brewing Stand                  | 1                                         |
+| Brown Mushroom                 | 1                                         |
+| Calibrated Sculk Sensor        | 1                                         |
+| Dragon Egg                     | 1                                         |
+| End Portal Frame               | 1                                         |
+| Sculk Sensor                   | 1                                         |
+| Small Amethyst Bud             | 1                                         |
+
 </details>
 
 <details>
   <summary><strong>Entities that Emit the Light</strong></summary>
 
-| Entity | Light Level |
-| - | - |
-| glow_squid | 10 |
-| allay | 10 |
-| vex | 10 |
-| blaze | 12 |
-| warden | 6 |
+| Entity     | Light Level |
+| ---------- | ----------- |
+| Glow Squid | 10          |
+| Allay      | 10          |
+| Vex        | 10          |
+| Blaze      | 12          |
+| Warden     | 6           |
+
 </details>
 
 ### Anvil Repairing
+
 <p align="center">
   <img src=".github/img/repair-anvil.png" alt="Anvil Repair repairing at a chipped anvil in a spruce house" width="1080">
 </p>
@@ -195,32 +230,36 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 <details>
   <summary><strong>Repairing Item & Cost</strong></summary>
 
-| Input | Cost | Output |
-| - | - | - |
-| damaged_anvil | 1x iron_ingot | chipped_anvil |
-| chipped_anvil | 1x iron_ingot | anvil |
-| anvil | | not repairable |
-
----
+| Input         | Cost          | Output         |
+| ------------- | ------------- | -------------- |
+| Damaged Anvil | 1x Iron_ingot | chipped_anvil  |
+| chipped_anvil | 1x iron_ingot | anvil          |
+| anvil         |               | not repairable |
 
 </details>
 
 ### Wet Concrete Powder
 
-Concrete powder item automatically convert to concrete when they enter water. The conversion happens after a short delay proportional to the stack size, and the resulting concrete item inherits the original item's velocity.
+Concrete powder items automatically convert to concrete when they enter water. The conversion happens after a short delay proportional to the stack size, and the resulting concrete item inherits the original item's velocity.
 
 **How It Works:**
 
 1. When a concrete powder item entity spawns, QoF begins tracking it.
-2. Once it enters water, a timer starts larger stacks wait slightly longer.
+2. Once it enters water, a timer starts. Larger stacks wait slightly longer.
 3. After the timer expires, the powder entity is removed and a concrete item entity is spawned in its place.
 4. A particle and sound effect play on conversion.
+
+The delay formula is:
+
+$$ \text{DELAY} = BASE + \lfloor \sqrt{item_amount - 1} \cdot MULTIPLIER \rfloor $$
+
+where `BASE` and `MULTIPLIER` are configurable in pack settings.
 
 #### Conversion In Action
 
 <img src=".github/img/powder-result.gif" alt="Top-down view: player throws concrete powder into water pool, allay nearby, powder converts to concrete" width="544">
 
-**alt-message**  Top-down view centered on a water pool with an allay floating nearby emitting soft light. The player walks in from the bottom-center and throws concrete powder into the pool. After a short delay the powder converts, and the player picks up the resulting concrete and walks off.
+**alt-message** Top-down view centered on a water pool with an allay floating nearby emitting soft light. The player walks in from the bottom-center and throws concrete powder into the pool. After a short delay the powder converts, and the player picks up the resulting concrete and walks off.
 
 ### Composter+
 
@@ -236,7 +275,7 @@ Expands the composter to accept many more item types not supported in vanilla, i
 
 <img src=".github/img/composter-work_hopper.gif" alt="Player composts string, places hopper on top, throws rotten flesh in, composter fills automatically" width="544">
 
-**alt-message** The player manually composts some string *`(not in the vanilla list)`*, then places a hopper above the composter and throws in rotten flesh *`(also not in the vanilla list)`*. The hopper feeds the composter automatically until it fills and becomes ready.
+**alt-message** The player manually composts some string _`(not in the vanilla list)`_, then places a hopper above the composter and throws in rotten flesh _`(also not in the vanilla list)`_. The hopper feeds the composter automatically until it fills and becomes ready.
 
 #### Stew & Soup Bowl Returning
 
@@ -252,85 +291,86 @@ Expands the composter to accept many more item types not supported in vanilla, i
 
 These are items added by QoF on top of the vanilla compost table. Vanilla items are handled by Minecraft natively and are excluded here to avoid double-processing.
 
-| Item | Success Chance |
-| - | - |
-| | <div align="center"><b>30%</b></div> |
-| podzol | 30% |
-| mycelium | 30% |
-| rooted_dirt | 30% |
-| | <div align="center"><b>50%</b></div> |
-| bamboo | 50% |
-| dead_bush | 50% |
-| honeycomb | 50% |
-| sugar | 50% |
-| blaze_powder | 50% |
-| ghast_tear | 50% |
-| string | 50% |
-| chicken | 50% |
-| porkchop | 50% |
-| beef | 50% |
-| mutton | 50% |
-| rabbit | 50% |
-| feather | 50% |
-| ink_sac | 50% |
-| glow_ink_sac | 50% |
-| rabbit_hide | 50% |
-| rabbit_foot | 50% |
-| frog_spawn | 50% |
-| cod | 50% |
-| salmon | 50% |
-| tropical_fish | 50% |
-| pufferfish | 50% |
-| | <div align="center"><b>65%</b></div> |
-| poisonous_potato | 65% |
-| chorus_fruit | 65% |
-| resin_clump | 65% |
-| lit_pumpkin | 65% |
-| rotten_flesh | 65% |
-| web | 65% |
-| gunpowder | 65% |
-| magma_cream | 65% |
-| slime_ball | 65% |
-| leather | 65% |
-| phantom_membrane | 65% |
-| cooked_chicken | 65% |
-| cooked_porkchop | 65% |
-| cooked_beef | 65% |
-| cooked_mutton | 65% |
-| cooked_rabbit | 65% |
-| cooked_cod | 65% |
-| cooked_salmon | 65% |
-| golden_carrot | 65% |
-| glistering_melon_slice | 65% |
-| | <div align="center"><b>85%</b></div> |
-| blaze_rod | 85% |
-| fermented_spider_eye | 85% |
-| dried_ghast | 85% |
-| black_wool | 85% |
-| blue_wool | 85% |
-| brown_wool | 85% |
-| cyan_wool | 85% |
-| gray_wool | 85% |
-| green_wool | 85% |
-| light_blue_wool | 85% |
-| light_gray_wool | 85% |
-| lime_wool | 85% |
-| magenta_wool | 85% |
-| orange_wool | 85% |
-| pink_wool | 85% |
-| red_wool | 85% |
-| purple_wool | 85% |
-| white_wool | 85% |
-| yellow_wool | 85% |
-| popped_chorus_fruit | 85% |
-| mushroom_stew | 85% |
-| suspicious_stew | 85% |
-| beetroot_soup | 85% |
-| golden_apple | 85% |
-| | <div align="center"><b>100%</b></div> |
-| enchanted_golden_apple | 100% |
-| rabbit_stew | 100% |
-| nether_star | 100% |
+| Item                   | Success Chance                        |
+| ---------------------- | ------------------------------------- |
+|                        | <div align="center"><b>30%</b></div>  |
+| podzol                 | 30%                                   |
+| mycelium               | 30%                                   |
+| rooted_dirt            | 30%                                   |
+|                        | <div align="center"><b>50%</b></div>  |
+| bamboo                 | 50%                                   |
+| dead_bush              | 50%                                   |
+| honeycomb              | 50%                                   |
+| sugar                  | 50%                                   |
+| blaze_powder           | 50%                                   |
+| ghast_tear             | 50%                                   |
+| string                 | 50%                                   |
+| chicken                | 50%                                   |
+| porkchop               | 50%                                   |
+| beef                   | 50%                                   |
+| mutton                 | 50%                                   |
+| rabbit                 | 50%                                   |
+| feather                | 50%                                   |
+| ink_sac                | 50%                                   |
+| glow_ink_sac           | 50%                                   |
+| rabbit_hide            | 50%                                   |
+| rabbit_foot            | 50%                                   |
+| frog_spawn             | 50%                                   |
+| cod                    | 50%                                   |
+| salmon                 | 50%                                   |
+| tropical_fish          | 50%                                   |
+| pufferfish             | 50%                                   |
+|                        | <div align="center"><b>65%</b></div>  |
+| poisonous_potato       | 65%                                   |
+| chorus_fruit           | 65%                                   |
+| resin_clump            | 65%                                   |
+| lit_pumpkin            | 65%                                   |
+| rotten_flesh           | 65%                                   |
+| web                    | 65%                                   |
+| gunpowder              | 65%                                   |
+| magma_cream            | 65%                                   |
+| slime_ball             | 65%                                   |
+| leather                | 65%                                   |
+| phantom_membrane       | 65%                                   |
+| cooked_chicken         | 65%                                   |
+| cooked_porkchop        | 65%                                   |
+| cooked_beef            | 65%                                   |
+| cooked_mutton          | 65%                                   |
+| cooked_rabbit          | 65%                                   |
+| cooked_cod             | 65%                                   |
+| cooked_salmon          | 65%                                   |
+| golden_carrot          | 65%                                   |
+| glistering_melon_slice | 65%                                   |
+|                        | <div align="center"><b>85%</b></div>  |
+| blaze_rod              | 85%                                   |
+| fermented_spider_eye   | 85%                                   |
+| dried_ghast            | 85%                                   |
+| black_wool             | 85%                                   |
+| blue_wool              | 85%                                   |
+| brown_wool             | 85%                                   |
+| cyan_wool              | 85%                                   |
+| gray_wool              | 85%                                   |
+| green_wool             | 85%                                   |
+| light_blue_wool        | 85%                                   |
+| light_gray_wool        | 85%                                   |
+| lime_wool              | 85%                                   |
+| magenta_wool           | 85%                                   |
+| orange_wool            | 85%                                   |
+| pink_wool              | 85%                                   |
+| red_wool               | 85%                                   |
+| purple_wool            | 85%                                   |
+| white_wool             | 85%                                   |
+| yellow_wool            | 85%                                   |
+| popped_chorus_fruit    | 85%                                   |
+| mushroom_stew          | 85%                                   |
+| suspicious_stew        | 85%                                   |
+| beetroot_soup          | 85%                                   |
+| golden_apple           | 85%                                   |
+|                        | <div align="center"><b>100%</b></div> |
+| enchanted_golden_apple | 100%                                  |
+| rabbit_stew            | 100%                                  |
+| nether_star            | 100%                                  |
+
 </details>
 
 ### Carrying Container
@@ -342,13 +382,14 @@ Allows players to pick up chests and other containers while preserving their con
 - [x] Slowness is applied continuously.
 - [x] Jumping is disabled by default (configurable).
 - [x] Jumping in water or lava can be allowed independently.
+- [x] Climbing scaffolding and ladders can be allowed independently.
 - [x] Creative mode players are exempt from jump restrictions.
 
 Full Carry Flow
 
 <img src=".github/img/chest-flow.gif" alt="Player puts cod in barrel, picks it up, walks to composter area, places barrel on hopper" width="544">
 
-**alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene slowness visible and place it on top of a hopper. The barrel lands with its contents intact.
+**alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene — slowness visible — and place it on top of a hopper. The barrel lands with its contents intact.
 
 #### Slowness and Double Chest
 
@@ -357,31 +398,314 @@ Full Carry Flow
 The player runs in, picks up a chest next to a black sheep, then visibly slows down while carrying it. They walk to a second chest and place theirs beside it, forming a double chest. Contents from both halves are preserved.
 
 > [!WARNING]
-> ~~Double chest support is partially implemented. Picking up one half of a double chest will attempt to preserve both halves, but edge cases may result in item loss. Always **back up world** before tranfer the important chests before carrying them.~~ 100% work, We has been extensively tested!
+> ~~Double chest support is partially implemented. Picking up one half of a double chest will attempt to preserve both halves, but edge cases may result in item loss. Always **back up world** before transferring the important chests before carrying them.~~ 100% working. It has been extensively tested.
 
 <details>
   <summary><strong>Supported Containers</strong></summary>
 
-Any block that has a `minecraft:inventory` component can be picked up. Common examples include:
+Any block with a `minecraft:inventory` component can be picked up. Common examples include:
 
-| Container | Chest support |
-| - | - |
-| chest | yes |
-| trapped_chest | yes |
-| barrel | yes |
-| hopper | yes |
-| dispenser | yes |
-| dropper | yes |
-| blast_furnace | yes`*` |
-| furnace | yes`*` |
-| smoker | yes`*` |
-| brewing_stand | yes |
-| crafter | no |
-| shulker | yes |
+| Container     | Chest support |
+| ------------- | ------------- |
+| Chest         | yes           |
+| Trapped Chest | yes           |
+| Barrel        | yes           |
+| Hopper        | yes           |
+| Dispenser     | yes           |
+| Dropper       | yes           |
+| Blast Furnace | yes`*`        |
+| Furnace       | yes`*`        |
+| Smoker        | yes`*`        |
+| Brewing Stand | yes           |
+| Crafter       | no            |
+| Shulker Box   | yes           |
 
 > [!NOTE]
-> ~~(Shulker boxes, Crafter & Brewing Stand) are also inventory blocks and should work, but have not been extensively tested.~~
-> `*` for furnace item will 100% correct, But heat state will be loss.
+> ~~(Shulker boxes, Crafter & Brewing Stand) are also inventory blocks and should work, but have not been extensively tested.~~\
+> `*` for furnace items will 100% correct, but heat state will be lost.
+
+</details>
+
+### Offhand
+
+<p align="center">
+  <img src=".github/img/placeholder.png" alt="Offhand swap and torch placement banner" width="1080">
+  <!-- todo: @pickerth-12 replace to real offhand banner: "offhand-banner.png" -aitji -->
+</p>
+
+Allows players to double-sneak to swap items between their mainhand and offhand. Additionally, torches and other light sources held in the offhand can be placed directly without switching slots.
+
+**How It Works:**
+
+- Double sneak within a configurable time window to swap mainhand ↔ offhand.
+- The sneak window gap is independently configurable for **Mobile**, **Console**, and **Windows**.
+- Torches placed from the offhand correctly consume the offhand item stack.
+
+> [!NOTE]
+> Enchantments and item color cannot be transferred between hands due to API limitations that do not allow editing the offhand cleanly.
+
+#### Swap and Torch Placement
+
+<img src=".github/img/placeholder.png" alt="Player double sneaks to swap sword and torch, places torch from offhand" width="544">
+<!-- todo: @pickerth-12 replace to real image/gif: "offhand-swap.gif.png" -aitji -->
+<!-- beef: **alt-message** First person view, The player stands holding a sword. They double-sneak and the sword and torch swap hands. The player then places a torch directly from the offhand onto a wall without switching hotbar slots. -->
+
+<details>
+  <summary><strong>Torch Types Supported for Offhand Placement</strong></summary>
+
+| Item           |
+| -------------- |
+| Torch          |
+| Redstone Torch |
+| Copper Torch   |
+| Soul Torch     |
+
+</details>
+
+### Harvest
+
+<p align="center">
+  <img src=".github/img/placeholder.png" alt="Player harvesting wheat field with hoe" width="1080">
+  <!-- todo: @pickerth-12 replace to real image/gif: "offhand-swap.gif.png" -aitji -->
+</p>
+
+Allows players to harvest fully grown crops by right-clicking while holding any hoe. Seeds are automatically replanted after harvest. The hoe loses durability on each harvest to balance the automation.
+
+**How It Works:**
+
+- Hold any hoe and interact with a fully grown crop to harvest it.
+- Seeds are automatically replanted in the same spot.
+- If seeds drop on the ground and the player has none in inventory, dropped seeds used for replanting are reduced by 1, with a `40 gametick` delay before the player can pick them up.
+- Hoe durability loss follows the vanilla formula:
+
+$$ \mathrm{Loss} = \mathrm{random} < \frac{1}{\mathrm{level} + 1} $$
+
+where `level` is the hoe's Unbreaking enchantment level.
+
+> [!TIP]
+> Using a hoe with high Unbreaking reduces durability loss significantly on large farms.
+
+#### Auto Replanting in Action
+
+<img src=".github/img/placeholder.png" alt="Player harvests a row of wheat with a hoe, seeds replant automatically" width="544">
+<!-- todo: @pickerth-12 replace to real image/gif: "harvest-replant.gif" -aitji -->
+<!-- beef:
+**alt-message** The player walks along a row of fully grown wheat holding a diamond hoe. Each crop is harvested on interact and the farmland immediately has a new seed replanted. The harvested wheat drops and the player collects it. -->
+
+### Mob Loot+
+
+<p align="center">
+  <img src=".github/img/placeholder.png" alt="Mob Loot+ showcase banner" width="1080">
+  <!-- todo: @pickerth-12 replace to real image/gif: "mobloot-banner.png"
+  beef: banner showing the 4 mobs -aitji -->
+</p>
+
+Adds drops to previously loot-less mobs, making them more rewarding to farm.
+
+#### Loot Showcase
+
+<img src=".github/img/placeholder.png" alt="Player kills goat, silverfish, sniffer and piglin brute, loot drops shown" width="544">
+
+<!--
+ todo: @pickerth-12 replace to real image/gif: "mobloot-banner.png"
+ beef: **alt-message** The player kills a goat and raw mutton drops. Then a silverfish is killed and string drops with a 20% chance visual. A sniffer is killed and a moss block drops. Finally a piglin brute is killed and gilded blackstone drops. -->
+
+<details>
+  <summary><strong>Mob Loot Table</strong></summary>
+
+**1. Goat drops `Raw Mutton`**
+
+$$ P(\text{drop}) \in \langle 1,\ 2 + L \rangle, \quad L \in \langle 0,\ \text{Looting} \rangle $$
+
+<div align="center">
+
+| Looting Level | Min Drop | Max Drop |
+| ------------- | -------- | -------- |
+| None          | 1        | 2        |
+| I             | 1        | 3        |
+| II            | 1        | 4        |
+| III           | 1        | 5        |
+
+</div>
+
+> **Goat on Fire** will cook `Raw Mutton` into `Cooked Mutton`
+
+**2. Silverfish drops `String`**
+
+$$ P(\text{drop}) = \frac{1}{5} = 20\% $$
+
+<div align="center">
+
+| Outcome  | Weight | Chance |
+| -------- | ------ | ------ |
+| Nothing  | 4      | 80%    |
+| `String` | 1      | 20%    |
+
+</div>
+
+> Only drops when killed by a **player or pet**
+
+**3. Sniffer drops `Moss Block`**
+
+$$ P(\text{Drop}) = 1 $$
+
+> Looting does not affect the drop quantity
+
+**4. Piglin Brute drops `Gilded Blackstone`**
+
+$$ P(\text{Drop}) \in \langle 0,\ 1 \rangle $$
+
+> Looting does not affect the drop quantity
+
+</details>
+
+### Recipe+
+
+<p align="center">
+  <img src=".github/img/placeholder.png" alt="Recipe+ banner showing various crafting and smelting screens" width="1080">
+<!-- todo: @pickerth-12 replace to real image/gif: "recipe-banner.png"
+wide banner of crafting/smelting screens -->
+</p>
+
+Adds new crafting, smelting, and stonecutter recipes for a more accessible way to obtain items.
+
+#### Recipe Showcase
+
+<img src=".github/img/placeholder.png" alt="Player demonstrates several new recipes at furnace, blast furnace and crafting table" width="544">
+<!-- todo: @pickerth-12 replace to real image/gif: "recipe-showcase.gif"
+beef: **alt-message** The player opens a blast furnace and smelts sand into glass, then gilded blackstone into gold ingots. They open a crafting table and craft rooted dirt from dirt and roots, then craft a banner pattern from a skull and paper. -->
+
+<details>
+  <summary><strong>Full Recipe List</strong></summary>
+
+**Smelting (Furnace)**
+
+| Input                 | Output   | Station |
+| --------------------- | -------- | ------- |
+| Bamboo Block          | Charcoal | Furnace |
+| Stripped Bamboo Block | Charcoal | Furnace |
+
+**Smelting (Blast Furnace / Furnace)**
+
+| Input             | Output       | Station                |
+| ----------------- | ------------ | ---------------------- |
+| Sand              | Glass        | Blast Furnace          |
+| Gilded Blackstone | Gold Ingot   | Blast Furnace, Furnace |
+| Stone             | Smooth Stone | Blast Furnace          |
+| Cobblestone       | Stone        | Blast Furnace          |
+
+**Crafting (Crafting Table)**
+
+| Input                | Output         | Notes     |
+| -------------------- | -------------- | --------- |
+| 9x Charcoal          | Coal Block     | Shapeless |
+| Dirt + Hanging Roots | Rooted Dirt    | Shapeless |
+| Any Skull + Paper    | Banner Pattern | Shapeless |
+
+> [!CAUTION]
+> **Removed recipes (rebalanced):**
+>
+> - Rotten Flesh → Rabbit Hide (Furnace / Smoker / Campfire / Soul Campfire) — removed in v1.2.2
+> - Charcoal → Coal Block (Crafting Table) — removed in v1.2.2
+
+**Stonecutter (Wood)**
+
+All 11 wood types (Acacia, Birch, Cherry, Crimson, Dark Oak, Jungle, Mangrove, Oak, Pale Oak, Spruce, Warped) can be cut in the Stonecutter.
+
+<details>
+  <summary><strong>Wood Material Inputs</strong></summary>
+
+1. Log `x4`
+2. Stripped Wood `x4`
+3. Wood `x4`
+4. Stripped Log `x4`
+5. Planks `x1`
+
+Nether wood edge cases (Warped & Crimson):
+
+6. Stem `x4`
+7. Hyphae `x4`
+
+</details>
+
+<details>
+  <summary><strong>Wood Result Items</strong></summary>
+
+1. Slab `x2`
+2. Stick `x2`
+3. Sign `x1`
+4. Door `x1`
+5. Pressure Plate `x1`
+6. Trapdoor `x1`
+7. Fence Gate `x1`
+8. Gate `x1`
+
+Wood transfer back & forth:
+
+9.  Stripped Wood
+10. Stripped Log
+11. Wood
+12. Log
+
+Nether wood edge cases:
+
+13. Stripped Stem
+14. Stripped Hyphae
+15. Stem
+16. Hyphae
+
+</details>
+
+**Crafting (Slab to Block (2 Slabs → 1 Block))**
+
+Two of the same slab stacked vertically craft back into their corresponding full block.
+
+| Slab                           | Block                      |
+| ------------------------------ | -------------------------- |
+| Smooth Stone Slab              | Smooth Stone               |
+| Stone Slab                     | Stone                      |
+| Cobblestone Slab               | Cobblestone                |
+| Mossy Cobblestone Slab         | Mossy Cobblestone          |
+| Mossy Stone Brick Slab         | Mossy Stone Bricks         |
+| Cut Sandstone Slab             | Cut Sandstone              |
+| Smooth Sandstone Slab          | Smooth Sandstone           |
+| Cut Red Sandstone Slab         | Cut Red Sandstone          |
+| Smooth Red Sandstone Slab      | Smooth Red Sandstone       |
+| Granite Slab                   | Granite                    |
+| Polished Granite Slab          | Polished Granite           |
+| Diorite Slab                   | Diorite                    |
+| Polished Diorite Slab          | Polished Diorite           |
+| Andesite Slab                  | Andesite                   |
+| Polished Andesite Slab         | Polished Andesite          |
+| Brick Slab                     | Brick Block                |
+| Red Nether Brick Slab          | Red Nether Bricks          |
+| End Stone Brick Slab           | End Stone Bricks           |
+| Smooth Quartz Slab             | Smooth Quartz              |
+| Prismarine Slab                | Prismarine                 |
+| Dark Prismarine Slab           | Dark Prismarine            |
+| Prismarine Brick Slab          | Prismarine Bricks          |
+| Blackstone Slab                | Blackstone                 |
+| Polished Blackstone Brick Slab | Polished Blackstone Bricks |
+| Polished Deepslate Slab        | Polished Deepslate         |
+| Deepslate Tile Slab            | Deepslate Tiles            |
+| Deepslate Brick Slab           | Deepslate Bricks           |
+| Polished Tuff Slab             | Polished Tuff              |
+| Mud Brick Slab                 | Mud Bricks                 |
+| Bamboo Mosaic Slab             | Bamboo Mosaic              |
+| Oak Slab                       | Oak Planks                 |
+| Spruce Slab                    | Spruce Planks              |
+| Birch Slab                     | Birch Planks               |
+| Jungle Slab                    | Jungle Planks              |
+| Acacia Slab                    | Acacia Planks              |
+| Dark Oak Slab                  | Dark Oak Planks            |
+| Mangrove Slab                  | Mangrove Planks            |
+| Cherry Slab                    | Cherry Planks              |
+| Pale Oak Slab                  | Pale Oak Planks            |
+| Crimson Slab                   | Crimson Planks             |
+| Warped Slab                    | Warped Planks              |
+
+> **Note** If a block is not listed here, it may already have a vanilla recipe or may not yet be included in this version (26.10).
+
 </details>
 
 ## Configuration References
@@ -390,38 +714,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 <details>
   <summary><strong>Full Settings Table</strong></summary>
-
-| Setting | Key | Type | Default | Description |
-|---|---|---|---|---|
-| Update interval | `qof:INTERVAL_DELAY` | Slider | `1` | Ticks between each QoF update cycle. Lower is faster. |
-| Debug mode | `qof:DEBUG` | Toggle | `false` | Prints verbose logs to chat and console. |
-| **Dynamic Light** | | | | |
-| Enabled | `qof:LIGHT.ENABLED` | Toggle | `true` | |
-| Decay hold ticks | `qof:LIGHT.DECAY_LIGHT_TICK` | Slider | `3` | How long (ticks) a light block persists after the source leaves before fading begins. |
-| Reduce factor | `qof:LIGHT.REDUCE_LIGHT` | Slider | `0.7` | Multiplier applied to raw light level. Lower = dimmer. |
-| Fade step | `qof:LIGHT.LIGHT_REDUCE_LINEAR` | Slider | `3` | Light levels removed per fade tick. Higher = faster fade. |
-| Render radius | `qof:LIGHT.LIGHT_RENDER_RADIUS` | Slider | `32` | Max distance (blocks) to detect light sources around the player. |
-| Sources per player | `qof:LIGHT.LIGHT_RENDER_PER_PLAYER` | Slider | `12` | Max number of light-emitting entities processed per player per tick. |
-| Fire light level | `qof:LIGHT.LIGHT_FIRE_LEVEL` | Slider | `10` | Base light level emitted by burning entities before the reduce factor is applied. |
-| **Anvil Repairing** | | | | |
-| Enabled | `qof:REPAIR_ANVIL.ENABLED` | Toggle | `true` | |
-| Repair hold delay | `qof:REPAIR_ANVIL.REPAIR_HELD_DELAY` | Slider | `7` | Ticks between repeated repair interactions when holding the button. |
-| **Wet Concrete Powder** | | | | |
-| Enabled | `qof:WET_POWDER_CONCRTE.ENABLED` | Toggle | `true` | |
-| Keep velocity | `qof:WET_POWDER_CONCRTE.KEEP_VELOCITY` | Toggle | `true` | Applies the original item velocity to the converted concrete entity. |
-| Max process | `qof:WET_POWDER_CONCRTE.MAX_PROCESS` | Slider | `12` | Max concrete powder entities processed per tick batch. |
-| **Composter+** | | | | |
-| Enabled | `qof:COMPOSTER.ENABLED` | Toggle | `true` | |
-| Hopper integration | `qof:COMPOSTER.WORK_WITH_HOPPER` | Toggle | `true` | Allows hoppers facing down into a composter to feed it. |
-| Hopper interval | `qof:COMPOSTER.HOPPER_INTERVAL_TICK` | Slider | `8` | Ticks between each hopper-to-composter feed attempt. |
-| Ready delay | `qof:COMPOSTER.DELAY_BEFORE_READY` | Slider | `17` | Ticks after reaching level 7 before the composter becomes ready. |
-| **Carrying Container** | | | | |
-| Enabled | `qof:CARRIED_CHEST.ENABLED` | Toggle | `true` | |
-| Slowness duration | `qof:CARRIED_CHEST.SLOWNESS_DURATION` | Slider | `10` | Ticks each slowness effect application lasts while carrying. |
-| Slowness level | `qof:CARRIED_CHEST.SLOWNESS_AMPLIFIER` | Slider | `2` | Amplifier level of the applied slowness effect. |
-| Disable jump | `qof:CARRIED_CHEST.PLAYER_JUMP.NO_JUMP_HOLD_CHEST` | Toggle | `true` | Prevents jumping while carrying a container. |
-| Allow jump in water | `qof:CARRIED_CHEST.PLAYER_JUMP.ALLOW_JUMP_IN_WATER` | Toggle | `true` | Exempts water from the jump restriction. |
-| Allow jump in lava | `qof:CARRIED_CHEST.PLAYER_JUMP.ALLOW_JUMP_IN_LAVA` | Toggle | `true` | Exempts lava from the jump restriction. |
+  <img src="./.github/img/settings.png" alt="full settings of manifest.json">
 </details>
 
 ## Known Limitations & Notes
@@ -432,17 +725,8 @@ All settings are accessible through the pack settings panel in-game. No manual f
 **Dynamic Light**
 
 - `Limitations` Light blocks are placed in air or liquid only. Solid blocks are never replaced, which can cause light gaps in tight or enclosed spaces.
-- `Limitations` Armor stands do not support the equippable component in the current API. Items held by armor stands do not emit dynamic light only item frames are supported for static placed sources.
+- `Limitations` Armor stands do not support the equippable component in the current API. Items held by armor stands do not emit dynamic light. Only item frames are supported for static placed sources.
 - Very high render radius or sources-per-player values will increase tick time noticeably. Keep defaults unless your world has very few active players.
-
-**Anvil Repairing**
-
-- The repair consumes the item from the selected hotbar slot within the same tick. If the player switches slots between the interact and the internal run tick, a fallback `/clear` command is used. In very rare cases this fallback may fail silently and reverting the anvil.
-
-**Wet Concrete Powder**
-
-- Conversion time scales with stack size. Very large stacks take longer to process.
-- If the item entity is removed before conversion completes (falling into void, despawning, etc.) no concrete is produced and the queue entry is simply cleaned up.
 
 **Composter+**
 
@@ -451,8 +735,11 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 **Carrying Container**
 
-- Double chest carrying is experimental. Items from both halves are preserved through an intermediate entity, but timing edge cases during placement may cause one half to fail to restore.
 - Only the player who picked up the container can place it back. Other players cannot interact with the carried item slot.
+
+**Offhand**
+
+- `Limitations` Enchantments and item color cannot be transferred between hands due to API limitations that do not allow editing the offhand cleanly.
 
 ## License
 
@@ -468,13 +755,13 @@ This project is licensed under the [MIT License](LICENSE).
 Made by (aitji & pickerth-12)
 
   README INFO
-Version: v1.2.0
-Last updated: 25 Mar 2026
-Has README Update: False
+Version: v1.3.0
+Last updated: 28 Mar 2026
+Has README Update: True
 
   PACK INFO
-Last Release: v1.2.0
-Last Pre-Release: v1.2.3
+Last Release: v1.3.0
+Last Pre-Release: v1.3.0
 Minecraft: 26.0 ... 26.10
 Dependencies: ^2.7.0-beta.1.26.10-stable
 ```
