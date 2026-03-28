@@ -1,9 +1,6 @@
 import { Block, BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
 import { checkRandom, getDistance, getEqu, RUNTIME, setEqu } from "../lib"
-const { DEBUG, CARRIED_CHEST, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK } } = RUNTIME
-
-const DOUBLE_SNEAK_WINDOW_MOBILE = 20
-const DOUBLE_SNEAK_WINDOW_DEFAULT = 12
+const { DEBUG, CARRIED_CHEST, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT } } = RUNTIME
 
 /**
  * @typedef {{ lastSneakTick: number, wasSneaking: boolean }} SneakState
@@ -21,15 +18,19 @@ function _initPlayer(player) {
     sneakState.set(id, { lastSneakTick: -999, wasSneaking: false })
 }
 
+const sneakWindow = Object.freeze({
+    Mobile: DOUBLE_SNEAK_WINDOW_MOBILE,
+    Console: DOUBLE_SNEAK_WINDOW_CONSOLE,
+    Desktop: DOUBLE_SNEAK_WINDOW_DEFAULT
+})
+
 /**@param {Player} player@param {number} now*/
 export function offhand_player(player, now) {
     const { id, isSneaking } = player
     if (!sneakState.has(id)) _initPlayer(player)
 
     const state = sneakState.get(id)
-    const window = player.clientSystemInfo.platformType === "Mobile"
-        ? DOUBLE_SNEAK_WINDOW_MOBILE
-        : DOUBLE_SNEAK_WINDOW_DEFAULT
+    const window = sneakWindow[player.clientSystemInfo.platformType || 'Desktop']
 
     const justReleased = state.wasSneaking && !isSneaking
     if (justReleased) {

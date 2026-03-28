@@ -26,7 +26,7 @@ this file is only for top priority todo, if something like refactor some code or
           \ trade off: it show error that it missing geometry because i use invaild geometry so it doesn't have a block but will inculde the resoure pack to fix that, if didn't install error just pop up once IF player enabled console gui log, great deal i take that
   - [x] player break block are showing light block particle ; after block become air it got replace to light block and minecraft decide to render it
 - [x] add changelog/*.md and github action bot pull file and update it
-- [ ] picker is on vacation ; make everything config-able tmr(28 Mar 2026)
+- [x] picker is on vacation ; make everything config-able tmr(28 Mar 2026)
 
 ### concern about dyp
 
@@ -74,14 +74,12 @@ elytra+firework (any level): peak 8000+ bytes (150+ dyp)\
 - [ ] assign by aitji (gl)
   - [ ] bug/error
     - [ ] syntax error: blocks/light_block.json | Unexpected version for the loaded data
-  - [ ] add more config in manifest pack
-    - [ ] offhand's settings
+  - [x] add more config in manifest pack (i add/update it for you but don't know about gramma tho --aitji)
+    - [x] offhand's settings
       - [x] update _config.js
       - [x] update _store.js
       - [x] update manifest.json
-      - [ ] still need to add more tho -aitji
-    - [ ] crop.js
+    - [x] crop.js
       - [x] update _config.js
       - [x] update _store.js
       - [x] update manifest.json
-      - [ ] still need to add more tho -aitji

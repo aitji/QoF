@@ -51,7 +51,7 @@
     },
     {
       "type": "slider",
-      "text": "§7How §f'long'§8(game tick)§7 should light stay after it turns off? §8(higher = longer) §r §r §r §r",
+      "text": "§7How §f'long'§8(game tick)§7 should light stay after it turns off? §8(higher = longer) §r",
       "name": "qof:LIGHT.DECAY_LIGHT_TICK",
       "min": 0,
       "max": 40,
@@ -60,12 +60,12 @@
     },
     {
       "type": "slider",
-      "text": "§7How §f'much'§7 should light be reduced? §8(final = lightLevel * §o[value]§r§8) §r §r §r",
+      "text": "§7How §f'much'§7 should light be reduced? §8(final = lightLevel * §o[value / 10]§r§8) §r",
       "name": "qof:LIGHT.REDUCE_LIGHT",
-      "min": 0.0,
-      "max": 0.9,
-      "step": 0.1,
-      "default": 0.7
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 7
     },
     {
       "type": "slider",
@@ -124,34 +124,6 @@
       "max": 20,
       "step": 1,
       "default": 7
-    },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Wet Concrete Powder §7----------------------------------"
-    },
-    {
-      "type": "toggle",
-      "text": "§7Should concrete powder react to water? §r",
-      "name": "qof:WET_POWDER_CONCRTE.ENABLED",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Keep item movement after touching water? §r",
-      "name": "qof:WET_POWDER_CONCRTE.KEEP_VELOCITY",
-      "default": true
-    },
-    {
-      "type": "slider",
-      "text": "§7How many items can process at once? §c(can affect performance) §r",
-      "name": "qof:WET_POWDER_CONCRTE.MAX_PROCESS",
-      "min": 1,
-      "max": 64,
-      "step": 1,
-      "default": 12
     },
 
 
@@ -265,20 +237,97 @@
 
     {
       "type": "label",
-      "text": "§l§cQ§r§lo§cF§r OFFHAND System §7---------------------------------------"
+      "text": "§l§cQ§r§lo§cF§r CONCRETE POWDER §7-------------------------------------"
     },
     {
       "type": "toggle",
-      "text": "§7Allow offhand?",
+      "text": "§7Allow convert concrete powder hardening in water?",
+      "name": "qof:WET_POWDER_CONCRETE.ENABLED",
+      "default": true
+    },
+    {
+      "type": "toggle",
+      "text": "§7Keep item velocity after conversion?",
+      "name": "qof:WET_POWDER_CONCRETE.KEEP_VELOCITY",
+      "default": true
+    },
+    {
+      "type": "slider",
+      "text": "§7Max items processed per tick",
+      "name": "qof:WET_POWDER_CONCRETE.BATCH_SIZE",
+      "min": 1,
+      "max": 64,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "label",
+      "text": "§7Wait time is calculated* as: §qgame tick§7 = §8[BASE] §7+ √(§gamount§7 - 1) × §8[MULTIPLIER]§7\n§7*§pfinal wait time§7 use floor from §qgame tick"
+    },
+    {
+      "type": "slider",
+      "text": "§7How long§8(game tick)§7 should base time take? §8(larger = slower)",
+      "name": "qof:WET_POWDER_CONCRETE.SLOW_BASE",
+      "min": 0,
+      "max": 360,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "slider",
+      "text": "§7Concrete conversion slowness §8(larger = slower)",
+      "name": "qof:WET_POWDER_CONCRETE.SLOW_MULTIPLIER",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "default": 10
+    },
+
+
+
+    {
+      "type": "label",
+      "text": "§l§cQ§r§lo§cF§r OFFHAND System §7--------------------------------------\n§f*Due to minecraft scripts limitation §l§cQ§r§fo§l§cF§r§f currently not support transfer item with nametag/enchantment/color"
+    },
+    {
+      "type": "toggle",
+      "text": "§7Allow offhand? §8(by double sneaking)",
       "name": "qof:OFFHAND.ENABLED",
       "default": true
+    },
+    {
+      "type": "slider",
+      "text": "§7How long§8(game tick)§7 between each sneak on §l§fMobile §r",
+      "name": "qof:OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "slider",
+      "text": "§7How long§8(game tick)§7 between each sneak on §l§fConsole §r",
+      "name": "qof:OFFHAND.DOUBLE_SNEAK_WINDOW_CONSOLE",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "slider",
+      "text": "§7How long§8(game tick)§7 between each sneak on §l§fDesktop §r",
+      "name": "qof:OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "default": 12
     },
   
 
 
     {
       "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Harvest System §7---------------------------------------"
+      "text": "§l§cQ§r§lo§cF§r Harvest System §7--------------------------------------"
     },
     {
       "type": "toggle",
@@ -288,7 +337,17 @@
     },
     {
       "type": "toggle",
-      "text": "§7Will Seeds got used for replant §c(If player doesn't have seed or plant didn't drop seed the harvest won't replant for you)",
+      "text": "§7Use hoe durability on harvest?",
+      "name": "qof:HARVEST.DURABILITY",
+      "default": true
+    },
+    {
+      "type": "label",
+      "text": "§7Replant uses seeds. If you have no seeds or the crop doesn'§7t drop any, it will not replant."
+    },
+    {
+      "type": "toggle",
+      "text": "§7Consume seeds for replant?",
       "name": "qof:HARVEST.LOSS_SEED",
       "default": true
     },
@@ -307,13 +366,13 @@
     },
     {
       "type": "toggle",
-      "text": "§cDisbaled Command Log? §7(sendCommandFeedback gamerule) §r",
+      "text": "§cDisabled Command Log? §7(sendCommandFeedback gamerule) §r",
       "name": "qof:DISABLED_COMMANDFEEDBACK",
       "default": true
     },
     {
       "type": "toggle",
-      "text": "§cDisbaled HeartBeat §7(script will never responed to mcfunction) §r",
+      "text": "§cDisabled HeartBeat §7(script will never respond to mcfunction) §r",
       "name": "qof:DISABLED_HEARTBEAT",
       "default": false
     }

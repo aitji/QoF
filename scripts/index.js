@@ -40,7 +40,7 @@ system.run(() => {
     }
 
     // interval
-    const { LIGHT, WET_POWDER_CONCRTE, CARRIED_CHEST, COMPOSTER } = RUNTIME
+    const { LIGHT, WET_POWDER_CONCRETE, CARRIED_CHEST, COMPOSTER } = RUNTIME
     system.runInterval(() => {
         const tick = system.currentTick
 
@@ -49,7 +49,7 @@ system.run(() => {
             light.light_processFrames(tick)
         }
 
-        if (WET_POWDER_CONCRTE.ENABLED) powder.powder_pending()
+        if (WET_POWDER_CONCRETE.ENABLED) powder.powder_pending()
         if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending(tick)
 
         for (const player of world.getAllPlayers()) {
@@ -101,7 +101,7 @@ world.afterEvents.entityDie.subscribe(data => {
 
 world.afterEvents.entityRemove.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_entityRemove(data)
-    if (RUNTIME.WET_POWDER_CONCRTE.ENABLED) powder.powder_entityRemove(data)
+    if (RUNTIME.WET_POWDER_CONCRETE.ENABLED) powder.powder_entityRemove(data)
 
     helper.helper_entityRemove(data)
 })
@@ -128,7 +128,7 @@ world.beforeEvents.playerInteractWithEntity.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithEntity(data)
 })
 world.afterEvents.entitySpawn.subscribe(data => {
-    if (RUNTIME.WET_POWDER_CONCRTE.ENABLED) powder.powder_entitySpawn(data)
+    if (RUNTIME.WET_POWDER_CONCRETE.ENABLED) powder.powder_entitySpawn(data)
 })
 world.afterEvents.playerSpawn.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerSpawn(data)

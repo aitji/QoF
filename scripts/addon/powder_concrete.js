@@ -3,15 +3,15 @@ import { checkRandom, RUNTIME } from "../lib"
 const {
     DEBUG,
     SLICE_PREFIX,
-    WET_POWDER_CONCRTE: {
+    WET_POWDER_CONCRETE: {
         TYPEID_ENDSWITH, ITEM_PREFIX,
         KEEP_VELOCITY, BATCH_SIZE, PROCESS_DELAY,
-        DONE_PARTICLE, DONE_SOUND
+        DONE_PARTICLE, DONE_SOUND, SLOW_BASE, SLOW_MULTIPLIER
     }
 } = RUNTIME
 const queue = new Map() // Map<id, { readyAt, color, amount, dimensionId, location, velocity }>
 
-const wetDelay = (amount) => 60 + Math.floor(Math.sqrt(amount - 1) * 10)
+const wetDelay = (amount) => SLOW_BASE + Math.floor(Math.sqrt(amount - 1) * SLOW_MULTIPLIER)
 export const powder_entityRemove = ({ removedEntityId }) => {
     queue.delete(removedEntityId)
 }

@@ -136,11 +136,13 @@ export const SETTINGS = Object.freeze({
             PITCH: 1.0
         })
     }),
-    WET_POWDER_CONCRTE: Object.freeze({
+    WET_POWDER_CONCRETE: Object.freeze({
         ENABLED: true,
         ITEM_PREFIX: "minecraft:",
         PROCESS_DELAY: 4, // how long before item vanish (tick)
         KEEP_VELOCITY: true, // kept VELOCITY after touch water
+        SLOW_BASE: 60,
+        SLOW_MULTIPLIER: 10,
         TYPEID_ENDSWITH: "_concrete_powder", // maybe don't touch this
         DONE_PARTICLE: "minecraft:water_evaporation_bucket_emitter",
         DONE_SOUND: Object.freeze({
@@ -374,11 +376,11 @@ export const SETTINGS = Object.freeze({
             'minecraft:leather': 0.65,
             'minecraft:phantom_membrane': 0.65,
             'minecraft:cod': 0.5,
-            'minecraft:salmon': 0.5, // referenced as grass block
+            'minecraft:salmon': 0.5,
             'minecraft:tropical_fish': 0.5,
             'minecraft:pufferfish': 0.5,
 
-            // ooked
+            // ooked (or cooked)
             'minecraft:cooked_chicken': 0.65,
             'minecraft:cooked_porkchop': 0.65,
             'minecraft:cooked_beef': 0.65,
@@ -428,6 +430,9 @@ export const SETTINGS = Object.freeze({
     }),
     OFFHAND: Object.freeze({
         ENABLED: true,
+        DOUBLE_SNEAK_WINDOW_MOBILE: 20,
+        DOUBLE_SNEAK_WINDOW_CONSOLE: 16,
+        DOUBLE_SNEAK_WINDOW_DEFAULT: 12,
         FACE_TO_TORCH_DIR: Object.freeze({
             Up: 'top',
             Down: 'top',
@@ -508,6 +513,7 @@ export const SETTINGS = Object.freeze({
     HARVEST: Object.freeze({
         ENABLED: true,
         LOSS_SEED: true,
+        DURABILITY: true,
 
         // only hoe for now...
         PLANT_LEVEL: Object.freeze({

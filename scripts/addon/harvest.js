@@ -1,6 +1,6 @@
 import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player } from "@minecraft/server"
 import { applyItemDamage, reduceItem, RUNTIME, helper } from "../lib"
-const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL } } = RUNTIME
+const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY } } = RUNTIME
 
 /**@param {PlayerBreakBlockBeforeEvent} data*/
 export const harvest_playerBreakBlock = (data) => {
@@ -18,8 +18,11 @@ export const harvest_playerBreakBlock = (data) => {
             if (!level) return
             if (growth >= level) {
                 system.run(() => {
-                    const { changed, item: newItem } = applyItemDamage(player, item)
-                    if (changed) equippable?.setEquipment(EquipmentSlot.Mainhand, newItem)
+                    if (DURABILITY) {
+                        const { changed, item: newItem } = applyItemDamage(player, item)
+                        if (changed) equippable?.setEquipment(EquipmentSlot.Mainhand, newItem)
+                    }
+
                     const apply = () => dimension.getBlock(location).setPermutation(BlockPermutation.resolve(typeId))
 
                     if (!LOSS_SEED) return apply()

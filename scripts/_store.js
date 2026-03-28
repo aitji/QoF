@@ -15,7 +15,7 @@ function buildRuntime() {
 
     const L = S.LIGHT
     const A = S.REPAIR_ANVIL
-    const W = S.WET_POWDER_CONCRTE
+    const W = S.WET_POWDER_CONCRETE
     const C = S.COMPOSTER
     const CH = S.CARRIED_CHEST
     const OH = S.OFFHAND
@@ -33,7 +33,7 @@ function buildRuntime() {
         LIGHT: Object.freeze({
             ENABLED: g("qof:LIGHT.ENABLED", L.ENABLED),
             DECAY_LIGHT_TICK: g("qof:LIGHT.DECAY_LIGHT_TICK", L.DECAY_LIGHT_TICK),
-            REDUCE_LIGHT: r1("qof:LIGHT.REDUCE_LIGHT", L.REDUCE_LIGHT),
+            REDUCE_LIGHT: r1(g("qof:LIGHT.REDUCE_LIGHT", L.REDUCE_LIGHT) / 10),
             LIGHT_REDUCE_LINEAR: g("qof:LIGHT.LIGHT_REDUCE_LINEAR", L.LIGHT_REDUCE_LINEAR),
             LIGHT_RENDER_RADIUS: g("qof:LIGHT.LIGHT_RENDER_RADIUS", L.LIGHT_RENDER_RADIUS),
             LIGHT_RENDER_PER_PLAYER: g("qof:LIGHT.LIGHT_RENDER_PER_PLAYER", L.LIGHT_RENDER_PER_PLAYER),
@@ -65,10 +65,12 @@ function buildRuntime() {
             REPAIR_SOUND: A.REPAIR_SOUND,
         }),
 
-        WET_POWDER_CONCRTE: Object.freeze({
-            ENABLED: g("qof:WET_POWDER_CONCRTE.ENABLED", W.ENABLED),
-            KEEP_VELOCITY: g("qof:WET_POWDER_CONCRTE.KEEP_VELOCITY", W.KEEP_VELOCITY),
-            MAX_PROCESS: g("qof:WET_POWDER_CONCRTE.MAX_PROCESS", W.MAX_PROCESS),
+        WET_POWDER_CONCRETE: Object.freeze({
+            ENABLED: g("qof:WET_POWDER_CONCRETE.ENABLED", W.ENABLED),
+            KEEP_VELOCITY: g("qof:WET_POWDER_CONCRETE.KEEP_VELOCITY", W.KEEP_VELOCITY),
+            MAX_PROCESS: g("qof:WET_POWDER_CONCRETE.MAX_PROCESS", W.MAX_PROCESS),
+            SLOW_BASE: g("qof:WET_POWDER_CONCRETE.SLOW_BASE", W.SLOW_BASE),
+            SLOW_MULTIPLIER: g("qof:WET_POWDER_CONCRETE.SLOW_MULTIPLIER", W.SLOW_MULTIPLIER),
 
             // static
             ITEM_PREFIX: W.ITEM_PREFIX,
@@ -123,6 +125,9 @@ function buildRuntime() {
         }),
         OFFHAND: Object.freeze({
             ENABLED: g("qof:OFFHAND.ENABLED", OH.ENABLED),
+            DOUBLE_SNEAK_WINDOW_MOBILE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE", OH.DOUBLE_SNEAK_WINDOW_MOBILE),
+            DOUBLE_SNEAK_WINDOW_CONSOLE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_CONSOLE", OH.DOUBLE_SNEAK_WINDOW_CONSOLE),
+            DOUBLE_SNEAK_WINDOW_DEFAULT: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT", OH.DOUBLE_SNEAK_WINDOW_DEFAULT),
             // need more customization
 
             // static
@@ -134,11 +139,12 @@ function buildRuntime() {
             TORCH_ID: OH.TORCH_ID,
             PLACE_SOUND: OH.PLACE_SOUND,
             BLOCK_INTERACTION_DELAY: OH.BLOCK_INTERACTION_DELAY,
-            ITEMBUTBLOCK: OH.ITEMBUTBLOCK
+            ITEMBUTBLOCK: OH.ITEMBUTBLOCK,
         }),
         HARVEST: Object.freeze({
             ENABLED: g("qof:HARVEST.ENABLED", CR.ENABLED),
             LOSS_SEED: g("qof:HARVEST.LOSS_SEED", CR.LOSS_SEED),
+            DURABILITY: g("qof:HARVEST.DURABILITY", CR.DURABILITY),
             // need more customization
 
             // static
