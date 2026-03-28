@@ -1,12 +1,14 @@
 import { EntityItemPickupBeforeEvent, EntityRemoveAfterEvent, system, world } from "@minecraft/server"
-
 const COOLDOWN_ENTITY = new Map()
-export const addItemCooldown = (entity, cooldown = 40) => {
+
+// anyone call
+export const pickupCooldown = (entity, cooldown = 40) => {
     const id = entity.id
     if (COOLDOWN_ENTITY.has(id)) return
     COOLDOWN_ENTITY.set(id, system.currentTick + cooldown)
 }
 
+// index call
 /** @param {EntityItemPickupBeforeEvent} data */
 export const helper_entityItemPickup = (data) => {
     const id = data?.entity?.id
@@ -23,3 +25,4 @@ export const helper_entityItemPickup = (data) => {
 export const helper_entityRemove = (data) => {
     COOLDOWN_ENTITY.delete(data.removedEntityId)
 }
+

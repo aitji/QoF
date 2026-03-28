@@ -1,8 +1,12 @@
 import { EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EquipmentSlot, GameMode, ItemComponentTypes, ItemDurabilityComponent, ItemStack, Player, system, world } from "@minecraft/server"
+// lazy import ---
 import { RUNTIME as E } from "./_store"
-const { DEBUG } = E
+import * as H from "./_helper"
 export const RUNTIME = E
+export const helper = H
+// ---
 
+const { DEBUG } = E
 export const clamp = (n, min = 0, max = 8) => Math.max(min, Math.min(max, Math.ceil(n)))
 export const checkRandom = (arr) => {
     switch (typeof arr) {

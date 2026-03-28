@@ -1,5 +1,5 @@
 import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player } from "@minecraft/server"
-import { applyItemDamage, reduceItem, RUNTIME } from "../lib"
+import { applyItemDamage, reduceItem, RUNTIME, helper } from "../lib"
 const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL } } = RUNTIME
 
 /**@param {PlayerBreakBlockBeforeEvent} data*/
@@ -39,8 +39,10 @@ export const harvest_playerBreakBlock = (data) => {
 
                             if (enItem?.typeId === seed) {
                                 const newItem = reduceItem(enItem)
+                                if (!newItem || newItem.typeId === 'minecraft:air') continue
                                 try {
                                     const newEn = dimension.spawnItem(newItem, location)
+                                    helper.pickupCooldown(newEn.id)
                                     newEn.applyImpulse(en.getVelocity())
                                 } catch { /** cannot apply vec to "air" */ }
 
