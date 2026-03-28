@@ -7,7 +7,7 @@ import * as powder from "./addon/powder_concrete"
 import * as composter from "./addon/composter"
 import * as chest from "./addon/chest"
 import * as offhand from "./addon/offhand"
-import * as crop from "./addon/crop"
+import * as harvest from "./addon/harvest"
 
 // helper (mostly debug)
 /** @type {ScoreboardObjective} */
@@ -112,7 +112,7 @@ world.beforeEvents.playerPlaceBlock.subscribe(data => {
 })
 world.beforeEvents.playerBreakBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerBreakBlock(data)
-    if (RUNTIME.CROP.ENABLED) crop.crop_playerBreakBlock(data)
+    if (RUNTIME.HARVEST.ENABLED) harvest.harvest_playerBreakBlock(data)
 })
 world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerInteractWithBlock(data)

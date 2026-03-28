@@ -473,7 +473,7 @@ export const SETTINGS = Object.freeze({
             // maybe add more :?
         })
     }),
-    CROP: Object.freeze({
+    HARVEST: Object.freeze({
         ENABLED: true,
         LOSS_SEED: true,
 

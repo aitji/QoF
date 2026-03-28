@@ -1,9 +1,9 @@
 import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player } from "@minecraft/server"
 import { applyItemDamage, reduceItem, RUNTIME } from "../lib"
-const { DEBUG, CROP: { LOSS_SEED, PLANT_LEVEL } } = RUNTIME
+const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL } } = RUNTIME
 
 /**@param {PlayerBreakBlockBeforeEvent} data*/
-export const crop_playerBreakBlock = (data) => {
+export const harvest_playerBreakBlock = (data) => {
     const { player, itemStack, block } = data
     if (!itemStack) return
 
@@ -47,7 +47,7 @@ export const crop_playerBreakBlock = (data) => {
                                 try { en.remove() }
                                 catch {
                                     try { en.kill() }
-                                    catch (_) { if (DEBUG) world.sendMessage(`[crop.js] cannot remove ${seed} ${_}`) }
+                                    catch (_) { if (DEBUG) world.sendMessage(`[harvest.js] cannot remove ${seed} ${_}`) }
                                 } finally { return apply() }
                             }
                         }

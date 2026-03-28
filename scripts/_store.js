@@ -19,7 +19,7 @@ function buildRuntime() {
     const C = S.COMPOSTER
     const CH = S.CARRIED_CHEST
     const OH = S.OFFHAND
-    const CR = S.CROP
+    const CR = S.HARVEST
 
     return Object.freeze({
         DEBUG: g("qof:DEBUG", S.DEBUG),
@@ -131,7 +131,7 @@ function buildRuntime() {
             BLOCK_INTERACTION_DELAY: OH.BLOCK_INTERACTION_DELAY,
             ITEMBUTBLOCK: OH.ITEMBUTBLOCK
         }),
-        CROP: Object.freeze({
+        HARVEST: Object.freeze({
             ENABLED: g("qof:HARVEST.ENABLED", CR.ENABLED),
             LOSS_SEED: g("qof:HARVEST.LOSS_SEED", CR.LOSS_SEED),
             // need more customization
