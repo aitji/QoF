@@ -77,6 +77,47 @@ export const reduceItem = (item, amount = 1, entity = null) => {
     }
 }
 
+/**
+ * @param {{x:number, y:number, z:number}} loc1 
+ * @param {{x:number, y:number, z:number}} loc2 
+ * @returns {number}
+ */
+export const getDistance = (a, b) => {
+    const dx = a.x - b.x
+    const dy = a.y - b.y
+    const dz = a.z - b.z
+    return dx * dx + dy * dy + dz * dz // faster than (Math.sqrt)
+}
+/**
+ * @param {{x:number, y:number, z:number}} loc1 
+ * @param {{x:number, y:number, z:number}} loc2 
+ * @param {'none'|'ceil'|'floor'|'round'} roundType
+ * @returns {{x:number, y:number, z:number}}
+ */
+export const sumLoc = (loc1, loc2, roundType = 'none') => {
+    loc1 = roundLoc(loc1, roundType)
+    loc2 = roundLoc(loc2, roundType)
+
+    return {
+        x: loc1.x + loc2.x,
+        y: loc1.y + loc2.y,
+        z: loc1.z + loc2.z,
+    }
+}
+/**
+ * @param {{x:number, y:number, z:number}} loc1
+ * @param {'none'|'ceil'|'floor'|'round'} roundType
+ * @returns {{x:number, y:number, z:number}}
+ */
+export const roundLoc = (loc, roundType = 'none') => {
+    switch (roundType) {
+        case 'ceil': return { x: Math.ceil(loc.x), y: Math.ceil(loc.y), z: Math.ceil(loc.z) }
+        case 'floor': return { x: Math.floor(loc.x), y: Math.floor(loc.y), z: Math.floor(loc.z) }
+        case 'round': return { x: Math.round(loc.x), y: Math.round(loc.y), z: Math.round(loc.z) }
+        default: return loc
+    }
+}
+
 // lazy helper, for lazy dev
 /**
  * @param {Entity} entity 
@@ -105,16 +146,4 @@ export const setEqu = (entity, itemStack = undefined, slot = EquipmentSlot.Mainh
         if (DEBUG) world.sendMessage(`entity=${typeof entity}, itemStack=${typeof itemStack}, slot=${typeof slot}`)
         return false
     }
-}
-
-/**
- * @param {{x:number, y:number, z:number}} loc1 
- * @param {{x:number, y:number, z:number}} loc2 
- * @returns {number}
- */
-export const getDistance = (a, b) => {
-  const dx = a.x - b.x
-  const dy = a.y - b.y
-  const dz = a.z - b.z
-  return dx*dx + dy*dy + dz*dz // faster than (Math.sqrt)
 }

@@ -1,6 +1,6 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, EntityComponentTypes, Player, PlayerInteractWithBlockBeforeEvent, ItemComponentTypes, EntityEquippableComponent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity } from "@minecraft/server"
-import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
-const { DEBUG, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR } } = RUNTIME
+import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, RUNTIME, setEqu, sumLoc } from "../lib"
+const { DEBUG, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR, FAIL_PARTICLE, PARTICLE_OFFSET, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE } } = RUNTIME
 export const isFrame = (b) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
 let AIR, WATER, LAVA, BASE_LIGHT
@@ -24,7 +24,7 @@ const getItemLight = (id, en, tick) => {
     if (found?.inLiquid !== undefined) {
         if (found.inLiquid === en.isInWater) return found.light || 0
         const loc = en.location
-        if (found.inLiquid === false && tick % 60 === 1) en.dimension.spawnParticle("minecraft:water_evaporation_bucket_emitter", { x: loc.x - .5, y: loc.y, z: loc.z - .5 }) // todo: make this config-able
+        if (found.inLiquid === false && tick % 60 === 1) en.dimension.spawnParticle(FAIL_PARTICLE, sumLoc(loc, PARTICLE_OFFSET))
         return 0
     }
 
@@ -265,16 +265,6 @@ export const light_playerBreakBlock = (data) => {
     suppressedLocs.set(blockBKey(block), system.currentTick + SUPP_BREAK)
 }
 
-const farmland = Object.freeze({ 'minecraft:farmland': true, 'minecraft:soul_sand': true })
-/** @type {Readonly<{[k: string]: Readonly<{asBlock: string; pot: string}>}>} */
-const seedToBlock = Object.freeze({ // todo: add to config
-    'minecraft:wheat_seeds': Object.freeze({ asBlock: 'minecraft:wheat', pot: 'minecraft:farmland', sound: 'nature' }),
-    'minecraft:carrots': Object.freeze({ asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' }),
-    'minecraft:potatoes': Object.freeze({ asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' }),
-    'minecraft:beetroot_seeds': Object.freeze({ asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' }),
-    'minecraft:nether_wart': Object.freeze({ asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' }),
-})
-
 const delay = {}
 /**@param {PlayerInteractWithBlockBeforeEvent} data*/
 export const light_playerInteractWithBlock = (data) => {
@@ -303,9 +293,9 @@ export const light_playerInteractWithBlock = (data) => {
                 block.setPermutation(BlockPermutation.resolve('minecraft:grass_path'))
                 toolUsed = true
 
-                player.dimension.playSound('use.grass', block.center(), { // todo: config.js
-                    volume: 1.0,
-                    pitch: 0.8
+                player.dimension.playSound(SOUND_SHOVEL_USE.ID, block.center(), {
+                    volume: checkRandom(SOUND_SHOVEL_USE.VOLUME),
+                    pitch: checkRandom(SOUND_SHOVEL_USE.PITCH)
                 })
             }
             if (itemStack?.hasTag('minecraft:is_hoe')) {
@@ -313,9 +303,9 @@ export const light_playerInteractWithBlock = (data) => {
                 block.setPermutation(BlockPermutation.resolve('minecraft:farmland'))
                 toolUsed = true
 
-                player.dimension.playSound('use.gravel', block.center(), { // todo: config.js
-                    volume: 1.0,
-                    pitch: 0.8
+                player.dimension.playSound(SOUND_HOE_USE.ID, block.center(), {
+                    volume: checkRandom(SOUND_HOE_USE.VOLUME),
+                    pitch: checkRandom(SOUND_HOE_USE.PITCH)
                 })
             }
 
@@ -332,9 +322,9 @@ export const light_playerInteractWithBlock = (data) => {
 
     // farmland
     const blockType = block.typeId
-    if (farmland[blockType]) {
+    if (FARMLAND_BLOCK[blockType]) {
         if (!isAboveLight()) return
-        const raw = seedToBlock[itemStack?.typeId || '']
+        const raw = SEEDTOBLOCK[itemStack?.typeId || '']
         if (!raw) return
         const { asBlock, pot, sound } = raw
 
@@ -345,16 +335,14 @@ export const light_playerInteractWithBlock = (data) => {
                 const center = block.center()
                 switch (sound) {
                     // make sound config-able
-                    case 'nature':
-                        return player.dimension.playSound('place.grass', center, {
-                            volume: 0.8,
-                            pitch: checkRandom([0.8, 1])
-                        })
-                    case 'nether':
-                        return player.dimension.playSound('dig.nether_wart', center, {
-                            volume: 0.7,
-                            pitch: checkRandom([0.8, 1])
-                        })
+                    case 'nature': return player.dimension.playSound('place.grass', center, {
+                        volume: 0.8,
+                        pitch: checkRandom([0.8, 1])
+                    })
+                    case 'nether': return player.dimension.playSound('dig.nether_wart', center, {
+                        volume: 0.7,
+                        pitch: checkRandom([0.8, 1])
+                    })
                     default:
                         if (DEBUG) world.sendMessage(`${sound} is invaild`)
                         return

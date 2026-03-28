@@ -4,6 +4,7 @@ export const SETTINGS = Object.freeze({
     DISABLED_HEARTBEAT: false,
     INTERVAL_DELAY: 1, // delay for each interval
     SLICE_PREFIX: "minecraft:".length, // 10
+
     LIGHT: Object.freeze({
         ENABLED: true,
         DECAY_LIGHT_TICK: 3, // before light when off time
@@ -12,6 +13,30 @@ export const SETTINGS = Object.freeze({
         LIGHT_RENDER_RADIUS: 32, // max distance light render around player
         LIGHT_RENDER_PER_PLAYER: 12, // max light entity(item) render per player
         LIGHT_FIRE_LEVEL: 10, // this will be reduce by REDUCE_LIGHT
+        FAIL_PARTICLE: "minecraft:water_evaporation_bucket_emitter",
+        PARTICLE_OFFSET: Object.freeze({ x: -.5, y: 0, z: -.5 }),
+        
+        // vanilla bug patched ---
+        /** @type {Readonly<{[k: string]: Readonly<{asBlock: string; pot: string}>}>} */
+        SEEDTOBLOCK: Object.freeze({
+            'minecraft:wheat_seeds': Object.freeze({ asBlock: 'minecraft:wheat', pot: 'minecraft:farmland', sound: 'nature' }),
+            'minecraft:carrots': Object.freeze({ asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' }),
+            'minecraft:potatoes': Object.freeze({ asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' }),
+            'minecraft:beetroot_seeds': Object.freeze({ asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' }),
+            'minecraft:nether_wart': Object.freeze({ asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' }),
+        }),
+        FARMLAND_BLOCK: Object.freeze({ 'minecraft:farmland': true, 'minecraft:soul_sand': true }),
+        SOUND_SHOVEL_USE: Object.freeze({
+            ID: "use.grass",
+            VOLUME: 1.0,
+            PITCH: 0.8
+        }),
+        SOUND_HOE_USE: Object.freeze({
+            ID: "use.gravel",
+            VOLUME: 1.0,
+            PITCH: 0.8
+        }),
+        // ---
         LIGHT_WIKI: Object.freeze({
             // light 15
             "beacon": Object.freeze({ light: 15 }), "campfire": Object.freeze({ light: 15, inLiquid: false }),

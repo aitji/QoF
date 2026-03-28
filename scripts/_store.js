@@ -41,6 +41,12 @@ function buildRuntime() {
             // static
             LIGHT_WIKI: L.LIGHT_WIKI,
             LIGHT_ENTITY: L.LIGHT_ENTITY,
+            FAIL_PARTICLE: L.FAIL_PARTICLE,
+            PARTICLE_OFFSET: L.PARTICLE_OFFSET,
+            SEEDTOBLOCK: L.SEEDTOBLOCK,
+            FARMLAND_BLOCK: L.FARMLAND_BLOCK,
+            SOUND_SHOVEL_USE: L.SOUND_SHOVEL_USE,
+            SOUND_HOE_USE: L.SOUND_HOE_USE,
         }),
 
         REPAIR_ANVIL: Object.freeze({
