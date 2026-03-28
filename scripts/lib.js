@@ -19,6 +19,7 @@ export const checkRandom = (arr) => {
 }
 
 /**
+ * @param {Player} player
  * @param {ItemStack} item
  * @returns {{changed: boolean, item: ItemStack}}
  */
@@ -41,7 +42,7 @@ export const applyItemDamage = (player, item) => { // only for weapon, not armor
     const newDurability = dur.damage + 1
     if (newDurability >= dur.maxDurability) {
         item = new ItemStack('minecraft:air', 1)
-        player.dimension.playSound('random.break', player.location)
+        player.dimension.playSound('random.break', player.location, { pitch: 0.9 })
         changed = true
     } else {
         dur.damage = newDurability

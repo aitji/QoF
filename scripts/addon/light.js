@@ -1,14 +1,15 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, EntityComponentTypes, Player, PlayerInteractWithBlockBeforeEvent, ItemComponentTypes, EntityEquippableComponent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity } from "@minecraft/server"
 import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, RUNTIME, setEqu, sumLoc } from "../lib"
-const { DEBUG, INTERVAL_DELAY, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR, FAIL_PARTICLE, PARTICLE_OFFSET, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, BLOCK_INTERACTION_DELAY, SOUND_FAIL, FAIL_SOUND_INTERVAL } } = RUNTIME
+const { DEBUG, BLOCKFACE_TO_DIR, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR, FAIL_PARTICLE, PARTICLE_OFFSET, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, BLOCK_INTERACTION_DELAY, SOUND_FAIL, FAIL_SOUND_INTERVAL, FIRE_ITEM, SOUND_FIRE_IGNITE } } = RUNTIME
 export const isFrame = (b) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
-let AIR, WATER, LAVA, BASE_LIGHT
+let AIR, WATER, LAVA, BASE_LIGHT, FIRE
 if (ENABLED) system.run(() => {
     AIR = BlockPermutation.resolve('minecraft:air')
     WATER = BlockPermutation.resolve('minecraft:water')
     LAVA = BlockPermutation.resolve('minecraft:lava')
-    BASE_LIGHT = BlockPermutation.resolve('qof:light_block')
+    BASE_LIGHT = BlockPermutation.resolve('qof:light_block'),
+        FIRE = BlockPermutation.resolve('minecraft:fire')
     _restoreFromDYP()
 })
 
@@ -269,6 +270,7 @@ export const light_playerBreakBlock = (data) => {
     suppressedLocs.set(blockBKey(block), system.currentTick + SUPP_BREAK)
 }
 
+// fix: cannot interact with light block above
 const delay = {}
 /**@param {PlayerInteractWithBlockBeforeEvent} data*/
 export const light_playerInteractWithBlock = (data) => {
@@ -277,15 +279,16 @@ export const light_playerInteractWithBlock = (data) => {
         const playerDelay = delay[player.id] || 0
         if (playerDelay > system.currentTick) return
     }
-    delay[player.id] = system.currentTick + BLOCK_INTERACTION_DELAY
 
+    delay[player.id] = system.currentTick + BLOCK_INTERACTION_DELAY
     if (!itemStack || !block) return
 
     /** @type {Block?} */
     let above
+    const isLight = (b) => b.permutation?.matches('qof:light_block') ?? false
     const isAboveLight = () => { // don't perm check if unnesscery
         above = block.above(1)
-        return above?.permutation?.matches('qof:light_block') ?? false
+        return isLight(above)
     }
 
     if (block.hasTag('dirt')) {
@@ -368,6 +371,54 @@ export const light_playerInteractWithBlock = (data) => {
                     } catch {
                         const command = above.dimension.runCommand(`setblock ${above.x} ${above.y} ${above.z} ${asBlock}`)
                         if (command.successCount <= 0 && scam && !isCreative) reduceItem(itemStack, -1, player) // give item back
+                    }
+                }
+            })
+        }
+    }
+
+    // flint and steal + fire charge
+    const itemType = itemStack.typeId
+    if (FIRE_ITEM[itemType]) {
+        /** @type {Block} */
+        const cache = block[BLOCKFACE_TO_DIR[blockFace]](1)
+        if (isLight(cache)) {
+            suppressedLocs.set(blockBKey(cache), system.currentTick + SUPP_BREAK)
+            const equ = getEqu(player)
+            const slot = player.selectedSlotIndex
+            system.run(() => {
+                if (player.selectedSlotIndex !== slot) {
+                    if (DEBUG) world.sendMessage(`selectedSlotIndex!==slot ; ${player.selectedSlotIndex} !== ${slot}`)
+                    player.selectedSlotIndex = slot
+
+                    // double check
+                    if (equ?.getEquipment(slot)?.typeId !== itemType) {
+                        if (DEBUG) world.sendMessage(`typeId!==itemType ; ${equ?.getEquipment(slot)?.typeId} !== ${itemType}`)
+                        return // cancel interaction
+                    }
+                }
+                const dim = cache.dimension
+                const applyDmg = () => {
+                    const { item, changed } = applyItemDamage(player, equ)
+                    if (changed) setEqu(player, item, "Mainhand", true)
+                    dim.playSound(SOUND_FIRE_IGNITE.ID, cache.center(), {
+                        pitch: checkRandom(SOUND_FIRE_IGNITE.PITCH),
+                        volume: checkRandom(SOUND_FIRE_IGNITE.VOLUME)
+                    })
+                }
+
+                try {
+                    cache.setType('minecraft:fire')
+                    applyDmg()
+                } catch {
+                    try {
+                        cache.setPermutation(FIRE)
+                        applyDmg()
+                    } catch {
+                        const cmd = dim.runCommand(`setblock ${cache.x} ${cache.y} ${cache.z} fire`)
+                        if (cmd?.successCount && cmd.successCount === 1) applyDmg()
+
+                        // all interact failed ._.
                     }
                 }
             })

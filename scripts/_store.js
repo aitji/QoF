@@ -28,6 +28,7 @@ function buildRuntime() {
 
         INTERVAL_DELAY: g("qof:INTERVAL_DELAY", S.INTERVAL_DELAY),
         SLICE_PREFIX: S.SLICE_PREFIX,
+        BLOCKFACE_TO_DIR: S.BLOCKFACE_TO_DIR,
 
         LIGHT: Object.freeze({
             ENABLED: g("qof:LIGHT.ENABLED", L.ENABLED),
@@ -49,7 +50,9 @@ function buildRuntime() {
             FARMLAND_BLOCK: L.FARMLAND_BLOCK,
             SOUND_SHOVEL_USE: L.SOUND_SHOVEL_USE,
             SOUND_HOE_USE: L.SOUND_HOE_USE,
-            BLOCK_INTERACTION_DELAY: L.BLOCK_INTERACTION_DELAY
+            BLOCK_INTERACTION_DELAY: L.BLOCK_INTERACTION_DELAY,
+            FIRE_ITEM: L.FIRE_ITEM,
+            SOUND_FIRE_IGNITE: L.SOUND_FIRE_IGNITE
         }),
 
         REPAIR_ANVIL: Object.freeze({
@@ -123,10 +126,10 @@ function buildRuntime() {
             // need more customization
 
             // static
-            ALLOW_REPLACE: OH.ALLOW_REPLACE,
-            NEED_SNEAK: OH.NEED_SNEAK,
             FACE_TO_TORCH_DIR: OH.FACE_TO_TORCH_DIR,
             FACE_TO_NEIGHBOUR: OH.FACE_TO_NEIGHBOUR,
+            ALLOW_REPLACE: OH.ALLOW_REPLACE,
+            NEED_SNEAK: OH.NEED_SNEAK,
             LIGHT: OH.LIGHT,
             TORCH_ID: OH.TORCH_ID,
             PLACE_SOUND: OH.PLACE_SOUND,

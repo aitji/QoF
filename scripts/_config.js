@@ -4,6 +4,14 @@ export const SETTINGS = Object.freeze({
     DISABLED_HEARTBEAT: false,
     INTERVAL_DELAY: 1, // delay for each interval
     SLICE_PREFIX: "minecraft:".length, // 10
+    BLOCKFACE_TO_DIR: Object.freeze({
+        Up: 'above',
+        Down: 'below',
+        North: 'north',
+        South: 'south',
+        East: 'east',
+        West: 'west',
+    }),
 
     LIGHT: Object.freeze({
         ENABLED: true,
@@ -43,6 +51,15 @@ export const SETTINGS = Object.freeze({
             PITCH: 0.8
         }),
         BLOCK_INTERACTION_DELAY: 4, // tick
+        FIRE_ITEM: Object.freeze({
+            "minecraft:flint_and_steel": true,
+            "minecraft:fire_charge": true,
+        }),
+        SOUND_FIRE_IGNITE: Object.freeze({
+            ID: "fire.ignite",
+            VOLUME: 1.0,
+            PITCH: [0.8, 1.2]
+        }),
         // ---
         LIGHT_WIKI: Object.freeze({
             // light 15
@@ -407,6 +424,22 @@ export const SETTINGS = Object.freeze({
     }),
     OFFHAND: Object.freeze({
         ENABLED: true,
+        FACE_TO_TORCH_DIR: Object.freeze({
+            Up: 'top',
+            Down: 'top',
+            North: 'south',
+            South: 'north',
+            East: 'west',
+            West: 'east',
+        }),
+        FACE_TO_NEIGHBOUR: Object.freeze({
+            Up: (b) => b.above(),
+            Down: (b) => b.below(),
+            North: (b) => b.north(),
+            South: (b) => b.south(),
+            East: (b) => b.east(),
+            West: (b) => b.west(),
+        }),
         ALLOW_REPLACE: Object.freeze({
             'minecraft:short_grass': true,
             'minecraft:short_dry_grass': true,
@@ -437,22 +470,6 @@ export const SETTINGS = Object.freeze({
             'minecraft:command_block': true,
             'minecraft:chain_command_block': true,
             'minecraft:repeating_command_block': true,
-        }),
-        FACE_TO_TORCH_DIR: Object.freeze({
-            Up: 'top',
-            Down: 'top',
-            North: 'south',
-            South: 'north',
-            East: 'west',
-            West: 'east',
-        }),
-        FACE_TO_NEIGHBOUR: Object.freeze({
-            Up: (b) => b.above(),
-            Down: (b) => b.below(),
-            North: (b) => b.north(),
-            South: (b) => b.south(),
-            East: (b) => b.east(),
-            West: (b) => b.west(),
         }),
         TORCH_ID: Object.freeze({
             "minecraft:torch": true,
