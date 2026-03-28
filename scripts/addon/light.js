@@ -1,6 +1,6 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, EntityComponentTypes, Player, PlayerInteractWithBlockBeforeEvent, ItemComponentTypes, EntityEquippableComponent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity } from "@minecraft/server"
 import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, RUNTIME, setEqu, sumLoc } from "../lib"
-const { DEBUG, BLOCKFACE_TO_DIR, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR, FAIL_PARTICLE, PARTICLE_OFFSET, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, BLOCK_INTERACTION_DELAY, SOUND_FAIL, FAIL_SOUND_INTERVAL, FIRE_ITEM, SOUND_FIRE_IGNITE } } = RUNTIME
+const { DEBUG, BLOCKFACE_TO_DIR, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR, FAIL_PARTICLE, PARTICLE_OFFSET, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, BLOCK_INTERACTION_DELAY, SOUND_FAIL, FAIL_SOUND_INTERVAL, FIRE_ITEM } } = RUNTIME
 export const isFrame = (b) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
 let AIR, WATER, LAVA, BASE_LIGHT, FIRE
@@ -8,8 +8,8 @@ if (ENABLED) system.run(() => {
     AIR = BlockPermutation.resolve('minecraft:air')
     WATER = BlockPermutation.resolve('minecraft:water')
     LAVA = BlockPermutation.resolve('minecraft:lava')
-    BASE_LIGHT = BlockPermutation.resolve('qof:light_block'),
-        FIRE = BlockPermutation.resolve('minecraft:fire')
+    BASE_LIGHT = BlockPermutation.resolve('qof:light_block')
+    FIRE = BlockPermutation.resolve('minecraft:fire')
     _restoreFromDYP()
 })
 
@@ -88,7 +88,7 @@ function put_light(block, level, owner, force = false) {
         if (exp !== undefined && system.currentTick < exp) return
         if (block.isLiquid && block.permutation.getState('liquid_depth') !== 0) return
         const isWater = block.permutation.matches('minecraft:water')
-        const isLava = block.permutation.matches('minecraft:lava')
+        const isLava = block.permutation.matches('minecraft:lava') || block.permutation.matches('minecraft:fire')
         if (isLava) return
         const ownerId = force ? 'Infinity' : (owner?.id || owner?.name || owner?.nameTag || owner?.typeId || String(owner))
 
@@ -379,7 +379,8 @@ export const light_playerInteractWithBlock = (data) => {
 
     // flint and steal + fire charge
     const itemType = itemStack.typeId
-    if (FIRE_ITEM[itemType]) {
+    const fireSound = FIRE_ITEM[itemType]
+    if (fireSound) {
         /** @type {Block} */
         const cache = block[BLOCKFACE_TO_DIR[blockFace]](1)
         if (isLight(cache)) {
@@ -398,29 +399,25 @@ export const light_playerInteractWithBlock = (data) => {
                     }
                 }
                 const dim = cache.dimension
-                const applyDmg = () => {
-                    const { item, changed } = applyItemDamage(player, equ)
-                    if (changed) setEqu(player, item, "Mainhand", true)
-                    dim.playSound(SOUND_FIRE_IGNITE.ID, cache.center(), {
-                        pitch: checkRandom(SOUND_FIRE_IGNITE.PITCH),
-                        volume: checkRandom(SOUND_FIRE_IGNITE.VOLUME)
+                const done = () => {
+                    // minecraft alr handle damage
+                    // const { item, changed } = applyItemDamage(player, equ)
+                    // if (changed) setEqu(player, item, "Mainhand", true)
+                    dim.playSound(fireSound.ID, cache.center(), {
+                        pitch: checkRandom(fireSound.PITCH),
+                        volume: checkRandom(fireSound.VOLUME)
                     })
-                }
-
-                try {
-                    cache.setType('minecraft:fire')
-                    applyDmg()
-                } catch {
-                    try {
-                        cache.setPermutation(FIRE)
-                        applyDmg()
-                    } catch {
-                        const cmd = dim.runCommand(`setblock ${cache.x} ${cache.y} ${cache.z} fire`)
-                        if (cmd?.successCount && cmd.successCount === 1) applyDmg()
-
-                        // all interact failed ._.
+                    if (fireSound.REDUCE_ITEM) {
+                        const equ = getEqu(player)
+                        const currItem = equ.getEquipment(EquipmentSlot.Mainhand)
+                        const newItem = reduceItem(currItem, 1)
+                        equ.setEquipment(EquipmentSlot.Mainhand, newItem)
                     }
                 }
+                try {
+                    cache.setType('minecraft:fire')
+                    done()
+                } catch (e) { if (DEBUG) world.sendMessage(`[light.js] fire ${e}`) }
             })
         }
     }

@@ -52,13 +52,17 @@ export const SETTINGS = Object.freeze({
         }),
         BLOCK_INTERACTION_DELAY: 4, // tick
         FIRE_ITEM: Object.freeze({
-            "minecraft:flint_and_steel": true,
-            "minecraft:fire_charge": true,
-        }),
-        SOUND_FIRE_IGNITE: Object.freeze({
-            ID: "fire.ignite",
-            VOLUME: 1.0,
-            PITCH: [0.8, 1.2]
+            "minecraft:flint_and_steel": Object.freeze({
+                ID: "fire.ignite",
+                VOLUME: 1.0,
+                PITCH: [0.8, 1.2]
+            }),
+            "minecraft:fire_charge": Object.freeze({
+                ID: "mob.ghast.fireball",
+                VOLUME: 1.0,
+                PITCH: 1.0,
+                REDUCE_ITEM: true
+            }),
         }),
         // ---
         LIGHT_WIKI: Object.freeze({
