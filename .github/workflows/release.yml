@@ -117,7 +117,7 @@ jobs:
         if: steps.resolve.outputs.changed == 'true'
         run: node .github/scripts/set-debug.js
 
-      - name: Cache terser (local)
+      - name: Cache terser
         if: steps.resolve.outputs.changed == 'true'
         id: cache-terser
         uses: actions/cache@v4
@@ -134,10 +134,6 @@ jobs:
       - name: Minify JSON & JS (behavior_packs)
         if: steps.resolve.outputs.changed == 'true'
         run: node .github/scripts/minify.js
-
-      - name: Minify JSON & JS (resource_packs)
-        if: steps.resolve.outputs.changed == 'true'
-        run: node .github/scripts/minify.js --rp
 
       - name: Zip behavior_packs mcpack
         if: steps.resolve.outputs.changed == 'true'
@@ -169,6 +165,10 @@ jobs:
         if: steps.resolve.outputs.changed == 'true'
         working-directory: _rp
         run: node ../.github/scripts/set-debug.js --rp
+
+      - name: Minify JSON & JS (resource_packs)
+        if: steps.resolve.outputs.changed == 'true'
+        run: node .github/scripts/minify.js --rp
 
       - name: Zip resource_packs mcpack
         if: steps.resolve.outputs.changed == 'true'
