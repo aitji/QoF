@@ -76,6 +76,14 @@ const minifyJSFile = async file => {
         if (MINIFY_JS.has(ext)) {
             await minifyJSFile(file)
             jsCount++
+            continue
+        }
+
+        if (path.basename(file) === 'notes.md') {
+            const dest = path.join('.', '.dev.notes.md')
+            fs.copyFileSync(file, dest)
+            console.log(`[COPY] ${file} -> ${dest}`)
+            continue
         }
     }
 

@@ -144,7 +144,9 @@ jobs:
             -x ".github/*" \
             -x ".gitattributes" \
             -x ".gitignore" \
+            -x "gen.js" \
             -x "*.md" \
+            +x "_notes.md" \
             -x "node_modules/*"
           echo "BP_PACK=$BP_PACK" >> $GITHUB_ENV
           echo "Created: $BP_PACK"
