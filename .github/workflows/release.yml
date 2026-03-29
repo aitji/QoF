@@ -144,7 +144,8 @@ jobs:
             -x ".github/*" \
             -x ".gitattributes" \
             -x ".gitignore" \
-            -x "gen.js" \
+            -x "recipes/shaped/gen.js" \
+            -x "recipes/stonecutter/wood/gen.js" \
             -x "README.md" \
             -x "scripts/todo.md" \
             -x "node_modules/*"
