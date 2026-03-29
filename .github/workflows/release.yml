@@ -53,7 +53,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         id: check_dispatch
         run: |
-          VERSION=$(node -e "const m=require('./manifest.json'); console.log(m.header.version.join('.'));")
+          VERSION=$(node -e "const m=require('./manifest.json'); const v=m.header.version; console.log(Array.isArray(v)?v.join('.'):v);")
           PATCH=$(echo "$VERSION" | cut -d. -f3)
 
           if [ "$PATCH" -eq 0 ]; then
