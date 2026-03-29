@@ -38,10 +38,10 @@
 
 - [x] Dynamic lighting
 - [x] Repair damaged anvils
-- [x] Concrete powder hardens when it touches water `as an item`
+- [x] Concrete powder hardens when it touches water as an item entity
 - [x] Composter accepts more items
-- [x] Pick up and carry containers while keeping their contents
-- [x] Swap mainhand and offhand with a double sneak, place torches from offhand
+- [x] Pick up and carry containers while preserving their contents
+- [x] Swap mainhand and offhand with a double sneak and place torches from the offhand
 - [x] Hold harvest crops with automatic seed replanting with Hoe
 - [x] Extra mob drops
 - [x] Extra crafting and smelting recipes
@@ -76,28 +76,28 @@
   <img src=".github/img/light-banner.png" alt="Dynamic Light night walk with soul lantern" width="1080">
 </p>
 
-Held items and dropped items emit light based on their type. Light smoothly fades after the source moves away or is removed. `Burning Entity`, `Glowing Entity` and `Item frames` also contribute light based on whatever is placed inside them.
+Held and dropped items emit light based on their type. The light smoothly fades after the source moves away or is removed. `burning entities`, `glowing entities` and `item frames` also emit light based on what they contain.
 
 **How It Works:**
 
 <img src=".github/img/light-fade.gif" alt="Player picks up soul lantern in mushroom cave, light fades after drop" width="1080">
 
-> **alt-message** In a mushroom cave, a soul lantern sits on the ground emitting light. The player walks in from the right, picks it up the room goes dark. And then drop it back in the same spot, then walk away.
+> **alt-message** In a mushroom cave, a soul lantern sits on the ground emitting light. The player walks in from the right, picks it up, and the room goes dark. And then drops it back in the same spot and walks away.
 >
 > - When a player holds or drops a light-emitting item, a `qof:light_block` is placed at the relevant position each tick.
-> - When the source is gone, light steps down linearly each tick until it reaches zero, then the block is restored to air or water.
+> - When the source is gone, the light level decreases linearly each tick until it reaches zero, then the block is restored to air or water.
 
 <img src=".github/img/light-fire.gif" alt="Player shoots flame arrows into targets, picks up arrow, walks away" width="1080">
 
 > **alt-message** A flaming arrow is fired into a target block. While the arrow is burning, it emits light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
 >
-> - Nearby glowing entities or burning entities also emit light passively.
+> - Nearby glowing or burning entities also emit light passively.
 
 <img src=".github/img/light-water.gif" alt="Player holds conduit while swimming in ocean, light visible underwater" width="1080">
 
-> **alt-message** In the open ocean, the player boats while holding a lantern making the water surface glow below. They stop, jump in, switch to a conduit, and swim deeper. The `qof:light_block` is placed inside the water itself, illuminating the seafloor and kelp.
+> **alt-message** In the open ocean, the player rows a boat while holding a lantern, making the water surface glow below. They stop, jump in, switch to a conduit, and swim deeper. The `qof:light_block` is placed inside the water itself, illuminating the seafloor and kelp.
 >
-> - Some items are prevented from emitting light underwater
+> - Some items are prevented from emitting light underwater.
 
 <div align="center">
 
@@ -122,7 +122,7 @@ Held items and dropped items emit light based on their type. Light smoothly fade
 </div>
 
 <details>
-  <summary><strong>Items that Emit the Light</strong></summary>
+  <summary><strong>Items That Emit Light</strong></summary>
   <div align="center">
 
 | Item                           | Light Level                               |
@@ -190,7 +190,7 @@ Held items and dropped items emit light based on their type. Light smoothly fade
 </details>
 
 <details>
-  <summary><strong>Entities that Emit the Light</strong></summary>
+  <summary><strong>Entities That Emit The Light</strong></summary>
   <div align="center">
 
 | Entity     | Light Level |
@@ -240,12 +240,12 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 
 ### Wet Concrete Powder
 
-Concrete powder items automatically convert to concrete when they enter water. The conversion happens after a short delay proportional to the stack size, and the resulting concrete item inherits the original item's velocity.
+Concrete powder items automatically convert to concrete when they enter water. The conversion happens after a short delay that scales with the stack size, and the resulting concrete item inherits the original velocity.
 
 **How It Works:**
 
 1. When a concrete powder item entity spawns, QoF begins tracking it.
-2. Once it enters water, a timer starts. Larger stacks wait slightly longer.
+2. Once the item enters water, a timer starts. Larger stacks wait slightly longer.
 3. After the timer expires, the powder entity is removed and a concrete item entity is spawned in its place.
 4. A particle and sound effect play on conversion.
 
@@ -386,13 +386,13 @@ Allows players to pick up chests and other containers while preserving their con
 - [x] Jumping is disabled by default (configurable).
 - [x] Jumping in water or lava can be allowed independently.
 - [x] Climbing scaffolding and ladders can be allowed independently.
-- [x] Creative mode players are exempt from jump restrictions.
+- [x] Players in Creative mode are exempt from jump restrictions.
 
-Full Carry Flow
+Full Carry Example
 
 <img src=".github/img/chest-flow.gif" alt="Player puts cod in barrel, picks it up, walks to composter area, places barrel on hopper" width="1080">
 
-> **alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene, slowness visible, and place it on top of a hopper. The barrel lands with its contents intact.
+> **alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene, with slowness visible, and place it on top of a hopper. The barrel lands with its contents intact.
 
 #### Slowness and Double Chest
 
@@ -401,7 +401,7 @@ Full Carry Flow
 > **alt-message** The player runs in, picks up a chest next to a black sheep, then visibly slows down while carrying it. They walk to a second chest and place theirs beside it, forming a double chest. Contents from both halves are preserved.
 
 > [!WARNING]
-> ~~Double chest support is partially implemented. Picking up one half of a double chest will attempt to preserve both halves, but edge cases may result in item loss. Always **back up world** before transferring the important chests before carrying them.~~ 100% working. It has been extensively tested.
+> ~~Double chest support is partially implemented. Picking up one half of a double chest will attempt to preserve both halves, but edge cases may result in item loss. Always **back up world** before carrying important chests carrying them.~~ 100% working. It has been extensively tested.
 
 <details>
   <summary><strong>Supported Containers</strong></summary>
@@ -480,12 +480,12 @@ Allows players to double-sneak to swap items between their mainhand and offhand.
   <!-- todo: @pickerth-12 replace to real image/gif: "offhand-swap.gif.png" -aitji -->
 </p>
 
-Allows players to harvest fully grown crops by right-clicking while holding any hoe. Seeds are automatically replanted after harvest. The hoe loses durability on each harvest to balance the automation.
+Allows players to harvest fully grown crops by right-clicking while holding any hoe. Seeds are automatically replanted after harvesting. The hoe loses durability on each harvest to balance the automation.
 
 **How It Works:**
 
 - Hold any hoe and interact with a fully grown crop to harvest it.
-- Seeds are automatically replanted in the same spot.
+- Seeds are automatically replanted in the same location.
 - If seeds drop on the ground and the player has none in inventory, dropped seeds used for replanting are reduced by 1, with a `40 gametick` delay before the player can pick them up.
 - Hoe durability loss follows the vanilla formula:
 
@@ -511,7 +511,7 @@ where `level` is the hoe's `Unbreaking` enchantment level.
   beef: banner showing the 4 mobs -aitji -->
 </p>
 
-Adds drops to previously loot-less mobs, making them more rewarding to farm.
+Adds drops to previously mobs without loot, making them more rewarding to farm.
 
 #### Loot Showcase
 
@@ -633,7 +633,7 @@ beef: **alt-message** The player opens a blast furnace and smelts sand into glas
 
 **Stonecutter (Wood)**
 
-All 11 wood types (Acacia, Birch, Cherry, Crimson, Dark Oak, Jungle, Mangrove, Oak, Pale Oak, Spruce, Warped) can be cut in the Stonecutter.
+All 11 wood types (Acacia, Birch, Cherry, Crimson, Dark Oak, Jungle, Mangrove, Oak, Pale Oak, Spruce, Warped) can be processed in the Stonecutter.
 
 <details>
   <summary><strong>Wood Material Inputs</strong></summary>
@@ -747,7 +747,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 **Dynamic Light**
 
-- `Limitations` Light blocks are placed in air or liquid only. Solid blocks are never replaced, which can cause light gaps in tight or enclosed spaces.
+- `Limitations` Light blocks are placed only in air or liquid. Solid blocks are never replaced, which can cause light gaps in tight or enclosed spaces.
 - `Limitations` Armor stands do not support the equippable component in the current API. Items held by armor stands do not emit dynamic light. Only item frames are supported for static placed sources.
 - Very high render radius or sources-per-player values will increase tick time noticeably. Keep defaults unless your world has very few active players.
 
