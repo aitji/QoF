@@ -2,10 +2,9 @@ name: Auto Release!
 
 on:
   push:
-    branches:
-      - behavior_packs
-    paths:
-      - manifest.json
+    branches: [behavior_packs]
+    paths: [manifest.json]
+  workflow_dispatch:
 
 jobs:
   release:
@@ -47,7 +46,7 @@ jobs:
         run: node .github/scripts/check-version.js
 
       - name: Read changelogs
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         id: changelogs
         run: |
           VERSION="${{ steps.check.outputs.version_string }}"
@@ -72,11 +71,11 @@ jobs:
           echo "has_changelogs=true" >> $GITHUB_OUTPUT
 
       - name: Set DEBUG to false (behavior_packs)
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         run: node .github/scripts/set-debug.js
 
       - name: Zip behavior_packs mcpack
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           BP_PACK="QoF_v${{ steps.check.outputs.version_string }}_behavior_packs.mcpack"
           zip -r "$BP_PACK" . \
@@ -90,24 +89,24 @@ jobs:
           echo "Created: $BP_PACK"
 
       - name: Checkout resource_packs branch
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         uses: actions/checkout@v4
         with:
           ref: resource_packs
           path: _rp
 
       - name: Read resource_packs version
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         id: rp_version
         run: node .github/scripts/read-manifest.js _rp/manifest.json
 
       - name: Set DEBUG to false (resource_packs)
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         working-directory: _rp
         run: node ../.github/scripts/set-debug.js --rp
 
       - name: Zip resource_packs mcpack
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           RP_PACK="QoF_v${{ steps.rp_version.outputs.rp_version }}_resource_packs.mcpack"
           zip -r "$RP_PACK" _rp/. \
@@ -116,17 +115,21 @@ jobs:
             -x "*/.gitignore" \
             -x "*/*.md"
           echo "RP_PACK=$RP_PACK" >> $GITHUB_ENV
-          echo "Created: $RP_PACK"
 
       - name: Bundle into .mcaddon
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           ADDON_NAME="${{ steps.check.outputs.pack_name }}"
           zip "$ADDON_NAME" "$BP_PACK" "$RP_PACK"
-          echo "Created: $ADDON_NAME"
+
+      - name: Delete existing tag (if rerun)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git tag -d "v${{ steps.check.outputs.version_string }}" || true
+          git push origin ":refs/tags/v${{ steps.check.outputs.version_string }}" || true
 
       - name: Create GitHub Release (with changelogs)
-        if: steps.check.outputs.changed == 'true' && steps.changelogs.outputs.has_changelogs == 'true'
+        if: (steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.changelogs.outputs.has_changelogs == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v${{ steps.check.outputs.version_string }}"
@@ -137,7 +140,7 @@ jobs:
           generate_release_notes: false
 
       - name: Create GitHub Release (auto notes)
-        if: steps.check.outputs.changed == 'true' && steps.changelogs.outputs.has_changelogs == 'false'
+        if: (steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.changelogs.outputs.has_changelogs == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v${{ steps.check.outputs.version_string }}"
