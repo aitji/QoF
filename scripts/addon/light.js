@@ -1,5 +1,5 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, EntityComponentTypes, Player, PlayerInteractWithBlockBeforeEvent, ItemComponentTypes, EntityEquippableComponent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity } from "@minecraft/server"
-import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, RUNTIME, setEqu, sumLoc } from "../lib"
+import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, roundLoc, RUNTIME, setEqu, sumLoc } from "../lib"
 const { DEBUG, BLOCKFACE_TO_DIR, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR, FAIL_PARTICLE, PARTICLE_OFFSET, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, BLOCK_INTERACTION_DELAY, SOUND_FAIL, FAIL_SOUND_INTERVAL, FIRE_ITEM } } = RUNTIME
 export const isFrame = (b) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
@@ -23,7 +23,11 @@ const getItemLight = (id, en, tick) => {
     if (!found) return 0
 
     if (found?.inLiquid !== undefined) {
-        if (found.inLiquid === en.isInWater) return found.light || 0
+        const block = en.dimension.getBlock(roundLoc(en.location, 'floor')).above(1)
+        const check = en.isSwimming
+            ? en.isInWater
+            : block?.isLiquid || block?.isWaterlogged
+        if (found.inLiquid === check) return found.light || 0
         const loc = en.location
         if (found.inLiquid === false && tick % FAIL_SOUND_INTERVAL === 0) {
             const dim = en.dimension
