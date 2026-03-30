@@ -177,7 +177,7 @@ jobs:
         if: steps.resolve.outputs.changed == 'true'
         run: |
           RP_PACK="QoF_v${{ steps.rp_version.outputs.rp_version }}_resource_packs.mcpack"
-          zip -r "$RP_PACK" _rp/. \
+          cd _rp && zip -r "../$RP_PACK" . \
             -x "*/.git*" \
             -x "*/.gitattributes" \
             -x "*/.gitignore" \
