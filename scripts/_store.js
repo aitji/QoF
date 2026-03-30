@@ -128,7 +128,6 @@ function buildRuntime() {
             DOUBLE_SNEAK_WINDOW_MOBILE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE", OH.DOUBLE_SNEAK_WINDOW_MOBILE),
             DOUBLE_SNEAK_WINDOW_CONSOLE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_CONSOLE", OH.DOUBLE_SNEAK_WINDOW_CONSOLE),
             DOUBLE_SNEAK_WINDOW_DEFAULT: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT", OH.DOUBLE_SNEAK_WINDOW_DEFAULT),
-            // need more customization
 
             // static
             FACE_TO_TORCH_DIR: OH.FACE_TO_TORCH_DIR,
@@ -145,7 +144,6 @@ function buildRuntime() {
             ENABLED: g("qof:HARVEST.ENABLED", CR.ENABLED),
             LOSS_SEED: g("qof:HARVEST.LOSS_SEED", CR.LOSS_SEED),
             DURABILITY: g("qof:HARVEST.DURABILITY", CR.DURABILITY),
-            // need more customization
 
             // static
             PLANT_LEVEL: CR.PLANT_LEVEL,

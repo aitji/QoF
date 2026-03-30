@@ -34,8 +34,8 @@ export const SETTINGS = Object.freeze({
         /** @type {Readonly<{[k: string]: Readonly<{asBlock: string; pot: string}>}>} */
         SEEDTOBLOCK: Object.freeze({
             'minecraft:wheat_seeds': Object.freeze({ asBlock: 'minecraft:wheat', pot: 'minecraft:farmland', sound: 'nature' }),
-            'minecraft:carrots': Object.freeze({ asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' }),
-            'minecraft:potatoes': Object.freeze({ asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' }),
+            'minecraft:carrot': Object.freeze({ asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' }),
+            'minecraft:potato': Object.freeze({ asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' }),
             'minecraft:beetroot_seeds': Object.freeze({ asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' }),
             'minecraft:nether_wart': Object.freeze({ asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' }),
         }),
@@ -507,7 +507,6 @@ export const SETTINGS = Object.freeze({
 
             "minecraft:redstone": true,
             "minecraft:redstone_torch": true,
-            // maybe add more :?
         })
     }),
     HARVEST: Object.freeze({
@@ -515,7 +514,6 @@ export const SETTINGS = Object.freeze({
         LOSS_SEED: true,
         DURABILITY: true,
 
-        // only hoe for now...
         PLANT_LEVEL: Object.freeze({
             "minecraft:wheat": Object.freeze({ level: 7, seed: "minecraft:wheat_seeds" }),
             "minecraft:carrots": Object.freeze({ level: 7, seed: "minecraft:carrot" }),

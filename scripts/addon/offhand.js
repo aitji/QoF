@@ -1,4 +1,4 @@
-import { Block, BlockComponentTypes, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
+import { Block, BlockComponentTypes, BlockPermutation, Difficulty, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
 import { checkRandom, getDistance, getEqu, RUNTIME, setEqu } from "../lib"
 const { DEBUG, CARRIED_CHEST, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT } } = RUNTIME
 
@@ -129,12 +129,32 @@ const delay = {}
  * @returns 
  */
 export const offhand_playerInteractWithBlock = (data) => {
-    const { player, block, blockFace, isFirstEvent } = data
+    const { player, block, blockFace, isFirstEvent, itemStack } = data
+    const creative = player.matches({ gameMode: GameMode.Creative })
     if (!isFirstEvent) {
         const playerDelay = delay[player.id] || 0
         if (playerDelay > system.currentTick) return
     }
     delay[player.id] = system.currentTick + BLOCK_INTERACTION_DELAY
+
+    if (itemStack) {
+        const food = itemStack.getComponent(ItemComponentTypes.Food)
+        const hunger = player.getComponent(EntityComponentTypes.Hunger)
+
+        // eating food main hand
+        if (
+            creative ||
+            food?.canAlwaysEat ||
+            world.getDifficulty() === Difficulty.Peaceful ||
+            hunger.currentValue < hunger.defaultValue
+        ) return
+
+        // shovel/hoe
+        if (
+            block && block?.hasTag('dirt') &&
+            itemStack && (itemStack.hasTag('minecraft:is_shovel') || itemStack.hasTag('minecraft:is_hoe'))
+        ) return
+    }
 
     const equ = player.getComponent(EntityComponentTypes.Equippable)
     const offhandItem = equ.getEquipment(EquipmentSlot.Offhand)
@@ -147,7 +167,7 @@ export const offhand_playerInteractWithBlock = (data) => {
                 pitch: checkRandom(PLACE_SOUND.PITCH)
             })
 
-            if (player.matches({ gameMode: GameMode.Creative })) return
+            if (creative) return
             if (offhandItem.amount <= 1) equ.setEquipment(EquipmentSlot.Offhand, undefined)
             else player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${offhandItem.typeId} ${offhandItem.amount - 1}`)
         } catch (e) { if (DEBUG) console.warn('[OFFHAND] unknown case:', e) }
