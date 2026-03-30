@@ -3,6 +3,7 @@ import { RUNTIME } from "./_store"
 import * as helper from "./_helper"
 
 import * as light from "./addon/light"
+import * as light_patcher from "./addon/light_patcher"
 import * as anvil from "./addon/anvil"
 import * as powder from "./addon/powder_concrete"
 import * as composter from "./addon/composter"
@@ -10,7 +11,7 @@ import * as chest from "./addon/chest"
 import * as offhand from "./addon/offhand"
 import * as harvest from "./addon/harvest"
 
-// helper (mostly debug)
+// helper (mostly debug) ---
 /** @type {ScoreboardObjective} */
 let dyp
 const score = (k, v) => { try { dyp.setScore(k, v) } catch { dyp.addScore(k, v) } }
@@ -19,8 +20,9 @@ const score = (k, v) => { try { dyp.setScore(k, v) } catch { dyp.addScore(k, v) 
 // tick
 system.run(() => {
     world.scoreboard.getObjective("aitjilib").setScore("api", 1) // heartbeat beta-api checker (use in mcfunction)
-
     const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
+
+    // (DEBUG) ignore this ---
     if (DISABLED_COMMANDFEEDBACK) world.gameRules.sendCommandFeedback = false
     if (DEBUG) {
         system.beforeEvents.watchdogTerminate.subscribe((d) => {
@@ -31,15 +33,11 @@ system.run(() => {
             world.sendMessage(msg)
         })
 
-        dyp = world.scoreboard.getObjective('dyp')
-        if (!dyp) dyp = world.scoreboard.addObjective('dyp', 'Dynamic Props')
-        world.scoreboard.setObjectiveAtDisplaySlot(DisplaySlotId.Sidebar, { objective: dyp })
-
         world.sendMessage('§7qof loaded')
         world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n')}`)
     }
+    // ---
 
-    // interval
     const { LIGHT, WET_POWDER_CONCRETE, CARRIED_CHEST, COMPOSTER } = RUNTIME
     system.runInterval(() => {
         const tick = system.currentTick
@@ -58,6 +56,8 @@ system.run(() => {
             offhand.offhand_player(player, tick)
         }
 
+
+        // (DEBUG) ignore this ---
         if (DEBUG) { // show dyp
             world.scoreboard.removeObjective("dyp")
             dyp = world.scoreboard.addObjective("dyp", "Dynamic Props")
@@ -65,24 +65,15 @@ system.run(() => {
 
             const ids = world.getDynamicPropertyIds()
             const bytes = world.getDynamicPropertyTotalByteCount()
-
             score("§eTotal props", ids.length)
             score("§eTotal bytes", bytes)
 
             for (const id of ids) {
                 const val = world.getDynamicProperty(id)
-                const display = `§7${id.slice(0, 16)}`
-
-                score(
-                    display,
-                    typeof val === "number" ? val
-                        : typeof val === "boolean" ? (val ? 1 : 0)
-                            : typeof val === "string" ? val.length
-                                : typeof val === "object" ? 1
-                                    : -1
-                )
+                score(`§7${id.slice(0, 16)}`, typeof val === "number" ? val : typeof val === "boolean" ? (val ? 1 : 0) : typeof val === "string" ? val.length : typeof val === "object" ? 1 : -1)
             }
         }
+        // ---
     }, RUNTIME.INTERVAL_DELAY)
 })
 
@@ -118,7 +109,7 @@ world.beforeEvents.playerBreakBlock.subscribe(data => {
     if (RUNTIME.HARVEST.ENABLED) harvest.harvest_playerBreakBlock(data)
 })
 world.beforeEvents.playerInteractWithBlock.subscribe(data => {
-    if (RUNTIME.LIGHT.ENABLED) light.light_playerInteractWithBlock(data)
+    if (RUNTIME.LIGHT.ENABLED) light_patcher.light_playerInteractWithBlock(data) // patcher
     if (RUNTIME.REPAIR_ANVIL.ENABLED) anvil.anvil_playerInteractWithBlock(data)
     if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
     if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
