@@ -748,6 +748,9 @@ This project is licensed under the [MIT License](LICENSE).
 
 All gameplay footage, images, and GIFs were recorded using [Vibrant Visual](https://www.minecraft.net/en-us/vibrant-visuals-update) and [Action And Stuff](https://www.minecraft.net/en-us/article/let-s-play--actions---stuff).
 
+LLMs were used to assist with wording and grammar in this documentation.\
+English is not our native language. Thank you for your understanding!
+
 ## Credits
 
 - @aitji scripting & design
