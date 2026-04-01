@@ -1,4 +1,4 @@
-import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player } from "@minecraft/server"
+import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player, GameMode } from "@minecraft/server"
 import { applyItemDamage, reduceItem, RUNTIME, helper } from "../lib"
 const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY } } = RUNTIME
 
@@ -6,6 +6,7 @@ const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY } } = RUNTIME
 export const harvest_playerBreakBlock = (data) => {
     const { player, itemStack, block } = data
     if (!itemStack) return
+    if (player.matches({ gameMode: GameMode.Creative })) return
 
     if (itemStack.typeId.endsWith("_hoe")) {
         const equippable = player.getComponent(EntityComponentTypes.Equippable)
