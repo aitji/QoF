@@ -765,12 +765,12 @@ Made by (aitji & pickerth-12)
 
   README INFO
 Version: v1.3.0
-Last updated: 29 Mar 2026
-Has README Update: True
+Last updated: 2 Apr 2026
+Has README Update: False
 
   PACK INFO
 Last Release: v1.3.0
-Last Pre-Release: v1.3.0
-Minecraft: 26.0 ... 26.10
-Dependencies: ^2.7.0-beta.1.26.10-stable
+Last Pre-Release: v1.3.2
+Last Minecraft Version: 26.12
+Used Dependencies: ^2.7.0-beta.1.26.10-stable
 ```
