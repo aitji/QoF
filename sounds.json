@@ -1,6 +1,27 @@
 {
-    "format_version": "1.21.40",
-    "qof:light_block": {
-        "sound": "null"
+    "block_sounds": {
+        "qof:null": {
+            "pitch": 1,
+            "volume": 1,
+            "events": {
+                "break": "null",
+                "hit": "null",
+                "place": "null"
+            }
+        }
+    },
+    "interactive_sounds": {
+        "block_sounds": {
+            "qof:null": {
+                "pitch": 1,
+                "volume": 1,
+                "events": {
+                    "fall": "null",
+                    "jump": "null",
+                    "step": "null",
+                    "land": "null"
+                }
+            }
+        }
     }
 }
