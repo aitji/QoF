@@ -36,152 +36,168 @@ export const light_playerInteractWithBlock = (data) => {
         return isLight(above)
     }
 
-    if (block.hasTag('dirt')) {
-        if (!isAboveLight()) return
-        system.run(() => {
-            tick++
-            let toolUsed = false
-            if (itemStack?.hasTag('minecraft:is_shovel')) {
-                switch (block?.typeId ?? '') {
-                    case 'minecraft:grass_path':
-                    case 'minecraft:farmland':
-                        return
-                    default: break
+    const dirtTypeCheck = () => {
+        if (block.hasTag('dirt')) {
+            if (!isAboveLight()) return
+            system.run(() => {
+                tick++
+                let toolUsed = false
+                if (itemStack?.hasTag('minecraft:is_shovel')) {
+                    switch (block?.typeId ?? '') {
+                        case 'minecraft:grass_path':
+                        case 'minecraft:farmland':
+                            return
+                        default: break
+                    }
+
+                    suppressLight(above, false, true, false, tick)
+                    block.setPermutation(GRASS_PATH)
+                    toolUsed = true
+
+                    dimension.playSound(SOUND_SHOVEL_USE.ID, block.center(), {
+                        volume: checkRandom(SOUND_SHOVEL_USE.VOLUME),
+                        pitch: checkRandom(SOUND_SHOVEL_USE.PITCH)
+                    })
+                }
+                if (itemStack?.hasTag('minecraft:is_hoe')) {
+                    switch (block?.typeId ?? '') {
+                        case 'minecraft:farmland':
+                        case 'minecraft:podzol':
+                        case 'minecraft:mycelium':
+                            return
+
+                        case 'minecraft:dirt_with_roots':
+                            const root = dimension.spawnItem(HANGING_ROOTS, block.center())
+                            pickupCooldown(root, 15)
+                            block.setPermutation(DIRT)
+                            break
+                        case 'minecraft:coarse_dirt':
+                            block.setPermutation(DIRT)
+                            break
+                        default:
+                            block.setPermutation(FARMLAND)
+                            break
+                    }
+
+                    toolUsed = true
+                    dimension.playSound(SOUND_HOE_USE.ID, block.center(), {
+                        volume: checkRandom(SOUND_HOE_USE.VOLUME),
+                        pitch: checkRandom(SOUND_HOE_USE.PITCH)
+                    })
                 }
 
-                suppressLight(above, false, true, false, tick)
-                block.setPermutation(GRASS_PATH)
-                toolUsed = true
-
-                dimension.playSound(SOUND_SHOVEL_USE.ID, block.center(), {
-                    volume: checkRandom(SOUND_SHOVEL_USE.VOLUME),
-                    pitch: checkRandom(SOUND_SHOVEL_USE.PITCH)
-                })
-            }
-            if (itemStack?.hasTag('minecraft:is_hoe')) {
-                switch (block?.typeId ?? '') {
-                    case 'minecraft:farmland':
-                    case 'minecraft:podzol':
-                    case 'minecraft:mycelium':
-                        return
-
-                    case 'minecraft:dirt_with_roots':
-                        const root = dimension.spawnItem(HANGING_ROOTS, block.center())
-                        pickupCooldown(root, 15)
-                        block.setPermutation(DIRT)
-                        break
-                    case 'minecraft:coarse_dirt':
-                        block.setPermutation(DIRT)
-                        break
-                    default:
-                        block.setPermutation(FARMLAND)
-                        break
+                // all logic
+                if (toolUsed && !player.matches({ gameMode: GameMode.Creative })) {
+                    const { changed, item } = applyItemDamage(player, itemStack)
+                    if (changed) {
+                        const equ = getEqu(player)
+                        equ.setEquipment(EquipmentSlot.Mainhand, item)
+                    }
                 }
-
-                toolUsed = true
-                dimension.playSound(SOUND_HOE_USE.ID, block.center(), {
-                    volume: checkRandom(SOUND_HOE_USE.VOLUME),
-                    pitch: checkRandom(SOUND_HOE_USE.PITCH)
-                })
-            }
-
-            // all logic
-            if (toolUsed && !player.matches({ gameMode: GameMode.Creative })) {
-                const { changed, item } = applyItemDamage(player, itemStack)
-                if (changed) {
-                    const equ = getEqu(player)
-                    equ.setEquipment(EquipmentSlot.Mainhand, item)
-                }
-            }
-        })
+            })
+        }
     }
+    dirtTypeCheck()
 
     // farmland
-    const blockType = block.typeId
-    if (FARMLAND_BLOCK[blockType]) {
-        if (!isAboveLight()) return
-        const raw = SEEDTOBLOCK[itemStack?.typeId || '']
-        if (!raw) return
-        const { asBlock, pot, sound } = raw
+    const farmlandCheck = () => {
+        const blockType = block.typeId
+        if (FARMLAND_BLOCK[blockType]) {
+            if (!isAboveLight()) return
+            const raw = SEEDTOBLOCK[itemStack?.typeId || '']
+            if (!raw) return
+            const { asBlock, pot, sound } = raw
 
-        if (pot === blockType) {
-            const isCreative = player.matches({ gameMode: GameMode.Creative })
-            const playSound = () => {
-                // if (DEBUG) world.sendMessage(`sound=${sound}`)
-                const center = block.center()
-                switch (sound) {
-                    // make sound config-able
-                    case 'nature': return dimension.playSound('place.grass', center, {
-                        volume: 0.8,
-                        pitch: checkRandom([0.8, 1])
-                    })
-                    case 'nether': return dimension.playSound('dig.nether_wart', center, {
-                        volume: 0.7,
-                        pitch: checkRandom([0.8, 1])
-                    })
-                    default:
-                        if (DEBUG) world.sendMessage(`${sound} is invaild`)
-                        return
+            if (pot === blockType) {
+                const isCreative = player.matches({ gameMode: GameMode.Creative })
+                const playSound = () => {
+                    // if (DEBUG) world.sendMessage(`sound=${sound}`)
+                    const center = block.center()
+                    switch (sound) {
+                        // make sound config-able
+                        case 'nature': return dimension.playSound('place.grass', center, {
+                            volume: 0.8,
+                            pitch: checkRandom([0.8, 1])
+                        })
+                        case 'nether': return dimension.playSound('dig.nether_wart', center, {
+                            volume: 0.7,
+                            pitch: checkRandom([0.8, 1])
+                        })
+                        default:
+                            if (DEBUG) world.sendMessage(`${sound} is invaild`)
+                            return
+                    }
+
                 }
 
-            }
-
-            let scam = false
-            system.run(() => {
-                try {
-                    above.setType(asBlock)
-                    playSound()
-                    if (!isCreative) scam = setEqu(player, reduceItem(itemStack))
-                } catch {
+                let scam = false
+                system.run(() => {
                     try {
-                        above.setPermutation(BlockPermutation.resolve(asBlock))
+                        above.setType(asBlock)
                         playSound()
                         if (!isCreative) scam = setEqu(player, reduceItem(itemStack))
                     } catch {
-                        const command = above.dimension.runCommand(`setblock ${above.x} ${above.y} ${above.z} ${asBlock}`)
-                        if (command.successCount <= 0 && scam && !isCreative) reduceItem(itemStack, -1, player) // give item back
+                        try {
+                            above.setPermutation(BlockPermutation.resolve(asBlock))
+                            playSound()
+                            if (!isCreative) scam = setEqu(player, reduceItem(itemStack))
+                        } catch {
+                            const command = above.dimension.runCommand(`setblock ${above.x} ${above.y} ${above.z} ${asBlock}`)
+                            if (command.successCount <= 0 && scam && !isCreative) reduceItem(itemStack, -1, player) // give item back
+                        }
                     }
-                }
-            })
+                })
+            }
+        }
+    }
+    farmlandCheck()
+
+    // flint and steal + fire charge
+    const fireCheck = () => {
+        const itemType = itemStack.typeId
+        const fireSound = FIRE_ITEM[itemType]
+        if (fireSound) {
+            /** @type {Block} */
+            const cache = block[BLOCKFACE_TO_DIR[blockFace]](1)
+            if (isLight(cache)) {
+                suppressLight(cache, false, false, false, tick)
+                const equ = getEqu(player)
+                const slot = player.selectedSlotIndex
+                system.run(() => {
+                    if (player.selectedSlotIndex !== slot) {
+                        if (DEBUG) world.sendMessage(`selectedSlotIndex!==slot ; ${player.selectedSlotIndex} !== ${slot}`)
+                        player.selectedSlotIndex = slot
+                    }
+                    const dim = cache.dimension
+                    const done = () => {
+                        // minecraft alr handle damage
+                        // const { item, changed } = applyItemDamage(player, equ)
+                        // if (changed) setEqu(player, item, "Mainhand", true)
+                        dim.playSound(fireSound.ID, cache.center(), {
+                            pitch: checkRandom(fireSound.PITCH),
+                            volume: checkRandom(fireSound.VOLUME)
+                        })
+                        if (fireSound.REDUCE_ITEM) {
+                            const equ = getEqu(player)
+                            const currItem = equ.getEquipment(EquipmentSlot.Mainhand)
+                            const newItem = reduceItem(currItem, 1)
+                            equ.setEquipment(EquipmentSlot.Mainhand, newItem)
+                        }
+                    }
+                    try {
+                        const below = cache.below(1)
+                        if (
+                            below.isSolid &&
+                            (cache.permutation.matches('minecraft:air') || cache.permutation.matches(LIGHT_BLOCK))
+                        ) {
+                            cache.setType('minecraft:fire')
+                            done()
+                        }
+                    } catch (e) { if (DEBUG) world.sendMessage(`[offhand.js] fire ${e}`) }
+                })
+            }
         }
     }
 
-    // flint and steal + fire charge
-    const itemType = itemStack.typeId
-    const fireSound = FIRE_ITEM[itemType]
-    if (fireSound) {
-        /** @type {Block} */
-        const cache = block[BLOCKFACE_TO_DIR[blockFace]](1)
-        if (isLight(cache)) {
-            suppressLight(cache, false, false, false, tick)
-            const equ = getEqu(player)
-            const slot = player.selectedSlotIndex
-            system.run(() => {
-                if (player.selectedSlotIndex !== slot) {
-                    if (DEBUG) world.sendMessage(`selectedSlotIndex!==slot ; ${player.selectedSlotIndex} !== ${slot}`)
-                    player.selectedSlotIndex = slot
-                }
-                const dim = cache.dimension
-                const done = () => {
-                    // minecraft alr handle damage
-                    // const { item, changed } = applyItemDamage(player, equ)
-                    // if (changed) setEqu(player, item, "Mainhand", true)
-                    dim.playSound(fireSound.ID, cache.center(), {
-                        pitch: checkRandom(fireSound.PITCH),
-                        volume: checkRandom(fireSound.VOLUME)
-                    })
-                    if (fireSound.REDUCE_ITEM) {
-                        const equ = getEqu(player)
-                        const currItem = equ.getEquipment(EquipmentSlot.Mainhand)
-                        const newItem = reduceItem(currItem, 1)
-                        equ.setEquipment(EquipmentSlot.Mainhand, newItem)
-                    }
-                }
-                try {
-                    cache.setType('minecraft:fire')
-                    done()
-                } catch (e) { if (DEBUG) world.sendMessage(`[light.js] fire ${e}`) }
-            })
-        }
-    }
+    fireCheck()
 }

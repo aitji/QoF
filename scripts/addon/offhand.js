@@ -1,5 +1,5 @@
 import { Block, BlockComponentTypes, BlockPermutation, Difficulty, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, PlayerInteractWithEntityBeforeEvent, system, world } from "@minecraft/server"
-import { checkRandom, getDistance, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
+import { applyItemDamage, checkRandom, getDistance, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
 import { suppressLight } from "./light"
 const { DEBUG, CARRIED_CHEST, BLOCKFACE_TO_DIR, LIGHT: { FIRE_ITEM, LIGHT_BLOCK }, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM } } = RUNTIME
 
@@ -201,7 +201,7 @@ const fireHandle = (data) => {
 
     // fix vanilla consumed wired durability
     if (
-        cache && cache.permutation.matches('minecraft:fire') &&
+        cache && (cache.permutation.matches('minecraft:fire') || cache.permutation.matches('minecraft:soul_fire')) &&
         itemStack && itemStack.typeId === 'minecraft:flint_and_steel'
     ) data.cancel = true
 
@@ -212,27 +212,37 @@ const fireHandle = (data) => {
     if (fireSound) {
         /** @type {Block} */
         if (isLight(cache)) suppressLight(cache, false, false, false, tick)
-        if (cache && cache.permutation.matches('minecraft:fire')) return
+        if (cache && (cache.permutation.matches('minecraft:fire') || cache.permutation.matches('minecraft:soul_fire'))) return
         system.run(() => {
             const dim = cache.dimension
             const done = () => {
-                // minecraft alr handle damage
-                // const { item, changed } = applyItemDamage(player, equ)
-                // if (changed) setEqu(player, item, "Offhand", true)
-                dim.playSound(fireSound.ID, cache.center(), {
-                    pitch: checkRandom(fireSound.PITCH),
-                    volume: checkRandom(fireSound.VOLUME)
-                })
                 if (fireSound.REDUCE_ITEM) {
-                    const equ = getEqu(player)
-                    const currItem = equ.getEquipment(EquipmentSlot.Offhand)
-                    const newItem = reduceItem(currItem, 1)
-                    equ.setEquipment(EquipmentSlot.Offhand, newItem)
+                    // const currItem = equ.getEquipment(EquipmentSlot.Offhand)
+                    // const newItem = reduceItem(currItem, 1)
+                    // equ.setEquipment(EquipmentSlot.Offhand, newItem)
+                    player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${offhandItem.typeId} ${offhandItem.amount - 1}`)
+                } else {
+                    const { item, changed } = applyItemDamage(player, offhandItem)
+                    // if (changed) setEqu(player, item, "Offhand", true)
+                    if (changed) {
+                        const dmg = offhandItem.getComponent(ItemComponentTypes.Durability)?.damage
+                        player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${offhandItem.typeId} ${offhandItem.amount} ${dmg ?? 0}`)
+                    }
+                    dim.playSound(fireSound.ID, cache.center(), {
+                        pitch: checkRandom(fireSound.PITCH),
+                        volume: checkRandom(fireSound.VOLUME)
+                    })
                 }
             }
             try {
-                cache.setType('minecraft:fire')
-                done()
+                const below = cache.below(1)
+                if (
+                    below.isSolid &&
+                    (cache.permutation.matches('minecraft:air') || cache.permutation.matches(LIGHT_BLOCK))
+                ) {
+                    cache.setType('minecraft:fire')
+                    done()
+                }
             } catch (e) { if (DEBUG) world.sendMessage(`[offhand.js] fire ${e}`) }
         })
     }

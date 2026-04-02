@@ -141,7 +141,7 @@ export const getInv = (entity) => entity.getComponent(EntityComponentTypes.Inven
  * @returns {Boolean} is success?
  */
 export const setEqu = (entity, itemStack = undefined, slot = EquipmentSlot.Mainhand, ignoreCreative = false) => {
-    if (ignoreCreative && entity instanceof Player && entity.matches(GameMode.Creative)) return
+    if (ignoreCreative && entity instanceof Player && entity.matches({ gameMode: GameMode.Creative })) return
 
     try {
         const equ = getEqu(entity)
