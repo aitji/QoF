@@ -340,6 +340,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:magma_cream': 0.65,
             'minecraft:slime_ball': 0.65,
             'minecraft:ghast_tear': 0.5,
+            'minecraft:spider_eye': 0.65,
             'minecraft:fermented_spider_eye': 0.85,
             'minecraft:dried_ghast': 0.85,
 
@@ -506,7 +507,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:purple_bundle',
             'minecraft:white_bundle',
             'minecraft:yellow_bundle',
-        
+
             // shulker_box
             'minecraft:undyed_shulker_box',
             'minecraft:black_shulker_box',
@@ -525,13 +526,13 @@ export const SETTINGS = Object.freeze({
             'minecraft:purple_shulker_box',
             'minecraft:white_shulker_box',
             'minecraft:yellow_shulker_box',
-        
+
             // potions
             'minecraft:potion',
             'minecraft:lingering_potion',
             'minecraft:splash_potion',
             'minecraft:ominous_bottle',
-        
+
             // dyeable leathers
             'minecraft:leather_horse_armor',
             'minecraft:leather_helmet',
@@ -595,7 +596,65 @@ export const SETTINGS = Object.freeze({
 
             "minecraft:redstone": true,
             "minecraft:redstone_torch": true,
-        })
+        }),
+        FOOD_DATA: {
+            // fruit & vegetable
+            "minecraft:apple": { nutrition: 4, saturation: 2.4, canAlwaysEat: true },
+            "minecraft:beetroot": { nutrition: 1, saturation: 1.2, canAlwaysEat: false },
+            "minecraft:carrot": { nutrition: 3, saturation: 3.6, canAlwaysEat: false },
+            "minecraft:chorus_fruit": { nutrition: 4, saturation: 2.4, canAlwaysEat: true }, // teleports player
+            "minecraft:glow_berries": { nutrition: 2, saturation: 0.4, canAlwaysEat: false },
+            "minecraft:golden_carrot": { nutrition: 6, saturation: 14.4, canAlwaysEat: false },
+            "minecraft:melon_slice": { nutrition: 2, saturation: 1.2, canAlwaysEat: false },
+            "minecraft:potato": { nutrition: 1, saturation: 0.6, canAlwaysEat: false },
+            "minecraft:poisonous_potato": { nutrition: 2, saturation: 1.2, canAlwaysEat: false }, // 60% poison (5s)
+            "minecraft:pumpkin_pie": { nutrition: 8, saturation: 4.8, canAlwaysEat: false },
+            "minecraft:sweet_berries": { nutrition: 2, saturation: 1.2, canAlwaysEat: false },
+
+            // golden / enchanted
+            "minecraft:golden_apple": { nutrition: 4, saturation: 9.6, canAlwaysEat: true }, // regen II (5s), absorption (2min)
+            "minecraft:enchanted_golden_apple": { nutrition: 4, saturation: 9.6, canAlwaysEat: true }, // regen II (30s), absorption IV, resistance, fire resistance
+
+            // baked / cooked
+            "minecraft:baked_potato": { nutrition: 5, saturation: 6.0, canAlwaysEat: false },
+            "minecraft:cooked_beef": { nutrition: 8, saturation: 12.8, canAlwaysEat: false }, // steak
+            "minecraft:cooked_chicken": { nutrition: 6, saturation: 7.2, canAlwaysEat: false },
+            "minecraft:cooked_cod": { nutrition: 5, saturation: 6.0, canAlwaysEat: false },
+            "minecraft:cooked_mutton": { nutrition: 6, saturation: 9.6, canAlwaysEat: false },
+            "minecraft:cooked_porkchop": { nutrition: 8, saturation: 12.8, canAlwaysEat: false },
+            "minecraft:cooked_rabbit": { nutrition: 5, saturation: 6.0, canAlwaysEat: false },
+            "minecraft:cooked_salmon": { nutrition: 6, saturation: 9.6, canAlwaysEat: false },
+
+            // raw meat
+            "minecraft:beef": { nutrition: 3, saturation: 1.8, canAlwaysEat: false }, // raw beef
+            "minecraft:chicken": { nutrition: 2, saturation: 1.2, canAlwaysEat: false }, // 30% hunger (30s)
+            "minecraft:cod": { nutrition: 2, saturation: 0.4, canAlwaysEat: false }, // raw cod
+            "minecraft:mutton": { nutrition: 2, saturation: 1.2, canAlwaysEat: false },
+            "minecraft:porkchop": { nutrition: 3, saturation: 1.8, canAlwaysEat: false },
+            "minecraft:rabbit": { nutrition: 3, saturation: 1.8, canAlwaysEat: false },
+            "minecraft:salmon": { nutrition: 2, saturation: 0.4, canAlwaysEat: false }, // raw salmon
+
+            // fish / seafood
+            "minecraft:pufferfish": { nutrition: 1, saturation: 0.2, canAlwaysEat: false }, // hunger III, nausea, poison II
+            "minecraft:tropical_fish": { nutrition: 1, saturation: 0.2, canAlwaysEat: false },
+
+            // stews & soups
+            "minecraft:beetroot_soup": { nutrition: 6, saturation: 7.2, canAlwaysEat: false },
+            "minecraft:mushroom_stew": { nutrition: 6, saturation: 7.2, canAlwaysEat: false },
+            "minecraft:rabbit_stew": { nutrition: 10, saturation: 12.0, canAlwaysEat: false },
+            "minecraft:suspicious_stew": { nutrition: 6, saturation: 7.2, canAlwaysEat: true }, // varies by flower
+
+            // sweat
+            "minecraft:bread": { nutrition: 5, saturation: 6.0, canAlwaysEat: false },
+            // "minecraft:cake": { nutrition: 2, saturation: 0.4, canAlwaysEat: false }, // whole = 14 over 7 slices, it not eatable as item tho
+            "minecraft:cookie": { nutrition: 2, saturation: 0.4, canAlwaysEat: false },
+
+            // misc
+            "minecraft:dried_kelp": { nutrition: 1, saturation: 0.2, canAlwaysEat: false },
+            "minecraft:honey_bottle": { nutrition: 6, saturation: 1.2, canAlwaysEat: true }, // clears poison
+            "minecraft:rotten_flesh": { nutrition: 4, saturation: 0.8, canAlwaysEat: false }, // 80% hunger (30s)
+            "minecraft:spider_eye": { nutrition: 2, saturation: 3.2, canAlwaysEat: false }, // poison (5s)
+        }
     }),
     HARVEST: Object.freeze({
         ENABLED: true,

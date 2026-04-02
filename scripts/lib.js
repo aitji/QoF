@@ -1,4 +1,4 @@
-import { EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EquipmentSlot, GameMode, ItemComponentTypes, ItemDurabilityComponent, ItemStack, Player, system, world } from "@minecraft/server"
+import { Block, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EquipmentSlot, GameMode, ItemComponentTypes, ItemDurabilityComponent, ItemStack, Player, system, world } from "@minecraft/server"
 // lazy import ---
 import { RUNTIME as E } from "./_store"
 import * as H from "./_helper"
@@ -151,4 +151,15 @@ export const setEqu = (entity, itemStack = undefined, slot = EquipmentSlot.Mainh
         if (DEBUG) world.sendMessage(`entity=${typeof entity}, itemStack=${typeof itemStack}, slot=${typeof slot}`)
         return false
     }
+}
+
+// debug tool lib
+/**
+ * @param {Entity|Player|ItemStack|Block} anything 
+ */
+export const dumpMeThatComp = (anything, boardcast = true) => {
+    const all = anything.getComponents()
+    const v = all.map(d => d.typeId).join(', ')
+    if (boardcast && DEBUG) world.sendMessage(v)
+    return v
 }

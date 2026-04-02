@@ -140,7 +140,8 @@ function buildRuntime() {
             PLACE_SOUND: OH.PLACE_SOUND,
             BLOCK_INTERACTION_DELAY: OH.BLOCK_INTERACTION_DELAY,
             ITEMBUTBLOCK: OH.ITEMBUTBLOCK,
-            DISALLOWED_ITEM: OH.DISALLOWED_ITEM
+            DISALLOWED_ITEM: OH.DISALLOWED_ITEM,
+            FOOD_DATA: OH.FOOD_DATA
         }),
         HARVEST: Object.freeze({
             ENABLED: g("qof:HARVEST.ENABLED", CR.ENABLED),

@@ -1,7 +1,7 @@
 import { Block, BlockComponentTypes, BlockPermutation, Difficulty, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, PlayerInteractWithEntityBeforeEvent, system, world } from "@minecraft/server"
 import { applyItemDamage, checkRandom, getDistance, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
 import { suppressLight } from "./light"
-const { DEBUG, CARRIED_CHEST, BLOCKFACE_TO_DIR, LIGHT: { FIRE_ITEM, LIGHT_BLOCK }, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM } } = RUNTIME
+const { DEBUG, CARRIED_CHEST, BLOCKFACE_TO_DIR, LIGHT: { FIRE_ITEM, LIGHT_BLOCK }, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM, FOOD_DATA } } = RUNTIME
 
 /**
  * @typedef {{ lastSneakTick: number, wasSneaking: boolean }} SneakState
@@ -248,21 +248,23 @@ const fireHandle = (data) => {
     }
 }
 
+/**@param {PlayerInteractWithBlockBeforeEvent} data*/
 const torchHandle = (data) => {
     const { player, block, blockFace, itemStack } = data
     const creative = player.matches({ gameMode: GameMode.Creative })
 
     if (itemStack) {
-        const food = itemStack.getComponent(ItemComponentTypes.Food)
+        const food = FOOD_DATA[itemStack?.typeId ?? ''] // vanilla return empty in food component -.-
         const hunger = player.getComponent(EntityComponentTypes.Hunger)
 
-        // eating food main hand
-        if (
-            creative ||
-            food?.canAlwaysEat ||
-            world.getDifficulty() === Difficulty.Peaceful ||
-            hunger.currentValue < hunger.defaultValue
-        ) return
+        if (food) {
+            if (
+                creative ||
+                food?.canAlwaysEat ||
+                world.getDifficulty() === Difficulty.Peaceful ||
+                hunger.currentValue < hunger.nutrition
+            ) return
+        }
 
         // shovel/hoe
         if (
