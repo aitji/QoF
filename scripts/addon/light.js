@@ -3,7 +3,7 @@ import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, roundLoc, RUNT
 const { DEBUG, BLOCKFACE_TO_DIR, LIGHT: { LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT, LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR, FAIL_PARTICLE, PARTICLE_OFFSET, LIGHT_BLOCK, SOUND_FAIL, FAIL_SOUND_INTERVAL } } = RUNTIME
 export const isFrame = (b) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
-let AIR, WATER, LAVA, BASE_LIGHT, FIRE
+export let AIR, WATER, LAVA, BASE_LIGHT, FIRE
 if (ENABLED) system.run(() => {
     AIR = BlockPermutation.resolve('minecraft:air')
     WATER = BlockPermutation.resolve('minecraft:water')
@@ -40,14 +40,28 @@ const getItemLight = (id, en, tick) => {
     return found.light ?? 0
 }
 
-const lightMap = new Map() // key: "dim:x:y:z"  val: { time, level, isWater, owner }
-const frameSet = new Set() // key: "dim:x:y:z"
-const entityLights = new Map() // owner id -> Set<blockKey>
+export const lightMap = new Map() // key: "dim:x:y:z"  val: { time, level, isWater, owner }
+export const frameSet = new Set() // key: "dim:x:y:z"
+export const entityLights = new Map() // owner id -> Set<blockKey>
 export const suppressedLocs = new Map() // key: "dim:x:y:z"  val: expireTick ;; no backup DYP just for visual
 export const SUPP_BREAK = 8 // need to be config-able
 
 const bKey = (dim, x, y, z) => `${dim ?? ''}:${x ?? ''}:${y ?? ''}:${z ?? ''}`
 export const blockBKey = (b) => bKey(dimId(b), b.location.x, b.location.y, b.location.z)
+export const suppressLight = (block, checkLightBlock = true, cleanLight = true, needTick = false, tick = system.currentTick) => {
+    if (!ENABLED) return false
+    if (checkLightBlock && !block.permutation.matches(LIGHT_BLOCK)) return false
+
+    const clean = () => block.setPermutation(AIR)
+    const k = blockBKey(block)
+    lightMap.delete(k)
+    suppressedLocs.set(k, tick + SUPP_BREAK)
+
+    if (!cleanLight) return true
+    if (needTick) system.run(() => clean())
+    else clean()
+    return true
+}
 
 function _restoreFromDYP() {
     const ids = world.getDynamicPropertyIds()

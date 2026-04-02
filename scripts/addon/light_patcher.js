@@ -1,6 +1,6 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, PlayerInteractWithBlockBeforeEvent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity, ItemStack } from "@minecraft/server"
 import { applyItemDamage, checkRandom, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
-import { blockBKey, SUPP_BREAK, suppressedLocs } from "./light"
+import { suppressLight } from "./light"
 import { pickupCooldown } from "../_helper"
 const { DEBUG, BLOCKFACE_TO_DIR, LIGHT: { ENABLED, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, BLOCK_INTERACTION_DELAY, FIRE_ITEM, LIGHT_BLOCK } } = RUNTIME
 export const isFrame = (b) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
@@ -17,17 +17,19 @@ const delay = {}
 /**@param {PlayerInteractWithBlockBeforeEvent} data*/
 export const light_playerInteractWithBlock = (data) => {
     const { player, block, blockFace, itemStack, isFirstEvent } = data
+    let tick = system.currentTick
+
     if (!isFirstEvent) {
         const playerDelay = delay[player.id] || 0
-        if (playerDelay > system.currentTick) return
+        if (playerDelay > tick) return
     }
 
-    delay[player.id] = system.currentTick + BLOCK_INTERACTION_DELAY
+    delay[player.id] = tick + BLOCK_INTERACTION_DELAY
     if (!itemStack || !block) return
     const dimension = block.dimension
 
     /** @type {Block?} */
-    let above
+    let above // cache above block
     const isLight = (b) => b.permutation?.matches(LIGHT_BLOCK) ?? false
     const isAboveLight = () => { // don't perm check if unnesscery
         above = block.above(1)
@@ -37,6 +39,7 @@ export const light_playerInteractWithBlock = (data) => {
     if (block.hasTag('dirt')) {
         if (!isAboveLight()) return
         system.run(() => {
+            tick++
             let toolUsed = false
             if (itemStack?.hasTag('minecraft:is_shovel')) {
                 switch (block?.typeId ?? '') {
@@ -46,6 +49,7 @@ export const light_playerInteractWithBlock = (data) => {
                     default: break
                 }
 
+                suppressLight(above, false, true, false, tick)
                 block.setPermutation(GRASS_PATH)
                 toolUsed = true
 
@@ -149,7 +153,7 @@ export const light_playerInteractWithBlock = (data) => {
         /** @type {Block} */
         const cache = block[BLOCKFACE_TO_DIR[blockFace]](1)
         if (isLight(cache)) {
-            suppressedLocs.set(blockBKey(cache), system.currentTick + SUPP_BREAK)
+            suppressLight(cache, false, false, false, tick)
             const equ = getEqu(player)
             const slot = player.selectedSlotIndex
             system.run(() => {
