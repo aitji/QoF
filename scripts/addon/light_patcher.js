@@ -160,12 +160,6 @@ export const light_playerInteractWithBlock = (data) => {
                 if (player.selectedSlotIndex !== slot) {
                     if (DEBUG) world.sendMessage(`selectedSlotIndex!==slot ; ${player.selectedSlotIndex} !== ${slot}`)
                     player.selectedSlotIndex = slot
-
-                    // double check
-                    if (equ?.getEquipment(slot)?.typeId !== itemType) {
-                        if (DEBUG) world.sendMessage(`typeId!==itemType ; ${equ?.getEquipment(slot)?.typeId} !== ${itemType}`)
-                        return // cancel interaction
-                    }
                 }
                 const dim = cache.dimension
                 const done = () => {

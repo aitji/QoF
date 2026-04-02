@@ -1,6 +1,7 @@
 import { Block, BlockComponentTypes, BlockPermutation, Difficulty, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, PlayerInteractWithEntityBeforeEvent, system, world } from "@minecraft/server"
 import { checkRandom, getDistance, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
-const { DEBUG, CARRIED_CHEST, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM } } = RUNTIME
+import { suppressLight } from "./light"
+const { DEBUG, CARRIED_CHEST, BLOCKFACE_TO_DIR, LIGHT: { FIRE_ITEM, LIGHT_BLOCK }, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM } } = RUNTIME
 
 /**
  * @typedef {{ lastSneakTick: number, wasSneaking: boolean }} SneakState
@@ -169,18 +170,77 @@ function canPlaceTorchOn(block) {
 }
 
 const delay = {}
-/**
- * @param {PlayerInteractWithBlockBeforeEvent} data 
- * @returns 
- */
+/**@param {PlayerInteractWithBlockBeforeEvent} data*/
 export const offhand_playerInteractWithBlock = (data) => {
-    const { player, block, blockFace, isFirstEvent, itemStack } = data
-    const creative = player.matches({ gameMode: GameMode.Creative })
+    const { player, isFirstEvent } = data
+
     if (!isFirstEvent) {
         const playerDelay = delay[player.id] || 0
         if (playerDelay > system.currentTick) return
     }
     delay[player.id] = system.currentTick + BLOCK_INTERACTION_DELAY
+
+    torchHandle(data)
+    fireHandle(data)
+}
+/**@param {PlayerInteractWithBlockBeforeEvent} data*/
+const fireHandle = (data) => {
+    const { player, block, blockFace, itemStack } = data
+    const tick = system.currentTick
+
+    /** @type {Block?} */
+    let above // cache above block
+    const isLight = (b) => b.permutation?.matches(LIGHT_BLOCK) ?? false
+    const isAboveLight = () => { // don't perm check if unnesscery
+        above = block.above(1)
+        return isLight(above)
+    }
+
+    const equ = getEqu(player)
+    const cache = block[BLOCKFACE_TO_DIR[blockFace]](1)
+
+    // fix vanilla consumed wired durability
+    if (
+        cache && cache.permutation.matches('minecraft:fire') &&
+        itemStack && itemStack.typeId === 'minecraft:flint_and_steel'
+    ) data.cancel = true
+
+    const offhandItem = equ.getEquipment(EquipmentSlot.Offhand)
+    if (!offhandItem) return
+    const itemType = offhandItem.typeId
+    const fireSound = FIRE_ITEM[itemType]
+    if (fireSound) {
+        /** @type {Block} */
+        if (isLight(cache)) suppressLight(cache, false, false, false, tick)
+        if (cache && cache.permutation.matches('minecraft:fire')) return
+        system.run(() => {
+            const dim = cache.dimension
+            const done = () => {
+                // minecraft alr handle damage
+                // const { item, changed } = applyItemDamage(player, equ)
+                // if (changed) setEqu(player, item, "Offhand", true)
+                dim.playSound(fireSound.ID, cache.center(), {
+                    pitch: checkRandom(fireSound.PITCH),
+                    volume: checkRandom(fireSound.VOLUME)
+                })
+                if (fireSound.REDUCE_ITEM) {
+                    const equ = getEqu(player)
+                    const currItem = equ.getEquipment(EquipmentSlot.Offhand)
+                    const newItem = reduceItem(currItem, 1)
+                    equ.setEquipment(EquipmentSlot.Offhand, newItem)
+                }
+            }
+            try {
+                cache.setType('minecraft:fire')
+                done()
+            } catch (e) { if (DEBUG) world.sendMessage(`[offhand.js] fire ${e}`) }
+        })
+    }
+}
+
+const torchHandle = (data) => {
+    const { player, block, blockFace, itemStack } = data
+    const creative = player.matches({ gameMode: GameMode.Creative })
 
     if (itemStack) {
         const food = itemStack.getComponent(ItemComponentTypes.Food)
