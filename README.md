@@ -51,6 +51,7 @@
 - QoF v1.4.0 `In Development`
   - `Pre-Releases` Qof [v1.3.1](https://github.com/aitji/QoF/releases/tag/v1.3.1)
   - `Pre-Releases` Qof [v1.3.2](https://github.com/aitji/QoF/releases/tag/v1.3.2)
+  - `Pre-Releases` Qof [v1.3.3](https://github.com/aitji/QoF/releases/tag/v1.3.3)
 - QoF [v1.3.0](https://github.com/aitji/QoF/releases/tag/v1.3.0)
   - `Pre-Releases` QoF [v1.2.1](https://github.com/aitji/QoF/releases/tag/v1.2.1)
   - `Pre-Releases` QoF [v1.2.2](https://github.com/aitji/QoF/releases/tag/v1.2.2)
@@ -761,11 +762,12 @@ English is not our native language. Thank you for your understanding!
 - @pickerth-12 design, json & molang
 
 ```
-©2026 QoF™ Licensed under the MIT License
-Made by (aitji & pickerth-12)
+QoF™
+Copyright (c) 2026 aitji & pickerth-12 Licensed under the MIT License
+Source: github.com/aitji/QoF
 
   README INFO
-Version: v1.3.0
+Version: v1.3.3
 Last updated: 2 Apr 2026
 Has README Update: False
 
