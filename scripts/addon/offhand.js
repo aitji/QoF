@@ -262,7 +262,7 @@ const torchHandle = (data) => {
                 creative ||
                 food?.canAlwaysEat ||
                 world.getDifficulty() === Difficulty.Peaceful ||
-                hunger.currentValue < hunger.nutrition
+                hunger.currentValue < hunger.effectiveMax
             ) return
         }
 
