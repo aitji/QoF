@@ -52,6 +52,7 @@
   - `Pre-Releases` Qof [v1.3.1](https://github.com/aitji/QoF/releases/tag/v1.3.1)
   - `Pre-Releases` Qof [v1.3.2](https://github.com/aitji/QoF/releases/tag/v1.3.2)
   - `Pre-Releases` Qof [v1.3.3](https://github.com/aitji/QoF/releases/tag/v1.3.3)
+  - `Pre-Releases` Qof [v1.3.4](https://github.com/aitji/QoF/releases/tag/v1.3.4)
 - QoF [v1.3.0](https://github.com/aitji/QoF/releases/tag/v1.3.0)
   - `Pre-Releases` QoF [v1.2.1](https://github.com/aitji/QoF/releases/tag/v1.2.1)
   - `Pre-Releases` QoF [v1.2.2](https://github.com/aitji/QoF/releases/tag/v1.2.2)
@@ -774,13 +775,13 @@ Copyright (c) 2026 aitji & pickerth-12 Licensed under the MIT License
 Source: github.com/aitji/QoF
 
   README INFO
-Version: v1.3.3
-Last updated: 2 Apr 2026
+Version: v1.3.0
+Last updated: 3 Apr 2026
 Has README Update: False
 
   PACK INFO
 Last Release: v1.3.0
-Last Pre-Release: v1.3.2
+Last Pre-Release: v1.3.4
 Last Minecraft Version: 26.12
 Used Dependencies: ^2.7.0-beta.1.26.10-stable
 ```
