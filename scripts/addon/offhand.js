@@ -216,9 +216,12 @@ export const offhand_playerInteractWithBlock = (data) => {
             block && block?.hasTag('dirt') &&
             itemStack && (
                 itemStack.hasTag('minecraft:is_shovel') ||
-                itemStack.hasTag('minecraft:is_hoe')
+                itemStack.hasTag('minecraft:is_hoe') && !(
+                    block.typeId === 'minecraft:farmland' ||
+                    block.typeId === 'minecraft:soul_sand' ||
+                    COCOA_VALID_LOGS.has(block.typeId)
+                )
             )
-
         ) return
 
         try { return !(itemStack && BlockPermutation.resolve(itemStack?.typeId) !== undefined) }
@@ -246,6 +249,10 @@ const seedsHandle = (data) => {
     if (!plantEntry && !isCocoa) return
     if (isCocoa) {
         if (!COCOA_VALID_LOGS.has(block?.typeId)) return
+        if (block && itemStack.hasTag('minecraft:is_axe') && (
+            block.typeId === 'minecraft:jungle_log' ||
+            block.typeId === 'minecraft:jungle_wood')
+        ) return
 
         const target = block[BLOCKFACE_TO_DIR[blockFace]](1)
         if (!target || !(target.isAir || target.permutation.matches(LIGHT_BLOCK))) return
