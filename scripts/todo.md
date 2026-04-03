@@ -17,6 +17,9 @@ this file is only for top priority todo, if something like refactor some code or
   - [x] fix seeds not work on farmlands
   - [x] support edge case for offhand like buckets
 - [x] harvest crop
+- [ ] offhand work with seed
+  - [ ] offhand seed work with harvest.js, auto replant from offhand
+- [ ] harvest support more things like coco bean
 - [x] ongoing problem ; might ship without fix this
   - [x] composter not work with piston
   - [x] (24-Mar-2026) piston is change state to air when extract it will del piston
