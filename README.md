@@ -241,7 +241,7 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 
 #### Full Repairing Loop
 
-<img src=".github/img/repair-anvil.gif" alt="Player repairs anvil twice, mines it, places damaged one, and walks out" width="1080">
+<img src="https://github.com/aitji/QoF/blob/behavior_packs/.github/img/repair-anvil.gif?raw=true" alt="Player repairs anvil twice, mines it, places damaged one, and walks out" width="1080">
 
 > **alt-message** The player walks into a cozy spruce house, repairs a damaged anvil twice to bring it back to full, mines it with an iron pickaxe, places a new damaged anvil, and walks out.
 
