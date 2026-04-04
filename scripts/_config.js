@@ -545,6 +545,7 @@ export const SETTINGS = Object.freeze({
             "minecraft:carrot_on_a_stick",
             "minecraft:warped_fungus_on_a_stick",
             "minecraft:shears",
+            "minecraft:flint_and_steel",
 
             "minecraft:lead",
             "minecraft:saddle",

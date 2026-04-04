@@ -50,6 +50,7 @@ export function offhand_player(player, now) {
 function hasUnsafeProperties(item) {
     if (!item) return false
     if (item.nameTag) return true
+    if (item.getLore().length > 0) return true
 
     const enchants = item.getComponent(ItemComponentTypes.Enchantable)
     if (enchants?.getEnchantments().length > 0) return true
