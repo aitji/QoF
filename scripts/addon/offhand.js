@@ -250,7 +250,7 @@ const seedsHandle = (data) => {
     if (!plantEntry && !isCocoa) return
     if (isCocoa) {
         if (!COCOA_VALID_LOGS.has(block?.typeId)) return
-        if (block && itemStack.hasTag('minecraft:is_axe') && (
+        if (block && itemStack && itemStack.hasTag('minecraft:is_axe') && (
             block.typeId === 'minecraft:jungle_log' ||
             block.typeId === 'minecraft:jungle_wood')
         ) return

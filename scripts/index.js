@@ -115,7 +115,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
     if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithBlock(data)
-    door.door_playerInteractWithBlock(data)
+    if (RUNTIME.DOUBLE_DOOR.ENABLED) door.door_playerInteractWithBlock(data)
 })
 world.beforeEvents.playerInteractWithEntity.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithEntity(data)
