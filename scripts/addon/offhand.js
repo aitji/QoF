@@ -1,6 +1,6 @@
 import { Block, BlockComponentTypes, BlockPermutation, Difficulty, Direction, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, PlayerInteractWithEntityBeforeEvent, system, world } from "@minecraft/server"
 import { applyItemDamage, checkRandom, getDistance, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
-import { suppressLight } from "./light"
+import { suppressLight } from "./light/core"
 import { resolveCocoaPermutation } from "./harvest"
 const { DEBUG, CARRIED_CHEST, BLOCKFACE_TO_DIR, HARVEST: { PLANT_LEVEL, COCOA_VALID_LOGS }, LIGHT: { FIRE_ITEM, LIGHT_BLOCK }, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM, FOOD_DATA, CAN_ALWAYS_USE } } = RUNTIME
 

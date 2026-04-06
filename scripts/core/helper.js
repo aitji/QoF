@@ -25,4 +25,3 @@ export const helper_entityItemPickup = (data) => {
 export const helper_entityRemove = (data) => {
     COOLDOWN_ENTITY.delete(data.removedEntityId)
 }
-

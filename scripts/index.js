@@ -1,9 +1,9 @@
 import { DisplaySlotId, ScoreboardObjective, system, world } from "@minecraft/server"
 import { RUNTIME } from "./_store"
-import * as helper from "./_helper"
+import * as lib from "./lib"
 
-import * as light from "./addon/light"
-import * as light_patcher from "./addon/light_patcher"
+import * as light from "./addon/light/core"
+import * as light_patcher from "./addon/light/patcher"
 import * as anvil from "./addon/anvil"
 import * as powder from "./addon/powder_concrete"
 import * as composter from "./addon/composter"
@@ -95,7 +95,7 @@ world.afterEvents.entityRemove.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_entityRemove(data)
     if (RUNTIME.WET_POWDER_CONCRETE.ENABLED) powder.powder_entityRemove(data)
 
-    helper.helper_entityRemove(data)
+    lib.helper.helper_entityRemove(data)
 })
 world.afterEvents.playerPlaceBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerPlaceBlock(data)
@@ -131,7 +131,7 @@ world.afterEvents.playerLeave.subscribe(data => {
 })
 // helpers
 world.beforeEvents.entityItemPickup.subscribe(data => {
-    helper.helper_entityItemPickup(data)
+    lib.helper.helper_entityItemPickup(data)
 }, { entityFilter: { type: "minecraft:player" } })
 
 // beta apis heartbeat

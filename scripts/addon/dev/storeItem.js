@@ -1,5 +1,5 @@
 import { EquipmentSlot, world } from "@minecraft/server"
-import { getEqu, getInv } from "../lib"
+import { getEqu, getInv } from "../../lib"
 
 world.afterEvents.entityHitBlock.subscribe(data => {
     const { damagingEntity: player, hitBlock: block } = data

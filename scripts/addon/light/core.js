@@ -1,5 +1,5 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, EntityComponentTypes, Player, PlayerInteractWithBlockBeforeEvent, ItemComponentTypes, EntityEquippableComponent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity } from "@minecraft/server"
-import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, roundLoc, RUNTIME, setEqu, sumLoc } from "../lib"
+import { applyItemDamage, checkRandom, clamp, getEqu, reduceItem, roundLoc, RUNTIME, setEqu, sumLoc } from "../../lib"
 
 const {
     DEBUG,

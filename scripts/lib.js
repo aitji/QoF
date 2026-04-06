@@ -1,7 +1,7 @@
 import { Block, BlockInventoryComponent, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EquipmentSlot, GameMode, ItemComponentTypes, ItemDurabilityComponent, ItemStack, Player, system, world } from "@minecraft/server"
 // lazy import ---
 import { RUNTIME as E } from "./_store"
-import * as H from "./_helper"
+import * as H from "./core/helper"
 export const RUNTIME = E
 export const helper = H
 // ---
