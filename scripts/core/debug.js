@@ -4,7 +4,7 @@ const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
 
 // small helper
 /** @type {ScoreboardObjective} */
-let dyp, runDyp = true
+let dyp
 const score = (k, v) => { try { dyp.setScore(k, v) } catch { dyp.addScore(k, v) } }
 
 system.run(() => {
@@ -25,8 +25,6 @@ system.run(() => {
 })
 
 export const debug_pending = () => {
-    // if (!runDyp) return
-
     world.scoreboard.removeObjective("dyp")
     dyp = world.scoreboard.addObjective("dyp", "Dynamic Props")
     world.scoreboard.setObjectiveAtDisplaySlot(DisplaySlotId.Sidebar, { objective: dyp })
@@ -46,7 +44,7 @@ const PREFIX = 'qof:' // kept ":"
 const MB_1 = 1048576
 const to3 = (i) => i.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 
-system.beforeEvents.startup.subscribe(event => {
+export const debug_startup = (event) => {
     if (!DEBUG) return
     const reg = event.customCommandRegistry
 
@@ -104,4 +102,4 @@ system.beforeEvents.startup.subscribe(event => {
 
         return { status: CustomCommandStatus.Success, message: 'yay' }
     })
-})
+}

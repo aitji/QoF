@@ -2,6 +2,7 @@ import { system, world } from "@minecraft/server"
 import { RUNTIME } from "./_store"
 import * as lib from "./lib"
 import * as debug from "./core/debug"
+import * as heartbeat from "./core/heartbeat"
 
 import * as light from "./addon/light/core"
 import * as light_patcher from "./addon/light/patcher"
@@ -15,8 +16,6 @@ import * as door from "./addon/door"
 
 // tick
 system.run(() => {
-    world.scoreboard.getObjective("aitjilib").setScore("api", 1) // heartbeat beta-api checker (use in mcfunction)
-
     const { LIGHT, WET_POWDER_CONCRETE, CARRIED_CHEST, COMPOSTER } = RUNTIME
     system.runInterval(() => {
         const tick = system.currentTick
@@ -81,21 +80,8 @@ world.afterEvents.playerSpawn.subscribe(data => {
 world.afterEvents.playerLeave.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerLeave(data)
 })
-// helpers
-world.beforeEvents.entityItemPickup.subscribe(data => {
-    lib.helper.helper_entityItemPickup(data)
-}, { entityFilter: { type: "minecraft:player" } })
 
-// beta apis heartbeat
-system.afterEvents.scriptEventReceive.subscribe(({ id, message }) => {
-    if (message !== "qof") return
-    if (RUNTIME.DISABLED_HEARTBEAT) return // script will never responed to mcfunction
-    const lib = world.scoreboard.getObjective("aitjilib")
-
-    switch (id) {
-        case 'aitji-lib:heartbeat':
-            lib.addScore('addon', 1)
-            lib.setScore('api', 1)
-        default: return
-    }
-}, { namespaces: ["aitji-lib"] })
+// core routes
+world.beforeEvents.entityItemPickup.subscribe(data => { lib.helper.helper_entityItemPickup(data) }, { entityFilter: { type: "minecraft:player" } })
+system.beforeEvents.startup.subscribe(event => { if (RUNTIME.DEBUG) debug.debug_startup(event) })
+system.afterEvents.scriptEventReceive.subscribe(({ id, message }) => { heartbeat.heartbeat_scriptEventReceive(({ id, message })) }, { namespaces: ["aitji-lib"] })
