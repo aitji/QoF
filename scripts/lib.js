@@ -4,6 +4,7 @@ import { RUNTIME as E } from "./_store"
 import * as H from "./core/helper"
 export const RUNTIME = E
 export const helper = H
+export const pickupCooldown = H.pickupCooldown
 // ---
 
 const { DEBUG } = E

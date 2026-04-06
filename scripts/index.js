@@ -1,6 +1,7 @@
-import { DisplaySlotId, ScoreboardObjective, system, world } from "@minecraft/server"
+import { system, world } from "@minecraft/server"
 import { RUNTIME } from "./_store"
 import * as lib from "./lib"
+import * as debug from "./core/debug"
 
 import * as light from "./addon/light/core"
 import * as light_patcher from "./addon/light/patcher"
@@ -12,32 +13,9 @@ import * as offhand from "./addon/offhand"
 import * as harvest from "./addon/harvest"
 import * as door from "./addon/door"
 
-// helper (mostly debug) ---
-/** @type {ScoreboardObjective} */
-let dyp
-const score = (k, v) => { try { dyp.setScore(k, v) } catch { dyp.addScore(k, v) } }
-// ---
-
 // tick
 system.run(() => {
     world.scoreboard.getObjective("aitjilib").setScore("api", 1) // heartbeat beta-api checker (use in mcfunction)
-    const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
-
-    // (DEBUG) ignore this ---
-    if (DISABLED_COMMANDFEEDBACK) world.gameRules.sendCommandFeedback = false
-    if (DEBUG) {
-        system.beforeEvents.watchdogTerminate.subscribe((d) => {
-            d.cancel = true // if you pc small remove this code ;p
-
-            const msg = `§co7... §7${d.terminateReason}`
-            console.warn(msg)
-            world.sendMessage(msg)
-        })
-
-        world.sendMessage('§7qof loaded')
-        world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n§8 ')}`)
-    }
-    // ---
 
     const { LIGHT, WET_POWDER_CONCRETE, CARRIED_CHEST, COMPOSTER } = RUNTIME
     system.runInterval(() => {
@@ -57,34 +35,8 @@ system.run(() => {
             offhand.offhand_player(player, tick)
         }
 
-
-        // (DEBUG) ignore this ---
-        if (DEBUG) { // show dyp
-            world.scoreboard.removeObjective("dyp")
-            dyp = world.scoreboard.addObjective("dyp", "Dynamic Props")
-            world.scoreboard.setObjectiveAtDisplaySlot(DisplaySlotId.Sidebar, { objective: dyp })
-
-            const ids = world.getDynamicPropertyIds()
-            const bytes = world.getDynamicPropertyTotalByteCount()
-            score("§eTotal props", ids.length)
-            score("§eTotal bytes", bytes)
-
-            for (const id of ids) {
-                const val = world.getDynamicProperty(id)
-                score(`§7${id.slice(0, 16)}`, typeof val === "number" ? val : typeof val === "boolean" ? (val ? 1 : 0) : typeof val === "string" ? val.length : typeof val === "object" ? 1 : -1)
-            }
-        }
-        // ---
+        if (RUNTIME.DEBUG) debug.debug_pending()
     }, RUNTIME.INTERVAL_DELAY)
-})
-
-// debug: barrier clears dynamic properties
-if (RUNTIME.DEBUG) world.beforeEvents.itemUse.subscribe(data => {
-    const { itemStack } = data
-    if (itemStack.typeId === 'minecraft:barrier') {
-        world.getDynamicPropertyIds().map(dy => world.sendMessage(`§7${dy}`))
-        world.clearDynamicProperties()
-    }
 })
 
 world.afterEvents.entityDie.subscribe(data => {
