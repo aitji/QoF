@@ -35,7 +35,7 @@ system.run(() => {
         })
 
         world.sendMessage('§7qof loaded')
-        world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n')}`)
+        world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n§8 ')}`)
     }
     // ---
 

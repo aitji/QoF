@@ -1,4 +1,4 @@
-import { Block, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EquipmentSlot, GameMode, ItemComponentTypes, ItemDurabilityComponent, ItemStack, Player, system, world } from "@minecraft/server"
+import { Block, BlockInventoryComponent, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EquipmentSlot, GameMode, ItemComponentTypes, ItemDurabilityComponent, ItemStack, Player, system, world } from "@minecraft/server"
 // lazy import ---
 import { RUNTIME as E } from "./_store"
 import * as H from "./_helper"
@@ -130,8 +130,8 @@ export const roundLoc = (loc, roundType = 'none') => {
  */
 export const getEqu = (entity) => entity.getComponent(EntityComponentTypes.Equippable)
 /**
- * @param {Entity} entity 
- * @returns {EntityInventoryComponent}
+ * @param {Entity|Block} entity 
+ * @returns {EntityInventoryComponent|BlockInventoryComponent}
  */
 export const getInv = (entity) => entity.getComponent(EntityComponentTypes.Inventory)
 /**
