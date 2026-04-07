@@ -557,6 +557,14 @@ export const SETTINGS = Object.freeze({
             "minecraft:netherite_horse_armor",
             "minecraft:wolf_armor",
 
+            "minecraft:woode_spear",
+            "minecraft:stone_spear",
+            "minecraft:copper_spear",
+            "minecraft:golden_spear",
+            "minecraft:iron_spear",
+            "minecraft:diamond_spear",
+            "minecraft:netherite_spear",
+
             // redstone
             "minecraft:repeater",
             "minecraft:comparator",

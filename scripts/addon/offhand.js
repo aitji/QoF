@@ -1,10 +1,10 @@
 import { Block, BlockComponentTypes, BlockPermutation, Difficulty, Direction, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, LiquidType, Player, PlayerInteractWithBlockBeforeEvent, PlayerInteractWithEntityBeforeEvent, system, world } from "@minecraft/server"
-import { applyItemDamage, checkRandom, getDistance, getEqu, reduceItem, RUNTIME, setEqu } from "../lib"
+import { applyItemDamage, checkRandom, getDistance, getEqu, reduceItem, roundLoc, RUNTIME, setEqu, sumLoc } from "../lib"
 import { suppressLight } from "./light/core"
 import { resolveCocoaPermutation } from "./harvest"
 import * as cache from "../core/cache"
-const { DEBUG, CARRIED_CHEST, BLOCKFACE_TO_DIR, HARVEST: { PLANT_LEVEL, COCOA_VALID_LOGS }, LIGHT: { FIRE_ITEM, LIGHT_BLOCK }, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM, FOOD_DATA, CAN_ALWAYS_USE } } = RUNTIME
 
+const { DEBUG, CARRIED_CHEST, BLOCKFACE_TO_DIR, HARVEST: { PLANT_LEVEL, COCOA_VALID_LOGS }, LIGHT: { FIRE_ITEM, LIGHT_BLOCK }, OFFHAND: { ENABLED, ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, FACE_TO_NEIGHBOUR, TORCH_ID, LIGHT, PLACE_SOUND, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM, FOOD_DATA, CAN_ALWAYS_USE } } = RUNTIME
 /**
  * @typedef {{ lastSneakTick: number, wasSneaking: boolean }} SneakState
  * @type {Map<string, SneakState>}
@@ -227,6 +227,7 @@ export const offhand_playerInteractWithBlock = (data) => {
             )
         ) return
 
+        if (ITEMBUTBLOCK[typeId] === true) return
         try { return !(itemStack && BlockPermutation.resolve(itemStack?.typeId) !== undefined) }
         catch { }
     }
@@ -235,6 +236,35 @@ export const offhand_playerInteractWithBlock = (data) => {
     torchHandle(data, creative)
     fireHandle(data)
     seedsHandle(data)
+    blockHandle(data)
+}
+
+/**@param {PlayerInteractWithBlockBeforeEvent} data*/
+const blockHandle = (data) => { // still demo process
+    const { player, block, blockFace, itemStack } = data
+
+    const equ = getEqu(player)
+    const offhandItem = equ.getEquipment(EquipmentSlot.Offhand)
+    if (!offhandItem) return
+
+    const typeId = offhandItem?.typeId
+    let pass = false, permutation
+    try {
+        permutation = BlockPermutation.resolve(typeId)
+        pass = permutation !== undefined
+    } catch { pass = false }
+    if (!pass) return
+
+    const target = block[BLOCKFACE_TO_DIR[blockFace]](1)
+    const distance = getDistance(sumLoc(target.location, { x: 0.5, y: 0, z: 0.5 }), player.location)
+
+    if (distance <= 0.62) return
+    system.run(() => {
+        player.dimension.getBlock(target.location).setPermutation(permutation)
+        const current = equ.getEquipment(EquipmentSlot.Offhand)
+        if (current.amount <= 1) equ.setEquipment(EquipmentSlot.Offhand, undefined)
+        if (!player.matches({ gameMode: GameMode.Creative })) player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${typeId} ${offhandItem.amount - 1}`)
+    })
 }
 
 /**@param {PlayerInteractWithBlockBeforeEvent} data*/
@@ -380,17 +410,7 @@ const torchHandle = (data, creative) => {
     if (!blockId) return
     if (blockId === true) blockId = offhandItem.typeId
 
-    const mainhandIsBlock = (() => {
-        const typeId = mainhandItem?.typeId ?? ''
-        if (ITEMBUTBLOCK[typeId] === true) return true
-        // TOO MANY edge case too handle, and mostly doesn't look great for ux
-        // const distance = getDistance(block.center(), player.location)
-        // if (distance < 1) return false
-
-        try { return mainhandItem && BlockPermutation.resolve(typeId) !== undefined }
-        catch { return false }
-    })()
-    if (block && cache.typeId !== block.typeId && mainhandIsBlock) return
+    if (block && cache.typeId !== block.typeId) return
     if (block.isLiquid) return
 
     const isLightBlock = block.permutation.matches(LIGHT)
