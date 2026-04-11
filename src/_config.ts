@@ -1,3 +1,13 @@
+import { Block, Direction, Vector3 } from "@minecraft/server"
+
+type BlockDirFn =
+    | 'above'
+    | 'below'
+    | 'north'
+    | 'south'
+    | 'east'
+    | 'west'
+
 export const SETTINGS = Object.freeze({
     DEBUG: true,
     DISABLED_COMMANDFEEDBACK: false,
@@ -11,7 +21,8 @@ export const SETTINGS = Object.freeze({
         South: 'south',
         East: 'east',
         West: 'west',
-    }),
+    }) as Readonly<Record<Direction, BlockDirFn>>,
+
     LIGHT: Object.freeze({
         ENABLED: true,
         DECAY_LIGHT_TICK: 3, // before light when off time
@@ -28,6 +39,7 @@ export const SETTINGS = Object.freeze({
             PITCH: [0.8, 1.0]
         }),
         PARTICLE_OFFSET: Object.freeze({ x: -.5, y: 0, z: -.5 }),
+
         // vanilla bug patched ---
         /** @type {Readonly<{[k: string]: Readonly<{asBlock: string; pot: string}>}>} */
         SEEDTOBLOCK: Object.freeze({
@@ -36,11 +48,11 @@ export const SETTINGS = Object.freeze({
             'minecraft:potato': Object.freeze({ asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' }),
             'minecraft:beetroot_seeds': Object.freeze({ asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' }),
             'minecraft:nether_wart': Object.freeze({ asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' }),
-        }),
+        }) as Readonly<Record<string, { asBlock: string, pot: string, sound: 'nature' | 'nether' }>>,
         FARMLAND_BLOCK: Object.freeze({
             'minecraft:farmland': true,
             'minecraft:soul_sand': true
-        }),
+        } as Record<string, boolean>),
         SOUND_SHOVEL_USE: Object.freeze({
             ID: "use.grass",
             VOLUME: 1.0,
@@ -64,7 +76,7 @@ export const SETTINGS = Object.freeze({
                 PITCH: 1.0,
                 REDUCE_ITEM: true
             }),
-        }),
+        }) as Record<string, { ID: string, VOLUME: number, PITCH: number | number[], REDUCE_ITEM?: boolean }>,
         // ---
         LIGHT_WIKI: Object.freeze({
             // light 15
@@ -78,40 +90,49 @@ export const SETTINGS = Object.freeze({
             "exposed_copper_lantern": Object.freeze({ light: 15, inLiquid: false }), "waxed_exposed_copper_lantern": Object.freeze({ light: 15, inLiquid: false }),
             "weathered_copper_lantern": Object.freeze({ light: 15, inLiquid: false }), "waxed_weathered_copper_lantern": Object.freeze({ light: 15, inLiquid: false }),
             "oxidized_copper_lantern": Object.freeze({ light: 15, inLiquid: false }), "waxed_oxidized_copper_lantern": Object.freeze({ light: 15, inLiquid: false }),
+
             // light 14
             "end_rod": Object.freeze({ light: 14 }), "glow_berries": Object.freeze({ light: 14 }),
             "torch": Object.freeze({ light: 14, inLiquid: false }), "copper_torch": Object.freeze({ light: 14, inLiquid: false }),
+
             // light 10
             "crying_obsidian": Object.freeze({ light: 10 }), "soul_campfire": Object.freeze({ light: 10, inLiquid: false }),
             "soul_lantern": Object.freeze({ light: 10, inLiquid: false }), "soul_torch": Object.freeze({ light: 10, inLiquid: false }),
+
             // light 7
             "enchanting_table": Object.freeze({ light: 7 }), "ender_chest": Object.freeze({ light: 7 }),
             "glow_lichen": Object.freeze({ light: 7 }), "redstone_torch": Object.freeze({ light: 7, inLiquid: false }),
+
             // light 6
             "sculk_catalyst": Object.freeze({ light: 6 }), "sea_pickle": Object.freeze({ light: 6, inLiquid: true }),
             "vault": Object.freeze({ light: 6 }),
+
             // light 5
             "amethyst_cluster": Object.freeze({ light: 5 }),
+
             // light 4
             "large_amethyst_bud": Object.freeze({ light: 4 }),
             "trial_spawner": Object.freeze({ light: 4 }),
+
             // light 3
             "magma": Object.freeze({ light: 3 }),
+
             // light 2
             "medium_amethyst_bud": Object.freeze({ light: 2 }), "firefly_bush": Object.freeze({ light: 2 }),
+
             // light 1
             "brewing_stand": Object.freeze({ light: 1 }), "brown_mushroom": Object.freeze({ light: 1 }),
             "calibrated_sculk_sensor": Object.freeze({ light: 1 }), "dragon_egg": Object.freeze({ light: 1 }),
             "end_portal_frame": Object.freeze({ light: 1 }), "sculk_sensor": Object.freeze({ light: 1 }),
             "small_amethyst_bud": Object.freeze({ light: 1 }),
-        }),
+        }) as Readonly<Record<string, { light: number, inLiquid?: boolean }>>,
         LIGHT_ENTITY: Object.freeze({
             "minecraft:glow_squid": Object.freeze({ light: 10 }),
             "minecraft:allay": Object.freeze({ light: 10 }),
             "minecraft:vex": Object.freeze({ light: 10 }),
             "minecraft:blaze": Object.freeze({ light: 12 }),
             "minecraft:warden": Object.freeze({ light: 6 }),
-        }),
+        }) as Readonly<Record<string, { light: number, inLiquid?: boolean }>>,
         LIGHT_PENDING_BATCH: 64,
         LIGHT_PLAYER_BATCH: 64,
     }),
@@ -123,7 +144,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:damaged_anvil': 'minecraft:chipped_anvil',
             'minecraft:chipped_anvil': 'minecraft:anvil',
             'minecraft:anvil': null
-        }), // last index will be unFixable
+        }) as Readonly<Record<string, string | null>>, // last index will be unFixable
         REPAIR_SOUND: Object.freeze({
             ID: 'smithing_table.use',
             VOLUME: 1.0,
@@ -147,7 +168,9 @@ export const SETTINGS = Object.freeze({
         MAX_PROCESS: 12,
         BATCH_SIZE: 12 // max entity that will get process
     }),
-    WATER_CAULDRON: Object.freeze({}),
+    WATER_CAULDRON: Object.freeze({
+
+    }),
     COMPOSTER: Object.freeze({
         ENABLED: true,
         WORK_WITH_HOPPER: true, // this might slow down the game when have too many...
@@ -311,6 +334,7 @@ export const SETTINGS = Object.freeze({
         ITEMS: Object.freeze({
             // chance is max 1 (0.3, 0.5, 0.65, 0.85, 1.0)
             // smelt item +0.2(tier)
+
             // botany
             'minecraft:podzol': 0.3,
             'minecraft:mycelium': 0.3,
@@ -323,6 +347,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:resin_clump': 0.65,
             'minecraft:sugar': 0.50,
             'minecraft:lit_pumpkin': 0.65,
+
             // lysosome inactived
             'minecraft:rotten_flesh': 0.65,
             'minecraft:string': 0.5,
@@ -336,6 +361,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:spider_eye': 0.65,
             'minecraft:fermented_spider_eye': 0.85,
             'minecraft:dried_ghast': 0.85,
+
             // wool
             'minecraft:black_wool': 0.85,
             'minecraft:blue_wool': 0.85,
@@ -353,6 +379,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:purple_wool': 0.85,
             'minecraft:white_wool': 0.85,
             'minecraft:yellow_wool': 0.85,
+
             // passive mob loot
             'minecraft:chicken': 0.5,
             'minecraft:porkchop': 0.5,
@@ -371,6 +398,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:salmon': 0.5,
             'minecraft:tropical_fish': 0.5,
             'minecraft:pufferfish': 0.5,
+
             // ooked (or cooked)
             'minecraft:cooked_chicken': 0.65,
             'minecraft:cooked_porkchop': 0.65,
@@ -379,6 +407,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:cooked_rabbit': 0.65,
             'minecraft:cooked_cod': 0.65,
             'minecraft:cooked_salmon': 0.65,
+
             'minecraft:golden_carrot': 0.65,
             'minecraft:golden_dandelion': 0.65,
             'minecraft:glistering_melon_slice': 0.65,
@@ -390,13 +419,13 @@ export const SETTINGS = Object.freeze({
             'minecraft:enchanted_golden_apple': 1,
             'minecraft:rabbit_stew': 1,
             'minecraft:nether_star': 1,
-        })
+        }) as Readonly<Record<string, 0.3 | 0.5 | 0.65 | 0.85 | 1.0>>
     }),
     CARRIED_CHEST: Object.freeze({
         ENABLED: true,
         CARRY_TAG: "carrying",
         MAX_DISPLAY: 5,
-        APPLY_IMPULSE: Object.freeze({
+        APPLY_IMPULSE: Object.freeze({ // only apply via player in water *won't effect [creative] gamemode
             ENABLED: true,
             VECTOR: Object.freeze({ x: 0, y: -0.008, z: 0 }) // if posstive will make player swim up easier
         }),
@@ -406,7 +435,7 @@ export const SETTINGS = Object.freeze({
             ALLOW_JUMP_IN_LAVA: true,
             ALLOW_JUMP_IN_SCAFFOLDING: true,
             ALLOW_JUMP_IN_LADDER: true
-        }),
+        }) as Readonly<Record<string, boolean>>,
         ENTITY_TYPE: "qof:chest",
         CHEST_ID: "minecraft:chest",
         CONTAINER_NAMETAG: "§r§fCarried Container",
@@ -431,15 +460,15 @@ export const SETTINGS = Object.freeze({
             South: 'north',
             East: 'west',
             West: 'east',
-        }),
+        }) as Readonly<Record<string, string>>,
         FACE_TO_NEIGHBOUR: Object.freeze({
-            Up: (b) => b.above(),
-            Down: (b) => b.below(),
-            North: (b) => b.north(),
-            South: (b) => b.south(),
-            East: (b) => b.east(),
-            West: (b) => b.west()
-        }),
+            Up: (b: Block) => b.above(),
+            Down: (b: Block) => b.below(),
+            North: (b: Block) => b.north(),
+            South: (b: Block) => b.south(),
+            East: (b: Block) => b.east(),
+            West: (b: Block) => b.west()
+        }) as Readonly<Record<'Up' | 'Down' | 'North' | 'South' | 'East' | 'West', (b: Block) => Block>>,
         ALLOW_REPLACE: Object.freeze({
             'minecraft:short_grass': true,
             'minecraft:short_dry_grass': true,
@@ -449,11 +478,12 @@ export const SETTINGS = Object.freeze({
             'minecraft:nether_sprouts': true,
             'minecraft:vine': true,
             'minecraft:glow_lichen': true,
+
             // 2 block tall need neig check
             'minecraft:tall_grass': false,
             'minecraft:large_fern': false,
-        }),
-        NEED_SNEAK: Object.freeze({
+        }) as Readonly<Record<string, boolean>>,
+        NEED_SNEAK: Object.freeze({ // o(1) search
             'minecraft:crafting_table': true,
             'minecraft:crafter': true,
             'minecraft:barrel': true,
@@ -470,13 +500,14 @@ export const SETTINGS = Object.freeze({
             'minecraft:command_block': true,
             'minecraft:chain_command_block': true,
             'minecraft:repeating_command_block': true,
-        }),
+        }) as Readonly<Record<string, boolean>>,
         TORCH_ID: Object.freeze({
             "minecraft:torch": true,
             "minecraft:redstone_torch": true,
             "minecraft:copper_torch": true,
             "minecraft:soul_torch": true
-        }),
+        }) as Readonly<Record<string, boolean>>,
+
         CAN_ALWAYS_USE: Object.freeze(new Set([
             // misc, idk where to put it
             "minecraft:wind_charge",
@@ -491,11 +522,13 @@ export const SETTINGS = Object.freeze({
             "minecraft:empty_map",
             "minecraft:banner",
             "minecraft:name_tag",
+
             // stew
             "minecraft:suspicious_stew",
             "minecraft:mushroom_stew",
             "minecraft:rabbit_stew",
             "minecraft:beetroot_soup",
+
             // fish bucket
             "minecraft:axolotl_bucket",
             "minecraft:cod_bucket",
@@ -506,6 +539,7 @@ export const SETTINGS = Object.freeze({
             "minecraft:water_bucket",
             "minecraft:lava_bucket",
             "minecraft:powder_snow_bucket",
+
             // potions
             "minecraft:potion",
             "minecraft:lingering_potion",
@@ -514,10 +548,12 @@ export const SETTINGS = Object.freeze({
             "minecraft:experience_bottle",
             "minecraft:honey_bottle",
             "minecraft:glass_bottle",
+
             // egg
             "minecraft:egg",
             "minecraft:brown_egg",
             "minecraft:blue_egg",
+
             // weapon
             "minecraft:bow",
             "minecraft:crossbow",
@@ -526,6 +562,7 @@ export const SETTINGS = Object.freeze({
             "minecraft:warped_fungus_on_a_stick",
             "minecraft:shears",
             "minecraft:flint_and_steel",
+
             "minecraft:lead",
             "minecraft:saddle",
             "minecraft:leather_horse_armor",
@@ -535,6 +572,7 @@ export const SETTINGS = Object.freeze({
             "minecraft:diamond_horse_armor",
             "minecraft:netherite_horse_armor",
             "minecraft:wolf_armor",
+
             "minecraft:woode_spear",
             "minecraft:stone_spear",
             "minecraft:copper_spear",
@@ -542,12 +580,13 @@ export const SETTINGS = Object.freeze({
             "minecraft:iron_spear",
             "minecraft:diamond_spear",
             "minecraft:netherite_spear",
+
             // redstone
             "minecraft:repeater",
             "minecraft:comparator",
             "minecraft:redstone",
             "minecraft:redstone_torch",
-        ])),
+        ])) as Readonly<Set<string>>,
         DISALLOWED_ITEM: Object.freeze(new Set([
             // bundle
             'minecraft:bundle',
@@ -567,6 +606,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:purple_bundle',
             'minecraft:white_bundle',
             'minecraft:yellow_bundle',
+
             // shulker_box
             'minecraft:undyed_shulker_box',
             'minecraft:black_shulker_box',
@@ -585,11 +625,13 @@ export const SETTINGS = Object.freeze({
             'minecraft:purple_shulker_box',
             'minecraft:white_shulker_box',
             'minecraft:yellow_shulker_box',
+
             // potions
             'minecraft:potion',
             'minecraft:lingering_potion',
             'minecraft:splash_potion',
             'minecraft:ominous_bottle',
+
             // dyeable leathers
             'minecraft:leather_horse_armor',
             'minecraft:leather_helmet',
@@ -597,6 +639,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:leather_leggings',
             'minecraft:leather_boots',
             'minecraft:wolf_armor',
+
             // fish in bucket (size&color)
             "minecraft:axolotl_bucket",
             "minecraft:cod_bucket",
@@ -604,9 +647,11 @@ export const SETTINGS = Object.freeze({
             "minecraft:salmon_bucket",
             "minecraft:tadpole_bucket",
             "minecraft:tropical_fish_bucket",
+
             // bee
             "minecraft:bee_nest",
             "minecraft:beehive",
+
             // others
             'minecraft:arrow', // tripped arrow, sadly this inculding the normal arrow too
             'minecraft:banner',
@@ -622,11 +667,12 @@ export const SETTINGS = Object.freeze({
             'minecraft:shield', // banner can be put on a shield
             "minecraft:filled_map",
             "minecraft:empty_map", // empty locator map will lost
+
             // dev
             "minecraft:command_block",
             "minecraft:chain_command_block",
             "minecraft:repeating_command_block",
-        ])),
+        ])) as Readonly<Set<string>>,
         LIGHT: 'qof:light_block',
         LIGHT_DEV: 'qof:light_block_dev',
         PLACE_SOUND: Object.freeze({
@@ -646,9 +692,10 @@ export const SETTINGS = Object.freeze({
             "minecraft:tadpole_bucket": true,
             "minecraft:tropical_fish_bucket": true,
             "minecraft:bucket": true,
+
             "minecraft:redstone": true,
             "minecraft:redstone_torch": true,
-        }),
+        }) as Readonly<Record<string, boolean>>,
         FOOD_DATA: Object.freeze({
             // fruit & vegetable
             "minecraft:apple": Object.freeze({ nutrition: 4, saturation: 2.4, canAlwaysEat: true }),
@@ -662,9 +709,11 @@ export const SETTINGS = Object.freeze({
             "minecraft:poisonous_potato": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }), // 60% poison (5s)
             "minecraft:pumpkin_pie": Object.freeze({ nutrition: 8, saturation: 4.8, canAlwaysEat: false }),
             "minecraft:sweet_berries": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }),
+
             // golden / enchanted
             "minecraft:golden_apple": Object.freeze({ nutrition: 4, saturation: 9.6, canAlwaysEat: true }), // regen II (5s), absorption (2min)
             "minecraft:enchanted_golden_apple": Object.freeze({ nutrition: 4, saturation: 9.6, canAlwaysEat: true }), // regen II (30s), absorption IV, resistance, fire resistance
+
             // baked / cooked
             "minecraft:baked_potato": Object.freeze({ nutrition: 5, saturation: 6.0, canAlwaysEat: false }),
             "minecraft:cooked_beef": Object.freeze({ nutrition: 8, saturation: 12.8, canAlwaysEat: false }), // steak
@@ -674,6 +723,7 @@ export const SETTINGS = Object.freeze({
             "minecraft:cooked_porkchop": Object.freeze({ nutrition: 8, saturation: 12.8, canAlwaysEat: false }),
             "minecraft:cooked_rabbit": Object.freeze({ nutrition: 5, saturation: 6.0, canAlwaysEat: false }),
             "minecraft:cooked_salmon": Object.freeze({ nutrition: 6, saturation: 9.6, canAlwaysEat: false }),
+
             // raw meat
             "minecraft:beef": Object.freeze({ nutrition: 3, saturation: 1.8, canAlwaysEat: false }), // raw beef
             "minecraft:chicken": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }), // 30% hunger (30s)
@@ -682,51 +732,55 @@ export const SETTINGS = Object.freeze({
             "minecraft:porkchop": Object.freeze({ nutrition: 3, saturation: 1.8, canAlwaysEat: false }),
             "minecraft:rabbit": Object.freeze({ nutrition: 3, saturation: 1.8, canAlwaysEat: false }),
             "minecraft:salmon": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }), // raw salmon
+
             // fish / seafood
             "minecraft:pufferfish": Object.freeze({ nutrition: 1, saturation: 0.2, canAlwaysEat: false }), // hunger III, nausea, poison II
             "minecraft:tropical_fish": Object.freeze({ nutrition: 1, saturation: 0.2, canAlwaysEat: false }),
+
             // stews & soups
             "minecraft:beetroot_soup": Object.freeze({ nutrition: 6, saturation: 7.2, canAlwaysEat: false }),
             "minecraft:mushroom_stew": Object.freeze({ nutrition: 6, saturation: 7.2, canAlwaysEat: false }),
             "minecraft:rabbit_stew": Object.freeze({ nutrition: 10, saturation: 12.0, canAlwaysEat: false }),
             "minecraft:suspicious_stew": Object.freeze({ nutrition: 6, saturation: 7.2, canAlwaysEat: true }), // varies by flower
+
             // sweat
             "minecraft:bread": Object.freeze({ nutrition: 5, saturation: 6.0, canAlwaysEat: false }),
             // "minecraft:cake": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }), // whole = 14 over 7 slices, it not eatable as item tho
             "minecraft:cookie": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }),
+
             // misc
             "minecraft:dried_kelp": Object.freeze({ nutrition: 1, saturation: 0.2, canAlwaysEat: false }),
             "minecraft:honey_bottle": Object.freeze({ nutrition: 6, saturation: 1.2, canAlwaysEat: true }), // clears poison
             "minecraft:rotten_flesh": Object.freeze({ nutrition: 4, saturation: 0.8, canAlwaysEat: false }), // 80% hunger (30s)
             "minecraft:spider_eye": Object.freeze({ nutrition: 2, saturation: 3.2, canAlwaysEat: false }), // poison (5s)
-        })
+        }) as Readonly<Record<string, { nutrition: number, saturation: number, canAlwaysEat: boolean }>>
     }),
     HARVEST: Object.freeze({
         ENABLED: true,
         LOSS_SEED: true,
         DURABILITY: true,
+
         PLANT_LEVEL: Object.freeze({
             "minecraft:wheat": Object.freeze({ level: 7, seed: "minecraft:wheat_seeds" }),
             "minecraft:carrots": Object.freeze({ level: 7, seed: "minecraft:carrot" }),
             "minecraft:potatoes": Object.freeze({ level: 7, seed: "minecraft:potato" }),
             "minecraft:beetroot": Object.freeze({ level: 7, seed: "minecraft:beetroot_seeds" }),
             "minecraft:nether_wart": Object.freeze({ level: 3, seed: "minecraft:nether_wart" }),
-        }),
+        }) as Readonly<Record<string, { level: number, seed: string }>>,
         COCOA_VALID_LOGS: Object.freeze(new Set([
             'minecraft:jungle_log',
             'minecraft:stripped_jungle_log',
             'minecraft:jungle_wood',
             'minecraft:stripped_jungle_wood',
-        ])),
-        COCOA_DIRECTIONS: [
-            { x: 0, z: 1, dir: 0 }, // south
+        ])) as Readonly<Set<string>>,
+        COCOA_DIRECTIONS: [ /** N/S/E/W offsets */
+            { x: 0, z: 1, dir: 0 },  // south
             { x: -1, z: 0, dir: 1 }, // west
             { x: 0, z: -1, dir: 2 }, // north
-            { x: 1, z: 0, dir: 3 }, // east
-        ]
+            { x: 1, z: 0, dir: 3 },  // east
+        ] as const
     }),
     DOUBLE_DOOR: Object.freeze({
         ENABLED: true,
     })
-});
-//# sourceMappingURL=_config.js.map
+})

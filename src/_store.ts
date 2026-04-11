@@ -1,35 +1,36 @@
-import { world } from "@minecraft/server";
-import { SETTINGS } from "./_config";
+import { world } from "@minecraft/server"
+import { SETTINGS } from "./_config"
+
 function buildRuntime() {
-    const S = SETTINGS;
-    let ps = {};
-    try {
-        ps = world.getPackSettings();
+    const S = SETTINGS
+    let ps = {} as Record<string, boolean | number | string>
+    try { ps = world.getPackSettings() }
+    catch (e) { if (S.DEBUG) world.sendMessage(`§cpack setting unable to load, using fallback: ${e}`) }
+
+    const r1 = (name: string, def: number) => Math.round(g(name, def) * 10) / 10
+    const g = <T>(name: string, def: T): T => {
+        const v = ps[name]
+        return (v !== undefined && typeof v === typeof def) ? v as T : def
     }
-    catch (e) {
-        if (S.DEBUG)
-            world.sendMessage(`§cpack setting unable to load, using fallback: ${e}`);
-    }
-    const r1 = (name, def) => Math.round(g(name, def) * 10) / 10;
-    const g = (name, def) => {
-        const v = ps[name];
-        return (v !== undefined && typeof v === typeof def) ? v : def;
-    };
-    const L = S.LIGHT;
-    const A = S.REPAIR_ANVIL;
-    const W = S.WATER_CONCRETE;
-    const C = S.COMPOSTER;
-    const CH = S.CARRIED_CHEST;
-    const OH = S.OFFHAND;
-    const CR = S.HARVEST;
-    const DD = S.DOUBLE_DOOR;
+
+    const L = S.LIGHT
+    const A = S.REPAIR_ANVIL
+    const W = S.WATER_CONCRETE
+    const C = S.COMPOSTER
+    const CH = S.CARRIED_CHEST
+    const OH = S.OFFHAND
+    const CR = S.HARVEST
+    const DD = S.DOUBLE_DOOR
+
     return Object.freeze({
         DEBUG: g("qof:DEBUG", S.DEBUG),
         DISABLED_HEARTBEAT: g("qof:DISABLED_HEARTBEAT", S.DISABLED_HEARTBEAT),
         INTERVAL_DELAY: g("qof:INTERVAL_DELAY", S.INTERVAL_DELAY),
+
         DISABLED_COMMANDFEEDBACK: S.DISABLED_COMMANDFEEDBACK,
         SLICE_PREFIX: S.SLICE_PREFIX,
         BLOCKFACE_TO_DIR: S.BLOCKFACE_TO_DIR,
+
         LIGHT: Object.freeze({
             ENABLED: g("qof:LIGHT.ENABLED", L.ENABLED),
             DECAY_LIGHT_TICK: g("qof:LIGHT.DECAY_LIGHT_TICK", L.DECAY_LIGHT_TICK),
@@ -38,6 +39,7 @@ function buildRuntime() {
             LIGHT_RENDER_RADIUS: g("qof:LIGHT.LIGHT_RENDER_RADIUS", L.LIGHT_RENDER_RADIUS),
             LIGHT_RENDER_PER_PLAYER: g("qof:LIGHT.LIGHT_RENDER_PER_PLAYER", L.LIGHT_RENDER_PER_PLAYER),
             LIGHT_FIRE_LEVEL: g("qof:LIGHT.LIGHT_FIRE_LEVEL", L.LIGHT_FIRE_LEVEL),
+
             // static
             LIGHT_BLOCK: OH.LIGHT, // use from offhand
             LIGHT_WIKI: L.LIGHT_WIKI,
@@ -55,19 +57,23 @@ function buildRuntime() {
             LIGHT_PENDING_BATCH: L.LIGHT_PENDING_BATCH,
             LIGHT_PLAYER_BATCH: L.LIGHT_PLAYER_BATCH,
         }),
+
         REPAIR_ANVIL: Object.freeze({
             ENABLED: g("qof:REPAIR_ANVIL.ENABLED", A.ENABLED),
             REPAIR_HELD_DELAY: g("qof:REPAIR_ANVIL.REPAIR_HELD_DELAY", A.REPAIR_HELD_DELAY),
+
             // static
             ITEM_TYPEID: A.ITEM_TYPEID,
             REPAIRABLE_ANVIL: A.REPAIRABLE_ANVIL,
             REPAIR_SOUND: A.REPAIR_SOUND,
         }),
+
         WATER_CONCRETE: Object.freeze({
             ENABLED: g("qof:WATER_CONCRETE.ENABLED", W.ENABLED),
             MAX_PROCESS: g("qof:WATER_CONCRETE.MAX_PROCESS", W.MAX_PROCESS),
             SLOW_BASE: g("qof:WATER_CONCRETE.SLOW_BASE", W.SLOW_BASE),
             SLOW_MULTIPLIER: g("qof:WATER_CONCRETE.SLOW_MULTIPLIER", W.SLOW_MULTIPLIER),
+
             // static
             KEEP_VELOCITY: W.KEEP_VELOCITY,
             ITEM_PREFIX: W.ITEM_PREFIX,
@@ -77,9 +83,11 @@ function buildRuntime() {
             DONE_SOUND: W.DONE_SOUND,
             BATCH_SIZE: W.BATCH_SIZE,
         }),
+
         COMPOSTER: Object.freeze({
             ENABLED: g("qof:COMPOSTER.ENABLED", C.ENABLED),
             WORK_WITH_HOPPER: g("qof:COMPOSTER.WORK_WITH_HOPPER", C.WORK_WITH_HOPPER),
+
             // static
             HOPPER_TYPEID: C.HOPPER_TYPEID,
             BLOCK_TYPEID: C.BLOCK_TYPEID,
@@ -95,6 +103,7 @@ function buildRuntime() {
             // VANILA_COMPOSTE: C.VANILA_COMPOSTE, // didn't use anymore
             ITEMS: C.ITEMS,
         }),
+
         CARRIED_CHEST: Object.freeze({
             ENABLED: g("qof:CARRIED_CHEST.ENABLED", CH.ENABLED),
             MAX_DISPLAY: g("qof:CARRIED_CHEST.MAX_DISPLAY", CH.MAX_DISPLAY),
@@ -105,6 +114,7 @@ function buildRuntime() {
                 ALLOW_JUMP_IN_SCAFFOLDING: g("qof:CARRIED_CHEST.PLAYER_JUMP.ALLOW_JUMP_IN_SCAFFOLDING", CH.PLAYER_JUMP.ALLOW_JUMP_IN_SCAFFOLDING),
                 ALLOW_JUMP_IN_LADDER: g("qof:CARRIED_CHEST.PLAYER_JUMP.ALLOW_JUMP_IN_LADDER", CH.PLAYER_JUMP.ALLOW_JUMP_IN_LADDER),
             }),
+
             // static
             SLOWNESS_DURATION: CH.SLOWNESS_DURATION,
             SLOWNESS_AMPLIFIER: CH.SLOWNESS_AMPLIFIER,
@@ -121,6 +131,7 @@ function buildRuntime() {
             DOUBLE_SNEAK_WINDOW_MOBILE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE", OH.DOUBLE_SNEAK_WINDOW_MOBILE),
             DOUBLE_SNEAK_WINDOW_CONSOLE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_CONSOLE", OH.DOUBLE_SNEAK_WINDOW_CONSOLE),
             DOUBLE_SNEAK_WINDOW_DEFAULT: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT", OH.DOUBLE_SNEAK_WINDOW_DEFAULT),
+
             // static
             FACE_TO_TORCH_DIR: OH.FACE_TO_TORCH_DIR,
             FACE_TO_NEIGHBOUR: OH.FACE_TO_NEIGHBOUR,
@@ -139,6 +150,7 @@ function buildRuntime() {
             ENABLED: g("qof:HARVEST.ENABLED", CR.ENABLED),
             LOSS_SEED: g("qof:HARVEST.LOSS_SEED", CR.LOSS_SEED),
             DURABILITY: g("qof:HARVEST.DURABILITY", CR.DURABILITY),
+
             // static
             PLANT_LEVEL: CR.PLANT_LEVEL,
             COCOA_VALID_LOGS: CR.COCOA_VALID_LOGS,
@@ -147,7 +159,7 @@ function buildRuntime() {
         DOUBLE_DOOR: Object.freeze({
             ENABLED: g("qof:DOUBLE_DOOR.ENABLED", DD.ENABLED),
         })
-    });
+    })
 }
-export const RUNTIME = buildRuntime();
-//# sourceMappingURL=_store.js.map
+
+export const RUNTIME = buildRuntime()

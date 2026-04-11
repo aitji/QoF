@@ -5,23 +5,35 @@ node_modules/
 dist/
 out/
 *.js.map
-# ^ if you want [map] run tsc
 
 # typescript cache
 *.tsbuildinfo
 
 # minecraft
-*.mc*
-*.zip
+# *.mc*
+# *.zip
 
 # dev
 npm-debug.log*
-.DS_Store
-Thumbs.db
 .env
 .env.*
 * copy*
 *test*
+
+# builder
+recipes/**/gen.js
+
+# repo
+*.md
+!README.md
+!_notes.md
+.github
+src/
+.gitattributes
+.gitignore
+build.gitignore
+*.git
+
 
 .vscode/
 .idea/

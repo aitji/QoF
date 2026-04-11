@@ -1,4 +1,2 @@
-import { PlayerInteractWithBlockBeforeEvent } from "@minecraft/server"
-
-/** @param {PlayerInteractWithBlockBeforeEvent} data */
-export const test = (data) => {}
+export const nothing = (data) => { };
+//# sourceMappingURL=cauldron.js.map

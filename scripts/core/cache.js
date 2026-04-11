@@ -1,80 +1,53 @@
-import { GameMode, PlatformType, Player, PlayerGameModeChangeAfterEvent, system, world } from "@minecraft/server"
-import { RUNTIME } from "../_store" // "cache.js" got use in "lib.js" as lazy import, use setting from store directly
-const { DEBUG } = RUNTIME
-
-// "core/cache.js" is [ONLY] for caching globally
-/**
- * @typedef {Object} PlayerData
- * @property {string} name
- * @property {PlatformType} platformType
- * @property {GameMode} gameMode
- */
-
-/**@type {Map<string, PlayerData>}*/
-export const playerData = new Map()
-export const worldData = new Set()
-
+import { system, world } from "@minecraft/server";
+import { RUNTIME } from "../_store"; // "cache" got use in "lib" as lazy import, use setting from store directly
+const { DEBUG } = RUNTIME;
+// maps, "core/cache" is [ONLY] for caching globally
+export const playerData = new Map();
+export const worldData = new Map();
+// map typing fix
+const typeMap = {
+    player: playerData,
+    world: worldData
+};
 // internal
-const typeMap = Object.freeze({
-    'player': playerData,
-    'world': worldData
-})
 system.run(() => {
-    const allPlayers = world.getAllPlayers()
-    for (const player of allPlayers) player_init_update(player)
-})
-
+    const allPlayers = world.getAllPlayers();
+    for (const player of allPlayers)
+        player_init_update(player);
+});
 // external
-/**
- * @param {Player|string} player string = playerId
- * @param {'name'|'platformType'|'gameMode'} get
- * @returns {PlayerData|string|PlatformType|GameMode}
- */
 export const getPlayer = (player, get) => {
-    const id = typeof player === 'string' ? player : player.id
-    let data = playerData.get(id)
-
+    const id = typeof player === 'string' ? player : player.id;
+    let data = playerData.get(id);
     if (!data) {
         if (typeof player === 'string') {
-            if(DEBUG)console.warn('[cache.js] cannot update player data throw empy string as return')
-            return ''
+            if (DEBUG)
+                console.warn('[cache] cannot update player data throw empy string as return');
+            return '';
         }
-        data = player_init_update(player)
+        data = player_init_update(player);
     }
-
-    return get ? data[get] : data
-}
-
-/**
- * @param {'player'|'world'} type
- * @param {string} id
- * @param {{}} kv
- */
-export const update = (type, id, kv = {}) => {
-    const cache = typeMap[type]
-    if (!cache) throw new Error(`[cache.js] ${type} not in the list`)
-
-    const prev = cache.get(id) || {}
-    const next = { ...prev, ...kv }
-    cache.set(id, next)
-    return next
-}
-
-/**@param {Player} player*/
+    return get ? data[get] : data;
+};
+export const update = (type, id, kv) => {
+    const cache = typeMap[type];
+    const prev = cache.get(id);
+    const next = { ...(prev || {}), ...kv };
+    cache.set(id, next);
+    return next;
+};
 export const player_init_update = (player) => {
-    const { id, name } = player
-    const platformType = player.clientSystemInfo.platformType
-    const gameMode = player.getGameMode()
-
+    const { id, name } = player;
+    const platformType = player.clientSystemInfo.platformType;
+    const gameMode = player.getGameMode();
     return update('player', id, {
         name,
         platformType,
         gameMode
-    })
-}
-
-/**@param {PlayerGameModeChangeAfterEvent} data*/
+    });
+};
 export const player_gamemode_update = (data) => {
-    const { player, toGameMode } = data
-    update('player', player.id, { gameMode: toGameMode })
-}
+    const { player, toGameMode } = data;
+    update('player', player.id, { gameMode: toGameMode });
+};
+//# sourceMappingURL=cache.js.map
