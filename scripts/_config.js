@@ -138,7 +138,7 @@ export const SETTINGS = Object.freeze({
             PITCH: 1.0
         })
     }),
-    WET_POWDER_CONCRETE: Object.freeze({
+    WATER_CONCRETE: Object.freeze({
         ENABLED: true,
         ITEM_PREFIX: "minecraft:",
         PROCESS_DELAY: 4, // how long before item vanish (tick)
@@ -154,6 +154,9 @@ export const SETTINGS = Object.freeze({
         }),
         MAX_PROCESS: 12,
         BATCH_SIZE: 12 // max entity that will get process
+    }),
+    WATER_CAULDRON: Object.freeze({
+        
     }),
     COMPOSTER: Object.freeze({
         ENABLED: true,

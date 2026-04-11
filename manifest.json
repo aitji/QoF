@@ -205,7 +205,7 @@
     {
       "type": "toggle",
       "text": "§7Allow convert concrete powder hardening in water?",
-      "name": "qof:WET_POWDER_CONCRETE.ENABLED",
+      "name": "qof:WATER_CONCRETE.ENABLED",
       "default": true
     },
     {
@@ -215,7 +215,7 @@
     {
       "type": "slider",
       "text": "§7How long§8(game tick)§7 should base time take? §8(larger = slower)",
-      "name": "qof:WET_POWDER_CONCRETE.SLOW_BASE",
+      "name": "qof:WATER_CONCRETE.SLOW_BASE",
       "min": 0,
       "max": 360,
       "step": 5,
@@ -224,7 +224,7 @@
     {
       "type": "slider",
       "text": "§7Concrete conversion slowness §8(larger = slower)",
-      "name": "qof:WET_POWDER_CONCRETE.SLOW_MULTIPLIER",
+      "name": "qof:WATER_CONCRETE.SLOW_MULTIPLIER",
       "min": 0,
       "max": 60,
       "step": 1,

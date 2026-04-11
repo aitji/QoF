@@ -1,2 +1,4 @@
+import { PlayerInteractWithBlockBeforeEvent } from "@minecraft/server"
 
-export const nothing = () => { }
+/** @param {PlayerInteractWithBlockBeforeEvent} data */
+export const test = (data) => {}

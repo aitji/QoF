@@ -15,7 +15,7 @@ function buildRuntime() {
 
     const L = S.LIGHT
     const A = S.REPAIR_ANVIL
-    const W = S.WET_POWDER_CONCRETE
+    const W = S.WATER_CONCRETE
     const C = S.COMPOSTER
     const CH = S.CARRIED_CHEST
     const OH = S.OFFHAND
@@ -69,11 +69,11 @@ function buildRuntime() {
             REPAIR_SOUND: A.REPAIR_SOUND,
         }),
 
-        WET_POWDER_CONCRETE: Object.freeze({
-            ENABLED: g("qof:WET_POWDER_CONCRETE.ENABLED", W.ENABLED),
-            MAX_PROCESS: g("qof:WET_POWDER_CONCRETE.MAX_PROCESS", W.MAX_PROCESS),
-            SLOW_BASE: g("qof:WET_POWDER_CONCRETE.SLOW_BASE", W.SLOW_BASE),
-            SLOW_MULTIPLIER: g("qof:WET_POWDER_CONCRETE.SLOW_MULTIPLIER", W.SLOW_MULTIPLIER),
+        WATER_CONCRETE: Object.freeze({
+            ENABLED: g("qof:WATER_CONCRETE.ENABLED", W.ENABLED),
+            MAX_PROCESS: g("qof:WATER_CONCRETE.MAX_PROCESS", W.MAX_PROCESS),
+            SLOW_BASE: g("qof:WATER_CONCRETE.SLOW_BASE", W.SLOW_BASE),
+            SLOW_MULTIPLIER: g("qof:WATER_CONCRETE.SLOW_MULTIPLIER", W.SLOW_MULTIPLIER),
 
             // static
             KEEP_VELOCITY: W.KEEP_VELOCITY,
