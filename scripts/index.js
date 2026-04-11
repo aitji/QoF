@@ -5,10 +5,14 @@ import * as debug from "./core/debug"
 import * as heartbeat from "./core/heartbeat"
 import * as cache from "./core/cache"
 
+// light
 import * as light from "./addon/light/core"
 import * as light_patcher from "./addon/light/patcher"
+// water
+import * as concrete from "./addon/water/concrete"
+import * as cauldron from "./addon/water/cauldron"
+
 import * as anvil from "./addon/anvil"
-import * as powder from "./addon/powder_concrete"
 import * as composter from "./addon/composter"
 import * as chest from "./addon/chest"
 import * as offhand from "./addon/offhand"
@@ -26,7 +30,7 @@ system.run(() => {
             light.light_processFrames(tick)
         }
 
-        if (WET_POWDER_CONCRETE.ENABLED) powder.powder_pending()
+        if (WET_POWDER_CONCRETE.ENABLED) concrete.powder_pending()
         if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending(tick)
 
         const players = world.getAllPlayers()
@@ -46,7 +50,7 @@ world.afterEvents.entityDie.subscribe(data => {
 
 world.afterEvents.entityRemove.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_entityRemove(data)
-    if (RUNTIME.WET_POWDER_CONCRETE.ENABLED) powder.powder_entityRemove(data)
+    if (RUNTIME.WET_POWDER_CONCRETE.ENABLED) concrete.powder_entityRemove(data)
 
     lib.helper.helper_entityRemove(data)
 })
@@ -74,7 +78,7 @@ world.beforeEvents.playerInteractWithEntity.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithEntity(data)
 })
 world.afterEvents.entitySpawn.subscribe(data => {
-    if (RUNTIME.WET_POWDER_CONCRETE.ENABLED) powder.powder_entitySpawn(data)
+    if (RUNTIME.WET_POWDER_CONCRETE.ENABLED) concrete.powder_entitySpawn(data)
 })
 world.afterEvents.playerSpawn.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerSpawn(data)

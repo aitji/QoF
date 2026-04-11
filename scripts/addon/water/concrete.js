@@ -1,5 +1,5 @@
-import { EntityComponentTypes, Player, world, ItemStack, system } from "@minecraft/server"
-import { checkRandom, RUNTIME } from "../lib"
+import { EntityComponentTypes, Player, world, ItemStack, system, EntitySpawnAfterEvent } from "@minecraft/server"
+import { checkRandom, RUNTIME } from "../../lib"
 const {
     DEBUG,
     SLICE_PREFIX,
@@ -12,13 +12,13 @@ const {
 const queue = new Map() // Map<id, { readyAt, color, amount, dimensionId, location, velocity }>
 
 const wetDelay = (amount) => SLOW_BASE + Math.floor(Math.sqrt(amount - 1) * SLOW_MULTIPLIER)
-export const powder_entityRemove = ({ removedEntityId }) => {
-    queue.delete(removedEntityId)
-}
-
+export const powder_entityRemove = ({ removedEntityId }) => queue.delete(removedEntityId)
+/** @param {EntitySpawnAfterEvent} entity */
 export const powder_entitySpawn = ({ entity }) => {
     if (entity?.typeId !== "minecraft:item") return
     if (!entity?.isValid) return
+    if (entity.dimension === "minecraft:nether") return
+
     const component = entity?.getComponent(EntityComponentTypes.Item)
     const itemStack = component?.itemStack
     if (!itemStack) return
