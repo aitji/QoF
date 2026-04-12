@@ -1,5 +1,5 @@
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, DisplaySlotId, EquipmentSlot, MemoryTier, Player, PlayerPlaceBlockAfterEvent, ScoreboardObjective, StartupEvent, system, world } from "@minecraft/server"
-import { dumpMeThatComp, getEqu, RUNTIME } from "../lib"
+import { clamp, dumpMeThatComp, getEqu, RUNTIME } from "../lib"
 const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
 import * as cache from "./cache"
 
@@ -193,7 +193,7 @@ export const debug_startup = (event: StartupEvent) => {
         const player = origin.sourceEntity as Player
         if (player.typeId !== 'minecraft:player') return { status: CustomCommandStatus.Failure, message: "origin not player" }
 
-        player_dampening.set(player.id, Number(light_dampening))
+        player_dampening.set(player.id, clamp(light_dampening, 0, 15))
         return { status: CustomCommandStatus.Success, message: 'yay' }
     })
 }
