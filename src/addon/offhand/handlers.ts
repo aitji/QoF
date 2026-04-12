@@ -1,11 +1,11 @@
 import {
     Block, BlockPermutation, Direction, EquipmentSlot,
-    GameMode, ItemComponentTypes, PlayerInteractWithBlockBeforeEvent, system, world
+    GameMode, ItemComponentTypes, LiquidType, PlayerInteractWithBlockBeforeEvent, system, world
 } from "@minecraft/server"
 import { applyItemDamage, getDistance, getEqu, playSound, RUNTIME, sumLoc } from "../../lib"
 import { suppressLight } from "../light/core"
 import { resolveCocoaPermutation } from "../harvest"
-import { getSpecialPermutation, hasEntityInBlock, isReplaceableTarget, resolveOrientedPermutation } from "./placement"
+import { getSpecialPermutation, hasEntityInBlock, isReplaceableTarget, resolveOrientedPermutation, DISALLOW_PLACEMENT_BLOCK } from "./placement"
 import * as cache from "../../core/cache"
 
 const {
@@ -223,6 +223,7 @@ export const blockHandle = (data: PlayerInteractWithBlockBeforeEvent, creative: 
     const typeId = offhandItem.typeId
     if (SEEDTOBLOCK[typeId]) return // handled by seedsHandle
     if (TORCH_ID[typeId]) return // handled by torchHandle
+    if (DISALLOW_PLACEMENT_BLOCK.has(typeId)) return
 
     try { if (!BlockPermutation.resolve(typeId)) return } catch { return }
 
@@ -276,28 +277,31 @@ export const blockHandle = (data: PlayerInteractWithBlockBeforeEvent, creative: 
     const target = block[BLOCKFACE_TO_DIR[blockFace]](1)
     if (!target) return
     if (!isReplaceableTarget(target)) return
-    const upOn = (e: number, threshold = 0.8) => e % 1 >= threshold ? Math.ceil(e) : Math.floor(e)
-
-    // vanilla: can't place inside own hitbox
-    if (getDistance(sumLoc(target.location, { x: 0.5, y: 0, z: 0.5 }), player.location) <= 0.62) return
-    if (DEBUG) {
-        world.sendMessage(`${target.location.x.toFixed(2)} [${upOn(target.location.x)}] === ${player.location.x.toFixed(2)} [${upOn(player.location.x)}]`)
-        world.sendMessage(`${target.location.y.toFixed(2)} [${upOn(target.location.y)}] === ${(player.location.y + 1).toFixed(2)} [${upOn(player.location.y + 1)}]`)
-        world.sendMessage(`${target.location.z.toFixed(2)} [${upOn(target.location.z)}] === ${player.location.z.toFixed(2)} [${upOn(player.location.z)}]`)
-    }
-    if (
-        upOn(target.location.x) === upOn(player.location.x) &&
-        target.location.y === player.location.y + 1 &&
-        upOn(target.location.z) === upOn(player.location.z)
-    ) return
-    // vanilla: can't place inside any other entity
-    if (hasEntityInBlock(player.dimension, target.location, player.id)) return
 
     const { y: yaw } = player.getRotation()
 
     const special = getSpecialPermutation(typeId, blockFace, faceLocation, block, target, yaw)
     if (special === undefined) return
     const permutation = special ?? resolveOrientedPermutation(typeId, blockFace, yaw)
+    const notPass = permutation.isLiquidBlocking(LiquidType.Water)
+    if (notPass) {
+        const upOn = (e: number, threshold = 0.8) => e % 1 >= threshold ? Math.ceil(e) : Math.floor(e)
+
+        // vanilla: can't place inside own hitbox
+        if (getDistance(sumLoc(target.location, { x: 0.5, y: 0, z: 0.5 }), player.location) <= 0.62) return
+        if (DEBUG) {
+            world.sendMessage(`${target.location.x.toFixed(2)} [${upOn(target.location.x)}] === ${player.location.x.toFixed(2)} [${upOn(player.location.x)}]`)
+            world.sendMessage(`${target.location.y.toFixed(2)} [${upOn(target.location.y)}] === ${(player.location.y + 1).toFixed(2)} [${upOn(player.location.y + 1)}]`)
+            world.sendMessage(`${target.location.z.toFixed(2)} [${upOn(target.location.z)}] === ${player.location.z.toFixed(2)} [${upOn(player.location.z)}]`)
+        }
+        if (
+            upOn(target.location.x) === upOn(player.location.x) &&
+            target.location.y === player.location.y + 1 &&
+            upOn(target.location.z) === upOn(player.location.z)
+        ) return
+        // vanilla: can't place inside any other entity
+        if (hasEntityInBlock(player.dimension, target.location, player.id)) return
+    }
 
     data.cancel = true
     system.run(() => {

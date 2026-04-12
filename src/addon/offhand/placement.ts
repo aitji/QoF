@@ -65,23 +65,37 @@ function flipFacing(blockFace: Direction, yaw: number): number {
     return CARDINAL_TO_FACING[OPPOSITE[FACE_CARDINAL[blockFace]!]]
 }
 
-const FACING_ATTACH = new Set([
+export const DISALLOW_PLACEMENT_BLOCK = Object.freeze(new Set([
+    "minecraft:acacia_door", "minecraft:bamboo_door",
+    "minecraft:birch_door", "minecraft:cherry_door",
+    "minecraft:copper_door", "minecraft:crimson_door",
+    "minecraft:dark_oak_door", "minecraft:exposed_copper_door",
+    "minecraft:iron_door", "minecraft:jungle_door",
+    "minecraft:mangrove_door", "minecraft:oxidized_copper_door",
+    "minecraft:pale_oak_door", "minecraft:spruce_door",
+    "minecraft:warped_door", "minecraft:waxed_copper_door",
+    "minecraft:waxed_exposed_copper_door", "minecraft:waxed_oxidized_copper_door",
+    "minecraft:waxed_weathered_copper_door", "minecraft:weathered_copper_door",
+    "minecraft:wooden_door"
+]))
+
+const FACING_ATTACH = Object.freeze(new Set([
     'minecraft:observer', 'minecraft:ladder',
     'minecraft:amethyst_cluster',
     'minecraft:large_amethyst_bud', 'minecraft:medium_amethyst_bud', 'minecraft:small_amethyst_bud',
-])
+]))
 /**
  * VERTICAL_ATTACH: like ATTACH
  * but Up=1(floor) and Down=0(ceiling) are literal.
  */
-const FACING_VERTICAL_ATTACH = new Set([
+const FACING_VERTICAL_ATTACH = Object.freeze(new Set([
     'minecraft:end_rod', 'minecraft:lightning_rod',
     'minecraft:stone_button',
     'minecraft:oak_button', 'minecraft:spruce_button', 'minecraft:birch_button',
     'minecraft:jungle_button', 'minecraft:acacia_button', 'minecraft:dark_oak_button',
     'minecraft:mangrove_button', 'minecraft:cherry_button', 'minecraft:bamboo_button',
     'minecraft:crimson_button', 'minecraft:warped_button', 'minecraft:polished_blackstone_button',
-])
+]))
 const FACING_OVERRIDE = new Map<string, 'flip' | 'attach' | 'vertical_attach'>()
 
 type SupportFn = (support: Block) => boolean
@@ -207,7 +221,7 @@ export function getSpecialPermutation(
         if (!(below && below.hasTag('dirt') || allowList.has(below.typeId))) return undefined
 
         if (block.typeId === 'minecraft:bamboo' || block.typeId === 'minecraft:bamboo_sapling') {
-            if (!(block.location.x === below.location.x && block.location.z === below.location.z)) 
+            if (!(block.location.x === below.location.x && block.location.z === below.location.z))
                 if (below.hasTag('dirt'))
                     return BlockPermutation.resolve('minecraft:bamboo_sapling')
 
