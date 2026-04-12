@@ -127,10 +127,11 @@ export const SETTINGS = Object.freeze({
             "small_amethyst_bud": Object.freeze({ light: 1 }),
         }) as Readonly<Record<string, { light: number, inLiquid?: boolean }>>,
         LIGHT_ENTITY: Object.freeze({
+            "minecraft:blaze": Object.freeze({ light: 12 }),
             "minecraft:glow_squid": Object.freeze({ light: 10 }),
             "minecraft:allay": Object.freeze({ light: 10 }),
             "minecraft:vex": Object.freeze({ light: 10 }),
-            "minecraft:blaze": Object.freeze({ light: 12 }),
+            "minecraft:magma_cube": Object.freeze({ light: 9 }),
             "minecraft:warden": Object.freeze({ light: 6 }),
         }) as Readonly<Record<string, { light: number, inLiquid?: boolean }>>,
         LIGHT_PENDING_BATCH: 64,
