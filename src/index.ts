@@ -59,6 +59,8 @@ world.afterEvents.playerPlaceBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerPlaceBlock(data)
     if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerPlaceBlock(data)
     if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER) composter.composter_playerPlaceBlock(data)
+
+    if (RUNTIME.DEBUG) debug.debug_playerPlaceBlock(data)
 })
 world.beforeEvents.playerPlaceBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerPlaceBlock_before(data)

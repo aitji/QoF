@@ -1,4 +1,4 @@
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, DisplaySlotId, EquipmentSlot, MemoryTier, Player, ScoreboardObjective, StartupEvent, system, world } from "@minecraft/server"
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, DisplaySlotId, EquipmentSlot, MemoryTier, Player, PlayerPlaceBlockAfterEvent, ScoreboardObjective, StartupEvent, system, world } from "@minecraft/server"
 import { dumpMeThatComp, getEqu, RUNTIME } from "../lib"
 const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
 import * as cache from "./cache"
@@ -6,6 +6,7 @@ import * as cache from "./cache"
 // small helper
 let dyp: ScoreboardObjective
 const score = (k: string, v: number) => { try { dyp.setScore(k, v) } catch { dyp.addScore(k, v) } }
+const player_dampening = new Map() as Map<string, number>
 
 system.run(() => {
     if (DISABLED_COMMANDFEEDBACK) world.gameRules.sendCommandFeedback = false
@@ -54,7 +55,6 @@ const logAs = (msg: string, log: string) => {
             break
     }
 }
-
 export const debug_startup = (event: StartupEvent) => {
     if (!DEBUG) return
     const reg = event.customCommandRegistry
@@ -180,4 +180,33 @@ export const debug_startup = (event: StartupEvent) => {
         logAs(msg, log)
         return { status: CustomCommandStatus.Success, message: 'yay' }
     })
+
+    // light damp
+    reg.registerCommand({
+        name: `${PREFIX}dampening`,
+        description: `set dampening block placement`,
+        optionalParameters: [
+            { name: 'light_dampening', type: CustomCommandParamType.Integer }
+        ],
+        permissionLevel: CommandPermissionLevel.Admin
+    }, (origin, light_dampening: number) => {
+        const player = origin.sourceEntity as Player
+        if (player.typeId !== 'minecraft:player') return { status: CustomCommandStatus.Failure, message: "origin not player" }
+
+        player_dampening.set(player.id, Number(light_dampening))
+        return { status: CustomCommandStatus.Success, message: 'yay' }
+    })
+}
+
+export const debug_playerPlaceBlock = (data: PlayerPlaceBlockAfterEvent) => {
+    const { player, dimension, block } = data
+
+    if (block && block.typeId === 'qof:light_damp_dev') {
+        const damp = player_dampening.get(player.id)
+        if (!damp) return
+
+        const perm = block.permutation
+            .withState('qof:light_dampening' as any, damp)
+        block.setPermutation(perm)
+    }
 }

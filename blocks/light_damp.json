@@ -12,13 +12,12 @@
             "minecraft:geometry": { "identifier": "minecraft:geometry.full_block" },
             "minecraft:material_instances": {
                 "*": {
-                    "texture": "light_block_0",
+                    "texture": "barrier",
                     "render_method": "blend",
                     "ambient_occlusion": false,
                     "face_dimming": false
                 }
             },
-            "minecraft:replaceable": {},
             "minecraft:flammable": false,
             "minecraft:connection_rule": { "accepts_connections_from": "none" },
             "minecraft:destructible_by_explosion": { "explosion_resistance": 0 },
