@@ -6,10 +6,9 @@
         "url": "https://github.com/aitji/QoF"
     },
     "license": "MIT",
-    "dependencies": {},
     "devDependencies": {
-        "typescript": "^6.0.2",
-        "@minecraft/server": "^2.7.0-beta.1.26.10-stable"
+        "@minecraft/server": "^2.7.0-beta.1.26.14-stable",
+        "typescript": "^6.0.2"
     },
     "scripts": {
         "dev": "tsc -w",
