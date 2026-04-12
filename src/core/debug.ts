@@ -211,6 +211,7 @@ export const debug_playerPlaceBlock = (data: PlayerPlaceBlockAfterEvent) => {
         const item = equ.getEquipment(EquipmentSlot.Mainhand)
         if (!item) return
         const lore = item.getLore()[0]
+        if (!lore) return
         const damp = clamp(parseInt(lore.slice("§r§7Light Dampening: ".length)), 0, 15)
         if (!damp) return
 
