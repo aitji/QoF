@@ -150,7 +150,8 @@ jobs:
           grep -v '^\s*#' build.gitignore \
             | grep -v '^\s*$' \
             | grep -v '^!' \
-            | sed 's|/$||' \
+            | sed 's|/*$||' \
+            | awk '{print $0; print $0 "/*"}' \
             > /tmp/bp_exclude.txt
 
           zip -r "$BP_PACK" . -x@/tmp/bp_exclude.txt
@@ -185,8 +186,9 @@ jobs:
           grep -v '^\s*#' build.gitignore \
             | grep -v '^\s*$' \
             | grep -v '^!' \
-            | sed 's|/$||' \
-            > /tmp/rp_exclude.txt
+            | sed 's|/*$||' \
+            | awk '{print $0; print $0 "/*"}' \
+            > /tmp/bp_exclude.txt
 
           cd _rp && zip -r "../$RP_PACK" . -x@/tmp/rp_exclude.txt
           echo "RP_PACK=$RP_PACK" >> $GITHUB_ENV
