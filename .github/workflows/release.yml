@@ -188,7 +188,7 @@ jobs:
             | grep -v '^!' \
             | sed 's|/*$||' \
             | awk '{print $0; print $0 "/*"}' \
-            > /tmp/bp_exclude.txt
+            > /tmp/rp_exclude.txt
 
           cd _rp && zip -r "../$RP_PACK" . -x@/tmp/rp_exclude.txt
           echo "RP_PACK=$RP_PACK" >> $GITHUB_ENV
