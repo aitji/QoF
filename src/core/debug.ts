@@ -7,6 +7,13 @@ import * as cache from "./cache"
 let dyp: ScoreboardObjective
 const score = (k: string, v: number) => { try { dyp.setScore(k, v) } catch { dyp.addScore(k, v) } }
 
+type Players = {
+    id: string
+    typeId: string
+}[]
+
+export const getPlayers = (players: Players) => players.map(p => world.getEntity(p.id) as Player)
+
 system.run(() => {
     if (DISABLED_COMMANDFEEDBACK) world.gameRules.sendCommandFeedback = false
     if (DEBUG) {
@@ -62,6 +69,10 @@ export const debug_startup = (event: StartupEvent) => {
     reg.registerEnum(`${PREFIX}log`, ['world', 'console'])
     reg.registerEnum(`${PREFIX}components`, ['item', 'block'])
 
+    type dypActionType = "list" | "list-value" | "bulk"
+    type logType = "world" | "console"
+    type componentsType = "item" | "block"
+
     // dyp
     reg.registerCommand({
         name: `${PREFIX}dyp`,
@@ -71,7 +82,7 @@ export const debug_startup = (event: StartupEvent) => {
             { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
         ],
         permissionLevel: CommandPermissionLevel.GameDirectors
-    }, (_, dyp_action = '', log = '') => {
+    }, (_, dyp_action: dypActionType, log: logType) => {
 
         const ids = world.getDynamicPropertyIds()
         const len = ids.length
@@ -92,7 +103,6 @@ export const debug_startup = (event: StartupEvent) => {
                 world.clearDynamicProperties()
                 msg = '§7dynamic property has been removed'
                 break
-
             case 'list':
             default:
                 for (let i = 0; i < len; i++) {
@@ -115,7 +125,7 @@ export const debug_startup = (event: StartupEvent) => {
             { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
         ],
         permissionLevel: CommandPermissionLevel.Admin
-    }, (_, players: Player[], log: string) => {
+    }, (_, players: Players, log: logType) => {
         let msg = ''
         if (!players) {
             const data = cache.worldData
@@ -126,7 +136,7 @@ export const debug_startup = (event: StartupEvent) => {
                 msg += `§8${index}. §7${key} §e${value}§r\n`
             }
         } else {
-            const plr = players.map(p => world.getEntity(p.id) as Player)
+            const plr = getPlayers(players)
             const data = cache.playerData
             msg = `There is ${data.size} player data §7(cache)§r in the list\n`
             let index = 0
@@ -152,7 +162,7 @@ export const debug_startup = (event: StartupEvent) => {
             { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
         ],
         permissionLevel: CommandPermissionLevel.Admin
-    }, (origin, types: string, log: string) => {
+    }, (origin, types: componentsType, log: logType) => {
         const player = origin.sourceEntity as Player
         if (player.typeId !== 'minecraft:player') return { status: CustomCommandStatus.Failure, message: "origin not player" }
 
