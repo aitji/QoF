@@ -12,7 +12,8 @@ out/
 *.tsbuildinfo
 
 # minecraft
-*.mc*
+*.mcpack
+*.mcaddon
 *.zip
 
 # dev

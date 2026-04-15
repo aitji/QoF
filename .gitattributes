@@ -1,2 +1,33 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# ts/js
+*.ts text diff=typescript
+*.js text diff=javascript
+*.js.map text diff=javascript
+
+# json/molang thing
+*.json text diff=json
+*.mcfunction text eol=lf
+
+# common text formats
+*.md text
+*.txt text
+
+# config/tool
+*.yml text
+*.yaml text
+*.toml text
+
+# binary files (no diff)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.mcpack binary
+*.mcaddon binary
+
+# prevent accidental CRLF in scripts
+*.sh text eol=lf
+*.bat text eol=crlf

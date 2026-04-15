@@ -12,7 +12,8 @@ tsconfig.json
 tsconfig.build.json
 
 # minecraft
-# *.mc*
+# *.mcpack
+# *.mcaddon
 # *.zip
 
 # dev

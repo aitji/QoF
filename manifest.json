@@ -21,6 +21,18 @@
     {"type": "data","uuid": "1f6786c8-d69d-4c59-a27f-f061e62ccde6","version": "1.0.0"},
     {"type": "script","uuid": "d71d1934-0d8d-46aa-b148-bb701eba33aa","version": "1.0.0","entry": "scripts/index.js", "language": "javascript"}
   ],
+  "subpacks": [
+      {
+      "folder_name": "heartbeat-off",
+      "name": "§cDisabled Heartbeat§r for BetaAPIs check §e(addon will won't notify you when BetaAPIs not enabled)",
+      "memory_performance_tier": 0
+    },
+    {
+      "folder_name": "heartbeat-on",
+      "name": "§aEnabled §cHeartbeat§r for BetaAPIs check §c(can affect performance, does help new users)",
+      "memory_performance_tier": 0
+    }
+  ],
   "settings": [
     {
       "type": "label",
