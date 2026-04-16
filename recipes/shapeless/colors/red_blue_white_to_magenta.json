@@ -1,0 +1,37 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "red_blue_white_to_magenta"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:red_dye"
+            },
+            {
+                "item": "minecraft:blue_dye"
+            },
+            {
+                "item": "minecraft:white_dye"
+            }
+        ],
+        "result": {
+            "item": "minecraft:magenta_dye",
+            "count": 3
+        },
+        "unlock": [
+            {
+                "item": "minecraft:red_dye"
+            },
+            {
+                "item": "minecraft:blue_dye"
+            },
+            {
+                "item": "minecraft:white_dye"
+            }
+        ]
+    }
+}
