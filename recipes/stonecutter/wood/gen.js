@@ -87,22 +87,15 @@ const calcPriority = (item, input, woodEntry) => {
 }
 
 const recipe = (input, output, priority, count) => `{
- "format_version": "1.20.10",
- "minecraft:recipe_shapeless": {
-  "description": {
-   "identifier": "minecraft:stonecutter_${input}_to_${output}"
-  },
-  "tags": ["stonecutter"],
-  "priority": ${priority},
-  "ingredients": [
-   { "item": "minecraft:${input}" }
-  ],
-  "result": {
-   "item": "minecraft:${output}",
-   "count": ${count}
-  },
-  "unlock": [{ "item": "minecraft:${input}" }]
- }
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": { "identifier": "minecraft:stonecutter_${input}_to_${output}" },
+        "tags": ["stonecutter"],
+        "priority": ${priority},
+        "ingredients": [{ "item": "minecraft:${input}" }],
+        "result": { "item": "minecraft:${output}", "count": ${count} },
+        "unlock": [{ "item": "minecraft:${input}" }]
+    }
 }`
 
 const BLOCK_CONV_PRIORITY = {

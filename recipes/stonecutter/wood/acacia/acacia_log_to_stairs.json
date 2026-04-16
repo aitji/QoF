@@ -1,18 +1,11 @@
 {
- "format_version": "1.20.10",
- "minecraft:recipe_shapeless": {
-  "description": {
-   "identifier": "minecraft:stonecutter_acacia_log_to_acacia_stairs"
-  },
-  "tags": ["stonecutter"],
-  "priority": 0.1,
-  "ingredients": [
-   { "item": "minecraft:acacia_log" }
-  ],
-  "result": {
-   "item": "minecraft:acacia_stairs",
-   "count": 8
-  },
-  "unlock": [{ "item": "minecraft:acacia_log" }]
- }
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": { "identifier": "minecraft:stonecutter_acacia_log_to_acacia_stairs" },
+        "tags": ["stonecutter"],
+        "priority": 0.1,
+        "ingredients": [{ "item": "minecraft:acacia_log" }],
+        "result": { "item": "minecraft:acacia_stairs", "count": 8 },
+        "unlock": [{ "item": "minecraft:acacia_log" }]
+    }
 }

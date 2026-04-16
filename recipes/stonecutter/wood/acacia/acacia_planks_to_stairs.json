@@ -1,18 +1,11 @@
 {
- "format_version": "1.20.10",
- "minecraft:recipe_shapeless": {
-  "description": {
-   "identifier": "minecraft:stonecutter_acacia_planks_to_acacia_stairs"
-  },
-  "tags": ["stonecutter"],
-  "priority": 0.1,
-  "ingredients": [
-   { "item": "minecraft:acacia_planks" }
-  ],
-  "result": {
-   "item": "minecraft:acacia_stairs",
-   "count": 2
-  },
-  "unlock": [{ "item": "minecraft:acacia_planks" }]
- }
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": { "identifier": "minecraft:stonecutter_acacia_planks_to_acacia_stairs" },
+        "tags": ["stonecutter"],
+        "priority": 0.1,
+        "ingredients": [{ "item": "minecraft:acacia_planks" }],
+        "result": { "item": "minecraft:acacia_stairs", "count": 2 },
+        "unlock": [{ "item": "minecraft:acacia_planks" }]
+    }
 }
