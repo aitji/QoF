@@ -8,7 +8,7 @@ const {
 const VANILLA_REPLACEABLE = new Set([
     'minecraft:tallgrass', 'minecraft:short_grass', 'minecraft:fern',
     'minecraft:short_dry_grass', 'minecraft:tall_dry_grass',
-    'minecraft:dead_bush', 'minecraft:snow_layer', 'minecraft:fire',
+    'minecraft:deadbush', 'minecraft:snow_layer', 'minecraft:fire',
     'minecraft:soul_fire', 'minecraft:vine', 'minecraft:nether_sprouts',
     'minecraft:crimson_roots', 'minecraft:warped_roots', 'minecraft:seagrass',
     LIGHT
@@ -84,6 +84,11 @@ const FACING_ATTACH = Object.freeze(new Set([
     'minecraft:observer', 'minecraft:ladder',
     'minecraft:amethyst_cluster',
     'minecraft:large_amethyst_bud', 'minecraft:medium_amethyst_bud', 'minecraft:small_amethyst_bud',
+
+    'minecraft:acacia_shelf', 'minecraft:bamboo_shelf', 'minecraft:birch_shelf',
+    'minecraft:cherry_shelf', 'minecraft:crimson_shelf', 'minecraft:dark_oak_shelf',
+    'minecraft:jungle_shelf', 'minecraft:mangrove_shelf', 'minecraft:oak_shelf',
+    'minecraft:pale_oak_shelf', 'minecraft:spruce_shelf', 'minecraft:warped_shelf'
 ]))
 /**
  * VERTICAL_ATTACH: like ATTACH
@@ -260,7 +265,7 @@ export function getSpecialPermutation(
     }
 
     // underwater
-    if (typeId === 'minecraft:kelp' || typeId === 'minecraft:seagrass') {
+    if (typeId === 'minecraft:kelp' || typeId === 'minecraft:seagrass' ||  typeId === 'minecraft:sea_pickle') {
         if (!target.isLiquid) return undefined
         return BlockPermutation.resolve(typeId)
     }

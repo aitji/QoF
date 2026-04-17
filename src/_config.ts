@@ -479,6 +479,13 @@ export const SETTINGS = Object.freeze({
             'minecraft:nether_sprouts': true,
             'minecraft:vine': true,
             'minecraft:glow_lichen': true,
+            'minecraft:snow_layer': true,
+            'minecraft:crimson_roots': true,
+            'minecraft:warped_roots': true,
+            'minecraft:seagrass': true,
+            'minecraft:fire': true,
+            'minecraft:soul_fire': true,
+            'minecraft:sculk_vein': true,
 
             // 2 block tall need neig check
             'minecraft:tall_grass': false,
