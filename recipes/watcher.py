@@ -126,8 +126,8 @@ def safe_clear_root():
 if __name__ == "__main__":
     os.makedirs(INPUT_DIR, exist_ok=True)
 
-    safe_clear_root()
-    print(f"[INIT]    cleaned root")
+    # safe_clear_root()
+    # print(f"[INIT]    cleaned root")
     print(f"--------- [Watching '{INPUT_DIR}\\' -> root]")
     sync_existing()
 
