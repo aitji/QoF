@@ -16,7 +16,7 @@ const combinations = [
     { id: "magenta_green_to_brown", ingredients: ["magenta_dye", "green_dye"], result: "brown_dye", count: 2 },
     { id: "red_green_to_brown", ingredients: ["red_dye", "green_dye"], result: "brown_dye", count: 2 },
     // muddy brown
-    { id: "rgb_to_brown", ingredients: ["red_dye", "blue_dye", "yellow_dye"], result: "brown_dye", count: 3 },
+    { id: "rgy_to_brown", ingredients: ["red_dye", "blue_dye", "yellow_dye"], result: "brown_dye", count: 3 },
     // dark-warm combos
     { id: "black_yellow_to_brown", ingredients: ["black_dye", "yellow_dye"], result: "brown_dye", count: 2 },
     { id: "black_green_to_brown", ingredients: ["black_dye", "green_dye"], result: "brown_dye", count: 2 },
