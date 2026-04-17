@@ -24,21 +24,67 @@ const DYE_COLORS: { name: string; r: number; g: number; b: number }[] = [
 function getNearestDye(r: number, g: number, b: number) {
     let nearest = DYE_COLORS[0]
     let minDist = Infinity
-
     for (const dye of DYE_COLORS) {
-        const dr = r - dye.r
-        const dg = g - dye.g
-        const db = b - dye.b
-
-        // weighted, eyes like (blue > green)
-        const dist = 0.299 * dr * dr + 0.587 * dg * dg + 0.114 * db * db
-        if (dist < minDist) {
-            minDist = dist
-            nearest = dye
-        }
+        const dist = 0.299 * (r - dye.r) ** 2 + 0.587 * (g - dye.g) ** 2 + 0.114 * (b - dye.b) ** 2
+        if (dist < minDist) { minDist = dist; nearest = dye }
     }
-
     return { color: nearest.name, distance: minDist }
+}
+
+type DyeableEntry = {
+    match: (id: string) => boolean
+    dyed: (id: string, dye: string) => string
+    clean: (id: string) => string
+}
+
+const DYEABLE: DyeableEntry[] = [
+    { // carpet -> *_carpet
+        match: id => id.includes('carpet'),
+        dyed: (_id, dye) => `minecraft:${dye}_carpet`,
+        clean: _ => 'minecraft:white_carpet',
+    },
+    { // wool -> *_wool
+        match: id => id.includes('wool'),
+        dyed: (_id, dye) => `minecraft:${dye}_wool`,
+        clean: _ => 'minecraft:white_wool',
+    },
+    { // concrete / concrete_powder -> *_concrete[_powder]
+        match: id => id.includes('concrete'),
+        dyed: (id, dye) => `minecraft:${dye}_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
+        clean: id => `minecraft:white_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
+    },
+    { // glass / glass_pane -> *_stained_glass[_pane]
+        match: id => id.includes('glass'),
+        dyed: (id, dye) => `minecraft:${dye}_stained_glass${id.endsWith('_pane') ? '_pane' : ''}`,
+        clean: id => id.endsWith('_pane') ? 'minecraft:glass_pane' : 'minecraft:glass',
+    },
+    { // hardened_clay / terracotta / glazed_terracotta -> hardened_clay / *(_glazed)_terracotta
+        match: id => id.includes('hardened_clay') || id.includes('terracotta'),
+        dyed: (id, dye) => `minecraft:${dye}${id.includes('_glazed') ? '_glazed' : ''}_terracotta`,
+        clean: _id => _id.includes("_glazed") ? 'white_glazed_terracotta' : 'hardened_clay',
+    },
+
+    // (shulkers, banners, bundles) have nbt cannot safe replace
+]
+
+const reduceWaterState = (block: Block, fluid: BlockFluidContainerComponent) => {
+    if (fluid.fillLevel <= 0) return
+    block.setPermutation(BlockPermutation.resolve(block.typeId).withState('fill_level', fluid.fillLevel - 1))
+    playSound(block.dimension, block.center(), { ID: "cauldron.dyearmor", VOLUME: 1.0, PITCH: 1.0 })
+}
+
+function applyDye(
+    fluid: BlockFluidContainerComponent, isWater: boolean, nearDye: string,
+    block: Block, itemStack: ItemStack, equ: EntityEquippableComponent
+) {
+    const id = itemStack.typeId
+    const entry = DYEABLE.find(e => e.match(id))
+    if (!entry) return
+
+    const resultId = isWater ? entry.clean(id) : entry.dyed(id, nearDye)
+    if (resultId !== id) equ.setEquipment(EquipmentSlot.Mainhand, new ItemStack(resultId, itemStack.amount))
+
+    reduceWaterState(block, fluid)
 }
 
 const delay: Record<string, number> = {}
@@ -51,59 +97,27 @@ export const cauldron_playerInteractWithBlock = (data: PlayerInteractWithBlockBe
     }
     delay[player.id] = system.currentTick + 8
 
-    if (!block) return
-    if (block.typeId !== 'minecraft:cauldron') return
+    if (!block || block.typeId !== 'minecraft:cauldron') return
 
     const fluid = block.getComponent(BlockComponentTypes.FluidContainer)
-    if (!fluid) return
-    if (fluid.fillLevel <= 0) return
+    if (!fluid || fluid.fillLevel <= 0) return
 
     const slot = player.selectedSlotIndex
     const equ = getEqu(player)!
     system.run(() => {
         if (slot !== player.selectedSlotIndex) player.selectedSlotIndex = slot
         if (itemStack?.typeId !== equ?.getEquipment(EquipmentSlot.Mainhand)?.typeId) return
-
-        const liq = fluid.getFluidType()
-        if (liq !== FluidType.Water) return
+        if (fluid.getFluidType() !== FluidType.Water) return
 
         const { red, green, blue } = fluid.fluidColor
-        const isWater = red == 0 && green == 0 && blue == 0
+        const isWater = red === 0 && green === 0 && blue === 0
         const dye = getNearestDye(red, green, blue)
-        if (DEBUG) console.log(`nearest dye: ${dye.color} §8~${dye.distance.toFixed(6)} §r§7(RGBA=${red.toFixed(2)},${green.toFixed(2)},${blue.toFixed(2)},${fluid.fluidColor.alpha})`)
 
-        glassHandle(fluid, isWater, dye.color, player, block, itemStack, equ)
+        if (DEBUG) console.log(
+            `nearest dye: ${dye.color} §8~${dye.distance.toFixed(6)} §r§7` +
+            `(RGBA=${red.toFixed(2)},${green.toFixed(2)},${blue.toFixed(2)},${fluid.fluidColor.alpha})`
+        )
+
+        if (itemStack) applyDye(fluid, isWater, dye.color, block, itemStack, equ)
     })
 }
-
-const reduceWaterState = (block: Block, fluid: BlockFluidContainerComponent) => {
-    const { fillLevel } = fluid
-    if (fillLevel <= 0) return
-    block.setPermutation(BlockPermutation.resolve(block.typeId).withState('fill_level', fillLevel - 1))
-    playSound(block.dimension, block.center(), { ID: "cauldron.dyearmor", VOLUME: 1.0, PITCH: 1.0 })
-}
-
-const glassHandle = (
-    fluid: BlockFluidContainerComponent, isWater: boolean, nearDye: string,
-    player: Player, block: Block, itemStack?: ItemStack, equ?: EntityEquippableComponent
-) => {
-    if (!itemStack || !itemStack.typeId.includes('glass')) return
-
-    const id = itemStack.typeId
-    const isPane = id.includes('pane')
-    let resultId: string | null = null
-
-    if (isWater) {
-        const clean = isPane ? 'minecraft:glass_pane' : 'minecraft:glass'
-        if (id !== clean) resultId = clean
-    } else resultId = `minecraft:${nearDye}_stained_glass${isPane ? '_pane' : ''}`
-
-    if (resultId) equ?.setEquipment(
-        EquipmentSlot.Mainhand,
-        new ItemStack(resultId, itemStack.amount)
-    )
-
-    reduceWaterState(block, fluid)
-}
-
-// todo: shulkers, banners?
