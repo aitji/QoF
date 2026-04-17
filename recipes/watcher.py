@@ -1,6 +1,7 @@
 from PIL import Image
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+import json
 import os
 import time
 import shutil
@@ -10,20 +11,79 @@ INPUT_FOLDER_NAME = 'input'
 INPUT_DIR = os.path.join(BASE_DIR, INPUT_FOLDER_NAME)
 OUTPUT_DIR = BASE_DIR
 
-CROP_LEFT = 689
-CROP_TOP = 226
-CROP_RIGHT = 1240
-CROP_BOTTOM = 493
+RULES_FILE = os.path.join(BASE_DIR, "crop_rules.json")
+DEFAULT_CROP = (689, 226, 1240, 493)
+
+_rules_cache: list[tuple[str, tuple[int, int, int, int]]] = []
+_rules_mtime: float = 0.0
+
+
+def refresh_by_keywords(keywords: list[str]) -> None:
+    for root, _, files in os.walk(INPUT_DIR):
+        for fname in files:
+            src = os.path.join(root, fname)
+            rel = os.path.relpath(src, INPUT_DIR).lower()
+
+            if any(kw.lower() in rel for kw in keywords):
+                try:
+                    crop_and_save(src, output_path(src))
+                    print(f"[REFRESH] {src}")
+                except Exception as e:
+                    print(f"[ERROR]   {e}")
+
+
+def load_rules() -> None:
+    global _rules_cache, _rules_mtime
+    try:
+        mtime = os.path.getmtime(RULES_FILE)
+        if mtime == _rules_mtime:
+            return
+
+        old_rules = dict(_rules_cache)
+
+        with open(RULES_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        _rules_cache = [(entry["keyword"], tuple(entry["crop"]))
+                        for entry in data]
+        _rules_mtime = mtime
+
+        print(f"[RULES]   loaded {len(_rules_cache)} rule(s)")
+
+        changed_keywords = []
+        for kw, box in _rules_cache:
+            if kw not in old_rules or old_rules.get(kw) != box:
+                changed_keywords.append(kw)
+
+        if changed_keywords:
+            print(f"[UPDATE]  changed: {changed_keywords}")
+            refresh_by_keywords(changed_keywords)
+
+    except Exception as e:
+        print(f"[RULES]   failed: {e}")
+
 
 SUPPORTED = {".png", ".jpg", ".jpeg"}
-KEEP_FILES = {".py", ".cmd"}
+KEEP_FILES = {".py", ".cmd", ".json"}
 KEEP_DIRS = {INPUT_FOLDER_NAME}
 
 
-def _to_str(path: str | bytes | bytearray | memoryview) -> str:
+def _to_str(path):
     if isinstance(path, str):
         return path
     return bytes(path).decode()
+
+
+def get_crop_box(src: str) -> tuple[int, int, int, int]:
+    rel = os.path.relpath(src, INPUT_DIR).replace("\\", "/").lower()
+    for keyword, box in _rules_cache:
+        if keyword.lower() in rel:
+            l, t, r, b = box
+            if r <= l or b <= t:
+                print(f"[WARN]    invalid crop {box} for '{keyword}'")
+                return DEFAULT_CROP
+            return box
+    return DEFAULT_CROP
 
 
 def output_path(src: str) -> str:
@@ -34,10 +94,29 @@ def output_path(src: str) -> str:
 
 def crop_and_save(src: str, dst: str) -> None:
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    img = Image.open(src)
-    cropped = img.crop((CROP_LEFT, CROP_TOP, CROP_RIGHT, CROP_BOTTOM))
-    cropped.save(dst, "PNG", optimize=True)
-    print(f"[SAVED]   {dst}")
+    box = get_crop_box(src)
+
+    with Image.open(src) as img:
+        w, h = img.size
+        l, t, r, b = box
+
+        l = max(1, min(l, w))
+        r = max(1, min(r, w))
+        t = max(1, min(t, h))
+        b = max(1, min(b, h))
+
+        if r <= l or b <= t:
+            print(f"[SKIP]    empty crop after clamp {box} -> {(l, t, r, b)}")
+            return
+
+        cropped = img.crop((l, t, r, b))
+
+        if os.path.exists(dst):
+            os.remove(dst)
+
+        cropped.save(dst, "PNG", optimize=True)
+
+    print(f"[SAVED]   {dst}  (crop {(l, t, r, b)})")
 
 
 class ImageHandler(FileSystemEventHandler):
@@ -97,11 +176,10 @@ def sync_existing() -> None:
             src = os.path.join(root, fname)
             if os.path.splitext(fname)[1].lower() in SUPPORTED:
                 dst = output_path(src)
-                if not os.path.exists(dst):
-                    try:
-                        crop_and_save(src, dst)
-                    except Exception as e:
-                        print(f"[ERROR]   {e}")
+                try:
+                    crop_and_save(src, dst)
+                except Exception as e:
+                    print(f"[ERROR]   {e}")
 
 
 def safe_clear_root():
@@ -125,9 +203,8 @@ def safe_clear_root():
 
 if __name__ == "__main__":
     os.makedirs(INPUT_DIR, exist_ok=True)
+    load_rules()
 
-    # safe_clear_root()
-    # print(f"[INIT]    cleaned root")
     print(f"--------- [Watching '{INPUT_DIR}\\' -> root]")
     sync_existing()
 
@@ -137,8 +214,10 @@ if __name__ == "__main__":
 
     try:
         while True:
-            time.sleep(3)
+            time.sleep(2)
+            load_rules()
     except KeyboardInterrupt:
         observer.stop()
         print("\nStopped")
+
     observer.join()

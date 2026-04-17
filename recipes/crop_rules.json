@@ -1,0 +1,4 @@
+[
+    { "keyword": "furnace",       "crop": [780, 226, 1173, 493]  },
+    { "keyword": "stonecutter",   "crop": [325, 220,  1590, 493] }
+]
