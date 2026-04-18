@@ -26,10 +26,14 @@ function buildRuntime() {
 
     return Object.freeze({
         DEBUG: g("qof:DEBUG", S.DEBUG),
-        DISABLED_HEARTBEAT: g("qof:DISABLED_HEARTBEAT", S.DISABLED_HEARTBEAT),
+        DISABLED_COMMANDFEEDBACK: S.DISABLED_COMMANDFEEDBACK,
+        DISABLED_HEARTBEAT: S.DISABLED_HEARTBEAT,
         INTERVAL_DELAY: g("qof:INTERVAL_DELAY", S.INTERVAL_DELAY),
 
-        DISABLED_COMMANDFEEDBACK: S.DISABLED_COMMANDFEEDBACK,
+        // share config
+        BLOCK_INTERACTION_DELAY: S.BLOCK_INTERACTION_DELAY,
+
+        // helper
         SLICE_PREFIX: S.SLICE_PREFIX,
         BLOCKFACE_TO_DIR: S.BLOCKFACE_TO_DIR,
 
@@ -54,7 +58,6 @@ function buildRuntime() {
             FARMLAND_BLOCK: L.FARMLAND_BLOCK,
             SOUND_SHOVEL_USE: L.SOUND_SHOVEL_USE,
             SOUND_HOE_USE: L.SOUND_HOE_USE,
-            BLOCK_INTERACTION_DELAY: L.BLOCK_INTERACTION_DELAY,
             FIRE_ITEM: L.FIRE_ITEM,
             LIGHT_PENDING_BATCH: L.LIGHT_PENDING_BATCH,
             LIGHT_PLAYER_BATCH: L.LIGHT_PLAYER_BATCH,
@@ -106,10 +109,6 @@ function buildRuntime() {
             ITEMS: C.ITEMS,
         }),
 
-        WATER_CAULDRON: Object.freeze({
-            ENABLED: g("qof:WATER_CAULDRON.ENABLED", WC.ENABLED),
-        }),
-
         CARRIED_CHEST: Object.freeze({
             ENABLED: g("qof:CARRIED_CHEST.ENABLED", CH.ENABLED),
             MAX_DISPLAY: g("qof:CARRIED_CHEST.MAX_DISPLAY", CH.MAX_DISPLAY),
@@ -146,7 +145,6 @@ function buildRuntime() {
             LIGHT: OH.LIGHT,
             TORCH_ID: OH.TORCH_ID,
             PLACE_SOUND: OH.PLACE_SOUND,
-            BLOCK_INTERACTION_DELAY: OH.BLOCK_INTERACTION_DELAY,
             ITEMBUTBLOCK: OH.ITEMBUTBLOCK,
             DISALLOWED_ITEM: OH.DISALLOWED_ITEM,
             FOOD_DATA: OH.FOOD_DATA,
@@ -167,7 +165,12 @@ function buildRuntime() {
         }),
         WAXED_OF: Object.freeze({
             ENABLED: g("qof:WAXED_OF.ENABLED", WF.ENABLED),
-        })
+            DURABILITY: g("qof:WAXED_OF.DURABILITY", WF.DURABILITY),
+        }),
+        WATER_CAULDRON: Object.freeze({
+            ENABLED: g("qof:WATER_CAULDRON.ENABLED", WC.ENABLED),
+            FIND_NEAR_COLOR: g("qof:WATER_CAULDRON.FIND_NEAR_COLOR", WC.FIND_NEAR_COLOR),
+        }),
     })
 }
 

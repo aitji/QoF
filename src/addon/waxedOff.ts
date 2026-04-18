@@ -2,8 +2,8 @@ import { BlockComponentTypes, EquipmentSlot, PlayerInteractWithBlockBeforeEvent,
 import { applyItemDamage, dumpMeThatComp, getEqu, playSound, RUNTIME, setEqu } from "../lib"
 import * as cache from "../core/cache"
 const {
-    DEBUG,
-    OFFHAND: { BLOCK_INTERACTION_DELAY }
+    DEBUG, BLOCK_INTERACTION_DELAY,
+    WAXED_OF: { DURABILITY }
 } = RUNTIME
 
 const delay: Record<string, number> = {}
@@ -28,7 +28,7 @@ export const waxedOff_playerInteractWithBlock = (data: PlayerInteractWithBlockBe
         system.run(() => {
             const { changed, item } = applyItemDamage(player, itemStack)
 
-            if (changed) {
+            if (changed && DURABILITY) {
                 if (slot !== player.selectedSlotIndex) player.selectedSlotIndex = slot
 
                 const equ = getEqu(player)!

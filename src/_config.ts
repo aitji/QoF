@@ -9,10 +9,15 @@ type BlockDirFn =
     | 'west'
 
 export const SETTINGS = Object.freeze({
-    DEBUG: true,
+    DEBUG: true, // auto set to false on released
     DISABLED_COMMANDFEEDBACK: false,
     DISABLED_HEARTBEAT: false,
     INTERVAL_DELAY: 1, // delay for each interval
+
+    // share config
+    BLOCK_INTERACTION_DELAY: 4, // tick
+
+    // helper
     SLICE_PREFIX: "minecraft:".length, // 10
     BLOCKFACE_TO_DIR: Object.freeze({
         Up: 'above',
@@ -22,6 +27,8 @@ export const SETTINGS = Object.freeze({
         East: 'east',
         West: 'west',
     }) as Readonly<Record<Direction, BlockDirFn>>,
+
+
 
     LIGHT: Object.freeze({
         ENABLED: true,
@@ -63,7 +70,6 @@ export const SETTINGS = Object.freeze({
             VOLUME: 1.0,
             PITCH: 0.8
         }),
-        BLOCK_INTERACTION_DELAY: 4, // tick
         FIRE_ITEM: Object.freeze({
             "minecraft:flint_and_steel": Object.freeze({
                 ID: "fire.ignite",
@@ -168,9 +174,6 @@ export const SETTINGS = Object.freeze({
         }),
         MAX_PROCESS: 12,
         BATCH_SIZE: 12 // max entity that will get process
-    }),
-    WATER_CAULDRON: Object.freeze({
-        ENABLED: true,
     }),
     COMPOSTER: Object.freeze({
         ENABLED: true,
@@ -515,7 +518,6 @@ export const SETTINGS = Object.freeze({
             "minecraft:copper_torch": true,
             "minecraft:soul_torch": true
         }) as Readonly<Record<string, boolean>>,
-
         CAN_ALWAYS_USE: Object.freeze(new Set([
             // misc, idk where to put it
             "minecraft:wind_charge",
@@ -688,7 +690,6 @@ export const SETTINGS = Object.freeze({
             VOLUME: 1.0,
             PITCH: 0.8
         }),
-        BLOCK_INTERACTION_DELAY: 4, // tick
         ITEMBUTBLOCK: Object.freeze({
             "minecraft:water_bucket": true,
             "minecraft:axolotl_bucket": true,
@@ -793,5 +794,10 @@ export const SETTINGS = Object.freeze({
     }),
     WAXED_OF: Object.freeze({
         ENABLED: true,
-    })
+        DURABILITY: true,
+    }),
+    WATER_CAULDRON: Object.freeze({
+        ENABLED: true,
+        FIND_NEAR_COLOR: true,
+    }),
 })

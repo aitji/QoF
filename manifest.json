@@ -89,7 +89,7 @@
     },
     {
       "type": "slider",
-      "text": "§7How §f'far'§7 can light sources be detected around you? §r",
+      "text": "§7How §f'far'§7 can light sources be detected around you?  §c(can affect performance) §r",
       "name": "qof:LIGHT.LIGHT_RENDER_RADIUS",
       "min": 0,
       "max": 256,
@@ -98,7 +98,7 @@
     },
     {
       "type": "slider",
-      "text": "§7How §f'many'§7 light sources can affect you at once? §r",
+      "text": "§7How §f'many'§7 light sources can affect you at once?  §c(can affect performance) §r",
       "name": "qof:LIGHT.LIGHT_RENDER_PER_PLAYER",
       "min": 0,
       "max": 128,
@@ -329,6 +329,44 @@
 
     {
       "type": "label",
+      "text": "§l§cQ§r§lo§cF§r Unwaxed Sign §7----------------------------------------"
+    },
+    {
+      "type": "toggle",
+      "text": "§7Allow signs to be unwaxed with an axe?",
+      "name": "qof:WAXED_OF.ENABLED",
+      "default": true
+    },
+    {
+      "type": "toggle",
+      "text": "§7Consume durability when unwaxing a sign?",
+      "name": "qof:WAXED_OF.DURABILITY",
+      "default": true
+    },
+
+
+
+    {
+      "type": "label",
+      "text": "§l§cQ§r§lo§cF§r Cauldron+ §7-------------------------------------------"
+    },
+    {
+      "type": "toggle",
+      "text": "§7Allow more items to interact with cauldrons?",
+      "name": "qof:WATER_CAULDRON.ENABLED",
+      "default": true
+    },
+    {
+      "type": "toggle",
+      "text": "§7Match nearest color?",
+      "name": "qof:WATER_CAULDRON.FIND_NEAR_COLOR",
+      "default": true
+    },
+
+
+
+    {
+      "type": "label",
       "text": "§l§cQ§r§lo§cF§r's developer settings §7----------------------------------"
     },
     {
@@ -336,12 +374,6 @@
       "text": "§cDebug mode? §7(Show spam logs in chat/console) §r",
       "name": "qof:DEBUG",
       "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§cDisabled HeartBeat §7(script will never respond to mcfunction) §r",
-      "name": "qof:DISABLED_HEARTBEAT",
-      "default": false
     }
   ]
 }

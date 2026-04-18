@@ -1,7 +1,14 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, PlayerInteractWithBlockBeforeEvent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity, ItemStack } from "@minecraft/server"
 import { applyItemDamage, checkRandom, getEqu, reduceItem, RUNTIME, setEqu, pickupCooldown, cache, playSound } from "../../lib"
 import { suppressLight } from "./core"
-const { DEBUG, BLOCKFACE_TO_DIR, LIGHT: { ENABLED, SEEDTOBLOCK, FARMLAND_BLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, BLOCK_INTERACTION_DELAY, FIRE_ITEM, LIGHT_BLOCK } } = RUNTIME
+const {
+    DEBUG, BLOCKFACE_TO_DIR, BLOCK_INTERACTION_DELAY,
+    LIGHT: {
+        ENABLED, SEEDTOBLOCK, FARMLAND_BLOCK,
+        SOUND_SHOVEL_USE, SOUND_HOE_USE, FIRE_ITEM,
+        LIGHT_BLOCK
+    }
+} = RUNTIME
 export const isFrame = (b: Block) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
 let HANGING_ROOTS: ItemStack

@@ -1,7 +1,7 @@
 import { Block, BlockComponentTypes, BlockFluidContainerComponent, BlockPermutation, EntityEquippableComponent, EquipmentSlot, FluidType, ItemStack, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
 import { getEqu, playSound, RUNTIME } from "../../lib"
-const { DEBUG } = RUNTIME
-
+const { DEBUG, WATER_CAULDRON: { FIND_NEAR_COLOR } } = RUNTIME
+const RGB_PRECISION = 4 // hardcode, don't make config
 const DYE_COLORS: { name: string; r: number; g: number; b: number }[] = [
     { name: 'white', r: 0.9412, g: 0.9412, b: 0.9412 },
     { name: 'light_gray', r: 0.6157, g: 0.6157, b: 0.5922 },
@@ -21,7 +21,14 @@ const DYE_COLORS: { name: string; r: number; g: number; b: number }[] = [
     { name: 'magenta', r: 0.7804, g: 0.3059, b: 0.7412 },
 ]
 
+// helper
+const toKey = (r: number, g: number, b: number) => `${r.toFixed(RGB_PRECISION)},${g.toFixed(RGB_PRECISION)},${b.toFixed(RGB_PRECISION)}`
+const DYE_COLOR_MAP = new Map<string, string>(DYE_COLORS.map(({ name, r, g, b }) => [toKey(r, g, b), name]))
 function getNearestDye(r: number, g: number, b: number) {
+    const exact = DYE_COLOR_MAP.get(toKey(r, g, b))
+    if (exact) return { color: exact, distance: 0 }
+
+    if (!FIND_NEAR_COLOR) return { color: 'null', distance: -1 }
     let nearest = DYE_COLORS[0]
     let minDist = Infinity
     for (const dye of DYE_COLORS) {
@@ -87,6 +94,7 @@ function applyDye(
     reduceWaterState(block, fluid)
 }
 
+// main
 const delay: Record<string, number> = {}
 export const cauldron_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { player, block, itemStack, isFirstEvent } = data
@@ -113,6 +121,7 @@ export const cauldron_playerInteractWithBlock = (data: PlayerInteractWithBlockBe
         const isWater = red === 0 && green === 0 && blue === 0
         const dye = getNearestDye(red, green, blue)
 
+        if (dye.color === 'null') return
         if (DEBUG) console.log(
             `nearest dye: ${dye.color} §8~${dye.distance.toFixed(6)} §r§7` +
             `(RGBA=${red.toFixed(2)},${green.toFixed(2)},${blue.toFixed(2)},${fluid.fluidColor.alpha})`

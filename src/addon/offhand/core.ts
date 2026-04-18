@@ -7,8 +7,11 @@ import { blockHandle, fireHandle, seedsHandle, torchHandle } from "./handlers"
 import * as cache from "../../core/cache"
 
 const {
-    DEBUG, CARRIED_CHEST,
-    OFFHAND: { ENABLED, NEED_SNEAK, BLOCK_INTERACTION_DELAY, ITEMBUTBLOCK, FOOD_DATA, CAN_ALWAYS_USE },
+    DEBUG, CARRIED_CHEST, BLOCK_INTERACTION_DELAY,
+    OFFHAND: {
+        ENABLED, NEED_SNEAK, ITEMBUTBLOCK,
+        FOOD_DATA, CAN_ALWAYS_USE
+    },
     HARVEST: { COCOA_VALID_LOGS }
 } = RUNTIME
 
