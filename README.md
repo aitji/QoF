@@ -826,12 +826,12 @@ Copyright (c) 2026 aitji & pickerth-12 Licensed under the MIT License
 Source: github.com/aitji/QoF
 
   README INFO
-Version: v1.4.0
-Last updated: 4 Apr 2026
+Version: v1.5.0
+Last updated: 19 Apr 2026
 Has README Update: True
 
   PACK INFO
-Last Release: v1.4.0
+Last Release: v1.5.0
 Last Pre-Release: v1.4.1
 Last Minecraft Version: 26.12
 Used Dependencies: ^2.7.0-beta.1.26.14-stable
