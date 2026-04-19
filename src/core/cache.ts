@@ -1,4 +1,4 @@
-import { Dimension, GameMode, PlatformType, Player, PlayerGameModeChangeAfterEvent, PlayerLeaveAfterEvent, PlayerSpawnAfterEvent, system, world } from "@minecraft/server"
+import { Dimension, GameMode, PlatformType, Player, PlayerGameModeChangeAfterEvent, PlayerLeaveAfterEvent, PlayerPermissionLevel, PlayerSpawnAfterEvent, system, world } from "@minecraft/server"
 import { RUNTIME } from "../_store" // "cache" got use in "lib" as lazy import, use setting from store directly
 const { DEBUG } = RUNTIME
 
@@ -7,6 +7,7 @@ export type PlayerData = {
     name: string
     platformType: PlatformType
     gameMode: GameMode
+    permissionLevel: PlayerPermissionLevel
 }
 
 type WorldData = {
@@ -35,19 +36,22 @@ type CacheValue<T extends CacheType> = TypeMap[T] extends Map<any, infer V> ? V 
 system.run(() => {
     const allPlayers = world.getAllPlayers()
     cachedPlayers = allPlayers
-    for (const player of allPlayers) player_init_update(player)
+
+    for (const player of allPlayers)
+        player_init_update(player)
 })
 
 // external routes
 export const player_init_update = (player: Player) => {
-    const { id, name } = player
+    const { id, name, playerPermissionLevel } = player
     const platformType = player.clientSystemInfo.platformType
     const gameMode = player.getGameMode()
 
     return update('player', id, {
         name,
         platformType,
-        gameMode
+        gameMode,
+        permissionLevel: playerPermissionLevel
     })
 }
 

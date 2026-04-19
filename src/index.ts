@@ -39,6 +39,15 @@ system.run(() => {
             if (LIGHT.ENABLED) light.light_player(player, tick)
             if (CARRIED_CHEST.ENABLED) chest.chest_player(player)
             offhand.offhand_player(player, tick)
+
+            // cache update
+            if (tick % 1200) {
+                cache.update(
+                    "player", player.id,
+                    { permissionLevel: player.playerPermissionLevel }
+                )
+                // more later?
+            }
         }
 
         if (DEBUG) debug.debug_pending()
