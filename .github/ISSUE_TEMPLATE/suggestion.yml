@@ -1,0 +1,113 @@
+name: Suggestion
+description: Suggest a new feature or improvement for QoF
+title: "[suggestion] "
+labels: [ "suggestion" ]
+assignees:
+  - picker
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Suggest a Feature for QoF
+        Have an idea to make QoF more enjoyable? Share it here!
+
+  - type: input
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: One-line description of your idea
+      placeholder: "Add a feature that..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Category
+      description: What area of the game does this relate to?
+      options:
+        - Other
+        - Modules
+        - Blocks
+        - Items
+        - Recipes
+        - Commands
+        - Sound / Particles
+        - Mobs / Entities
+        - I Don't Know
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: What's missing or frustrating in QoF that your idea fix?
+      placeholder: "In QoF, there's no way to... which makes... annoying"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How should this feature work in QoF? Be specific.
+      placeholder: "A overhaul block called X that when placed..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this to you?
+      options:
+        - Low, Nice to have
+        - Medium, Would noticeably improve gameplay
+        - High, Feels essential / missing from the addon
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / Workarounds
+      description: Any existing workarounds you're using in the meantime? (optional)
+      placeholder: "Currently I use... but it's not ideal because..."
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: References / Inspiration
+      description: Java Edition equivalents, mods, videos, or links for inspiration (optional)
+        (optional)
+      placeholder: "Java has this via... / Reference: https://..."
+
+  - type: upload
+    id: attachments
+    attributes:
+      label: Attachments
+      description: Screenshots, mockups, or in-game clips (optional)
+    validations:
+      required: false
+      accept: ".png,.jpg,.jpeg,.gif,.webp,.mp4,.mov,.webm"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before Submitting
+      options:
+        - label: I checked existing issues and this hasn't been suggested before
+          required: true
+        - label: This feature makes sense for QoF addon (it's fit vanilla styles)
+          required: true
+        - label: This fits the QoF goal of improving quality of features
+          required: true
+        - label: I'm using lastest versions of QoF
+          required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional Notes (optional)

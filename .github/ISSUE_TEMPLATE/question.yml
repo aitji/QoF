@@ -1,0 +1,95 @@
+name: Question / Help
+description: Ask a question about QoF or how something works
+title: "[question] "
+labels: [ "question" ]
+assignees:
+  - aitji
+  - picker
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Question / Help
+        Not sure how something in QoF works? Ask away!
+
+  - type: input
+    id: question
+    attributes:
+      label: Your Question
+      description: Summarize your question in one line
+      placeholder: "How do I...? / Why does X...?"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: What area of QoF does your question relate to? (optional)
+      options:
+        - Other
+        - Modules
+        - Blocks
+        - Items
+        - Recipes
+        - Commands
+        - Compatibility
+        - Mobs / Entities
+        - Installation / Setup
+        - I Don't Know
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to do in-game? (optional)
+      placeholder: "I'm trying to build a... / I want to use X feature to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What You've Already Tried
+      description: Steps, wiki pages, or searches you've done (optional)
+      placeholder: |
+        - Checked the wiki at...
+        - Tried...
+        - Searched for...
+
+  - type: input
+    id: version
+    attributes:
+      label: QoF Version (optional)
+      placeholder: "e.g. v1.1.0"
+
+  - type: input
+    id: mc_version
+    attributes:
+      label: Minecraft Bedrock Version
+      placeholder: "e.g. 26.14"
+
+  - type: upload
+    id: attachments
+    attributes:
+      label: Screenshots / Clips
+      description: Anything that helps show what you're dealing with (optional)
+    validations:
+      required: false
+      accept: ".png,.jpg,.jpeg,.gif,.webp,.mp4,.mov,.webm,.log,.txt"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before Submitting
+      options:
+        - label: I checked the QoF wiki / documentation first
+          required: true
+        - label: I searched existing issues and this hasn't been asked before
+          required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional Notes (optional)
