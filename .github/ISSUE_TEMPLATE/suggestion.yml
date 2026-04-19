@@ -3,7 +3,7 @@ description: Suggest a new feature or improvement for QoF
 title: "[suggestion] "
 labels: [ "suggestion" ]
 assignees:
-  - picker
+  - pickerth-12
 
 body:
   - type: markdown
