@@ -147,6 +147,44 @@ export const playSound = (dimension: Dimension, location: Vector3, sounds: { ID:
     try { tryPlay() }
     catch { system.run(() => tryPlay()) }
 }
+export const addItem = (player: Player, item: ItemStack, overrideAmount?: number): boolean => {
+    const inv = getInv(player)?.container
+    if (!inv) return false
+
+    let amount = overrideAmount ?? item.amount
+    const max = item.maxAmount ?? 64
+
+    for (let i = 0; i < inv.size && amount > 0; i++) {
+        const slot = inv.getItem(i)
+        if (!slot) continue
+        if (
+            slot.typeId !== item.typeId &&
+            slot?.nameTag !== item?.nameTag
+        ) continue
+
+        const space = max - slot.amount
+        if (space <= 0) continue
+
+        const add = Math.min(space, amount)
+        slot.amount += add
+        inv.setItem(i, slot)
+        amount -= add
+    }
+
+    for (let i = 0; i < inv.size && amount > 0; i++) {
+        if (inv.getItem(i)) continue
+
+        const add = Math.min(max, amount)
+        const newItem = item.clone()
+        newItem.amount = add
+
+        inv.setItem(i, newItem)
+        amount -= add
+    }
+
+    if (amount > 0) player.runCommand(`give @s ${item.typeId} ${amount}`)
+    return true
+}
 
 // debug tool lib
 export const dumpMeThatComp = (anything: Entity | Player | ItemStack | Block, boardcast = true) => {
