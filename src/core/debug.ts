@@ -1,10 +1,10 @@
 import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, DisplaySlotId, EquipmentSlot, ItemStack, MemoryTier, Player, PlayerPlaceBlockAfterEvent, ScoreboardObjective, StartupEvent, system, world } from "@minecraft/server"
-import { clamp, dumpMeThatComp, getEqu, getInv, RUNTIME } from "../lib"
+import { clamp, dumpMeThatComp, getEqu, getInv, QOF_INFORMATION, roundLoc, RUNTIME } from "../lib"
 const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
 import * as cache from "./cache"
 
 // small helper
-let dyp: ScoreboardObjective | null = null
+let dyp: ScoreboardObjective | null = null, message: string[]
 const getDypObjective = () => {
     if (dyp) return dyp
     dyp = world.scoreboard.getObjective("dyp") || world.scoreboard.addObjective("dyp", "Dynamic Props")
@@ -24,6 +24,42 @@ export const getPlayers = (players: Players) => players.map(p => world.getEntity
 
 system.run(() => {
     if (DISABLED_COMMANDFEEDBACK) world.gameRules.sendCommandFeedback = false
+
+    // pre build ---
+    const { version, license, dependencies, authors, url } = QOF_INFORMATION
+    type FeatureModule = { ENABLED: boolean }
+    const isFeatureModule = (v: unknown): v is FeatureModule => typeof v === 'object' && v !== null && 'ENABLED' in v
+    const features = Object.entries(RUNTIME).filter(([_, v]) => isFeatureModule(v)) as [string, FeatureModule][]
+    const FL = features.map(([key, v]) => {
+        const enabled = v.ENABLED
+        const setting = RUNTIME[key as keyof typeof RUNTIME]
+        const isDefault = isFeatureModule(setting) && setting.ENABLED === enabled
+
+        if (enabled) return isDefault
+            ? ` §7- §f${key}: §eEnabled`
+            : ` §7- §f${key}: §o§eEnabled`
+        else return isDefault
+            ? ` §7- §f${key}: §gDisabled`
+            : ` §7- §f${key}: §o§gDisabled`
+    })
+
+    message = [
+        `§eQ§fuality §eo§ff §eF§feature §r§7v${version.qof}`,
+        ``,
+        `§fMinecraft: §e${version.minecraft}`,
+        `§fLicense: §e${license}`,
+        `§fAuthors: §e${authors.join(', ')}`,
+        `§fDebug: §e${RUNTIME.DEBUG}`,
+        `§fURL: §g${url}`,
+        ``,
+        `§fFeatures §7(§e${features.filter(([_, v]) => v.ENABLED).length}§7/§e${features.length}§7):`,
+        ...FL,
+        ``,
+        `§fDependencies:`,
+        ...Object.entries(dependencies).map(([pkg, ver]) => ` §7- ${pkg} §e${ver}`)
+    ]
+    // ---
+
     if (DEBUG) {
         const host = world.getPlayers().find(e => e.id === "-4294967295")
         system.beforeEvents.watchdogTerminate.subscribe((d) => {
@@ -69,9 +105,25 @@ const logAs = (msg: string, log: string) => {
             break
     }
 }
+
 export const debug_startup = (event: StartupEvent) => {
-    if (!DEBUG) return
     const reg = event.customCommandRegistry
+
+    reg.registerCommand({
+        name: `${PREFIX}info`,
+        description: 'get infomation about Quality of Feature',
+        permissionLevel: CommandPermissionLevel.Any,
+    }, (origin) => {
+        const player = origin.sourceEntity as Player
+        if (player.typeId !== 'minecraft:player')
+            return { status: CustomCommandStatus.Failure, message: "origin not player" }
+
+        player.sendMessage(message.join("\n"))
+
+        return { status: CustomCommandStatus.Success }
+    })
+
+    if (!DEBUG) return
 
     reg.registerEnum(`${PREFIX}dyp_action`, ['list', 'list-value', 'bulk'])
     reg.registerEnum(`${PREFIX}log`, ['world', 'console'])

@@ -14,6 +14,20 @@ type RoundType = 'none' | 'ceil' | 'floor' | 'round'
 type EquSlot = 'Mainhand' | 'Offhand' | 'Head' | 'Body' | 'Legs' | 'Feet'
 
 const { DEBUG } = E
+export const QOF_INFORMATION = {
+    version: {
+        qof: '1.5.0',
+        minecraft: '1.26.12'
+    },
+    license: 'MIT',
+    dependencies: {
+        '@minecraft/server': '^2.7.0-beta.1.26.14-stable',
+        'typescript': '^6.0.2',
+    },
+    authors: ['aitji', 'pickerth-12'],
+    url: 'https://github.com/aitji/QoF'
+}
+
 export const clamp = (n: number, min: number = 0, max: number = 8) => Math.max(min, Math.min(max, Math.ceil(n)))
 export const checkRandom = (arr: number | number[]) => {
     switch (typeof arr) {
