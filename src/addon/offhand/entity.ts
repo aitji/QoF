@@ -1,5 +1,5 @@
 import { EquipmentSlot, PlayerInteractWithEntityBeforeEvent, system } from "@minecraft/server"
-import { getEqu, playSound } from "../../lib"
+import { checkPerm, getEqu, playSound } from "../../lib"
 
 const susCow = new Map()
 const SUS_STEW = Object.freeze({
@@ -47,6 +47,7 @@ export const offhand_playerInteractWithEntity = (event: PlayerInteractWithEntity
     const equippable = getEqu(player)!
     const offhand = equippable.getEquipment(EquipmentSlot.Offhand)
 
+    if (checkPerm(player) === false) return
     if (
         (target.typeId === "minecraft:cow" || target.typeId === "minecraft:mooshroom") &&
         offhand?.typeId === "minecraft:bucket"
