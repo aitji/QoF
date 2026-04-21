@@ -1,5 +1,5 @@
 import { Block, BlockComponentTypes, BlockPermutation, Dimension, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, PistonActivateAfterEvent, PlayerInteractWithBlockBeforeEvent, PlayerPlaceBlockAfterEvent, system, Vector3, world } from "@minecraft/server"
-import { cache, checkRandom, clamp, getEqu, getInv, playSound, RUNTIME } from "../lib"
+import { cache, checkPerm, checkRandom, clamp, getEqu, getInv, playSound, RUNTIME } from "../lib"
 const {
     DEBUG, SLICE_PREFIX,
     COMPOSTER: {
@@ -70,6 +70,7 @@ const maybeFinish = (block: Block, dim: Dimension, loc: Vector3) => {
 export const composter_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { player, block, itemStack } = data
     if (player.isSneaking || !itemStack || block.typeId !== BLOCK_TYPEID) return
+    if (checkPerm(player) === false) return
 
     const itemID = itemStack.typeId
     const chance = ITEMS[itemID]
