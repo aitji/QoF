@@ -1,5 +1,5 @@
 import { Block, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
-import { RUNTIME } from "../lib"
+import { checkPerm, RUNTIME } from "../lib"
 const { DEBUG } = RUNTIME
 
 function getNeighborDoorBlock(lowerBlock: Block) {
@@ -21,6 +21,7 @@ function getNeighborDoorBlock(lowerBlock: Block) {
 const isDoor = (typeId: string) => typeId?.endsWith('_door') && typeId !== 'minecraft:iron_door'
 export const door_playerInteractWithBlock = (event: PlayerInteractWithBlockBeforeEvent) => {
     const { block, player, itemStack } = event
+    if (checkPerm(player) === false) return
     if (!isDoor(block.typeId)) return
     if (player.isSneaking && itemStack) return
     const lower = block.permutation.getState("upper_block_bit") ? block.below()! : block!

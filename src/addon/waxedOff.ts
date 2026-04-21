@@ -1,5 +1,5 @@
 import { BlockComponentTypes, EquipmentSlot, PlayerInteractWithBlockBeforeEvent, system } from "@minecraft/server"
-import { applyItemDamage, dumpMeThatComp, getEqu, playSound, RUNTIME, setEqu } from "../lib"
+import { applyItemDamage, checkPerm, dumpMeThatComp, getEqu, playSound, RUNTIME, setEqu } from "../lib"
 import * as cache from "../core/cache"
 const {
     DEBUG, BLOCK_INTERACTION_DELAY,
@@ -15,6 +15,7 @@ export const waxedOff_playerInteractWithBlock = (data: PlayerInteractWithBlockBe
     }
     delay[player.id] = system.currentTick + BLOCK_INTERACTION_DELAY
 
+    if (checkPerm(player) === false) return
     if (
         block && itemStack &&
         itemStack.hasTag('minecraft:is_axe') &&

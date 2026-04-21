@@ -2,7 +2,7 @@ import {
     BlockPermutation, Difficulty, EntityComponentTypes,
     GameMode, PlayerInteractWithBlockBeforeEvent, system, world
 } from "@minecraft/server"
-import { getInv, RUNTIME } from "../../lib"
+import { checkPerm, getInv, RUNTIME } from "../../lib"
 import { blockHandle, fireHandle, seedsHandle, torchHandle } from "./handlers"
 import * as cache from "../../core/cache"
 
@@ -32,6 +32,7 @@ export const offhand_playerInteractWithBlock = (data: PlayerInteractWithBlockBef
     }
     delay[player.id] = now + BLOCK_INTERACTION_DELAY
 
+    if (checkPerm(player) === false) return
     const creative = cache.getPlayer(player, 'gameMode') === GameMode.Creative
 
     if (itemStack) {
@@ -41,16 +42,21 @@ export const offhand_playerInteractWithBlock = (data: PlayerInteractWithBlockBef
 
         // disallow main hand always use item
         if (typeId) {
-            if (CAN_ALWAYS_USE.has(typeId)) return
-            if (typeId.endsWith('_boat')) return
-            if (typeId.endsWith('minecart')) return
-            if (typeId.endsWith('harness')) return
-            if (typeId.endsWith('bundle')) return
-            if (typeId.endsWith('_boots')) return
-            if (typeId.endsWith('_leggings')) return
-            if (typeId.endsWith('_chestplate')) return
-            if (typeId.endsWith('_helmet')) return
-            if (block && block.typeId === 'minecraft:jukebox' && typeId.startsWith('minecraft:music_disc_')) return
+            const ends = typeId.endsWith.bind(typeId)
+            const starts = typeId.startsWith.bind(typeId)
+
+            if (
+                CAN_ALWAYS_USE.has(typeId) ||
+                ends('_boat') ||
+                ends('minecart') ||
+                ends('harness') ||
+                ends('bundle') ||
+                ends('_boots') ||
+                ends('_leggings') ||
+                ends('_chestplate') ||
+                ends('_helmet') ||
+                (block && block.typeId === 'minecraft:jukebox' && starts('minecraft:music_disc_'))
+            ) return
         }
 
         // ignore foods
