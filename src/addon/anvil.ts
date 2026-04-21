@@ -1,5 +1,5 @@
 import { system, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, PlayerInteractWithBlockBeforeEvent, world, Direction } from "@minecraft/server"
-import { checkRandom, reduceItem, RUNTIME, cache, getEqu, playSound } from "../lib"
+import { checkRandom, reduceItem, RUNTIME, cache, getEqu, playSound, checkPerm } from "../lib"
 const { DEBUG, REPAIR_ANVIL: { ITEM_TYPEID, REPAIRABLE_ANVIL, REPAIR_SOUND, REPAIR_HELD_DELAY } } = RUNTIME
 
 const delay: Record<string, number> = {}
@@ -46,6 +46,7 @@ export const anvil_playerInteractWithBlock = (data: PlayerInteractWithBlockBefor
         }
 
         delay[player.id] = system.currentTick + REPAIR_HELD_DELAY
+        if (checkPerm(player) === false) return
 
         const currType = block.typeId
         const nextType = REPAIRABLE_ANVIL[currType]
