@@ -38,7 +38,7 @@ system.run(() => {
         for (const player of players) {
             if (LIGHT.ENABLED) light.light_player(player, tick)
             if (CARRIED_CHEST.ENABLED) chest.chest_player(player)
-            offhand.offhand_player(player, tick)
+            if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_player(player, tick)
 
             // cache update
             if (tick % 1200 === 0) {
@@ -83,13 +83,13 @@ world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.REPAIR_ANVIL.ENABLED) anvil.anvil_playerInteractWithBlock(data)
     if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
     if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
-    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithBlock(data)
+    if (RUNTIME.OFFHAND.ENABLED && RUNTIME.OFFHAND.ALLOW_BLOCK_PLACEMENT) offhand.offhand_playerInteractWithBlock(data)
     if (RUNTIME.DOUBLE_DOOR.ENABLED) door.door_playerInteractWithBlock(data)
     if (RUNTIME.WAXED_OF.ENABLED) waxedOff.waxedOff_playerInteractWithBlock(data)
     if (RUNTIME.WATER_CAULDRON.ENABLED) cauldron.cauldron_playerInteractWithBlock(data)
 })
 world.beforeEvents.playerInteractWithEntity.subscribe(data => {
-    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerInteractWithEntity(data)
+    if (RUNTIME.OFFHAND.ENABLED && RUNTIME.OFFHAND.ALLOW_BLOCK_PLACEMENT) offhand.offhand_playerInteractWithEntity(data)
 })
 world.afterEvents.entitySpawn.subscribe(data => {
     if (RUNTIME.WATER_CONCRETE.ENABLED) concrete.powder_entitySpawn(data)

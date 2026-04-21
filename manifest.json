@@ -256,6 +256,12 @@
       "default": true
     },
     {
+      "type": "toggle",
+      "text": "§7Allow blocks placement from offhand?",
+      "name": "qof:OFFHAND.ALLOW_BLOCK_PLACEMENT",
+      "default": true
+    },
+    {
       "type": "slider",
       "text": "§7How long§8(game tick)§7 between each sneak on §l§fMobile §r",
       "name": "qof:OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE",

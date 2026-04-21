@@ -454,6 +454,7 @@ export const SETTINGS = Object.freeze({
     }),
     OFFHAND: Object.freeze({
         ENABLED: true,
+        ALLOW_BLOCK_PLACEMENT: true,
         DOUBLE_SNEAK_WINDOW_MOBILE: 20,
         DOUBLE_SNEAK_WINDOW_CONSOLE: 16,
         DOUBLE_SNEAK_WINDOW_DEFAULT: 12,
