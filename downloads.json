@@ -3,26 +3,6 @@
     "queryResult": {
         "data": [
             {
-                "downloadDate": 1768867200000,
-                "downloads": 0,
-                "quality of feature": 0
-            },
-            {
-                "downloadDate": 1768953600000,
-                "downloads": 0,
-                "quality of feature": 0
-            },
-            {
-                "downloadDate": 1769040000000,
-                "downloads": 0,
-                "quality of feature": 0
-            },
-            {
-                "downloadDate": 1769126400000,
-                "downloads": 0,
-                "quality of feature": 0
-            },
-            {
                 "downloadDate": 1769212800000,
                 "downloads": 0,
                 "quality of feature": 0
@@ -451,6 +431,26 @@
                 "downloadDate": 1776556800000,
                 "downloads": 1398,
                 "quality of feature": 1398
+            },
+            {
+                "downloadDate": 1776643200000,
+                "downloads": 212,
+                "quality of feature": 212
+            },
+            {
+                "downloadDate": 1776729600000,
+                "downloads": 137,
+                "quality of feature": 137
+            },
+            {
+                "downloadDate": 1776816000000,
+                "downloads": 127,
+                "quality of feature": 127
+            },
+            {
+                "downloadDate": 1776902400000,
+                "downloads": 122,
+                "quality of feature": 122
             }
         ],
         "legend": [
