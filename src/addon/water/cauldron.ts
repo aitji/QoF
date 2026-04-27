@@ -1,6 +1,6 @@
 import { Block, BlockComponentTypes, BlockFluidContainerComponent, BlockPermutation, EntityEquippableComponent, EquipmentSlot, FluidType, ItemStack, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
-import { checkPerm, getEqu, playSound, RUNTIME } from "../../lib"
-const { DEBUG, WATER_CAULDRON: { FIND_NEAR_COLOR } } = RUNTIME
+import { addItem, checkPerm, clamp, getEqu, playSound, RUNTIME, setEqu } from "../../lib"
+const { DEBUG, WATER_CAULDRON: { FIND_NEAR_COLOR, HARDENED_POWDER } } = Object.freeze(RUNTIME)
 const RGB_PRECISION = 4 // hardcode, don't make config
 const DYE_COLORS: { name: string; r: number; g: number; b: number }[] = [
     { name: 'white', r: 0.9412, g: 0.9412, b: 0.9412 },
@@ -57,8 +57,8 @@ const DYEABLE: DyeableEntry[] = [
     },
     { // concrete / concrete_powder -> *_concrete[_powder]
         match: id => id.includes('concrete'),
-        dyed: (id, dye) => `minecraft:${dye}_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
-        clean: id => `minecraft:white_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
+        dyed: (id, dye) => HARDENED_POWDER ? `minecraft:${dye}_concrete` : `minecraft:${dye}_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
+        clean: id => HARDENED_POWDER ? `minecraft:white_concrete` : `minecraft:white_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
     },
     { // glass / glass_pane -> *_stained_glass[_pane]
         match: id => id.includes('glass'),
@@ -82,14 +82,24 @@ const reduceWaterState = (block: Block, fluid: BlockFluidContainerComponent) => 
 
 function applyDye(
     fluid: BlockFluidContainerComponent, isWater: boolean, nearDye: string,
-    block: Block, itemStack: ItemStack, equ: EntityEquippableComponent
+    block: Block, itemStack: ItemStack, player: Player
 ) {
     const id = itemStack.typeId
+    const amount = itemStack.amount
     const entry = DYEABLE.find(e => e.match(id))
     if (!entry) return
 
     const resultId = isWater ? entry.clean(id) : entry.dyed(id, nearDye)
-    if (resultId !== id) equ.setEquipment(EquipmentSlot.Mainhand, new ItemStack(resultId, itemStack.amount))
+    if (resultId === id) return reduceWaterState(block, fluid)
+
+    const used = clamp(amount, 1, 16)
+    const remain = amount - used
+
+    const giveItem = new ItemStack(resultId, used)
+    const remainItem = remain > 0 ? new ItemStack(id, remain) : undefined
+
+    addItem(player, giveItem)
+    setEqu(player, remainItem)
 
     reduceWaterState(block, fluid)
 }
@@ -128,6 +138,6 @@ export const cauldron_playerInteractWithBlock = (data: PlayerInteractWithBlockBe
             `(RGBA=${red.toFixed(2)},${green.toFixed(2)},${blue.toFixed(2)},${fluid.fluidColor.alpha})`
         )
 
-        if (itemStack) applyDye(fluid, isWater, dye.color, block, itemStack, equ)
+        if (itemStack) applyDye(fluid, isWater, dye.color, block, itemStack, player)
     })
 }

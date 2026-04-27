@@ -803,5 +803,6 @@ export const SETTINGS = Object.freeze({
     WATER_CAULDRON: Object.freeze({
         ENABLED: true,
         FIND_NEAR_COLOR: true,
+        HARDENED_POWDER: true
     }),
 })

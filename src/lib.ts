@@ -156,6 +156,8 @@ export const setEqu = (entity: Player | Entity, itemStack: ItemStack | undefined
     try {
         const equ = getEqu(entity)
         if (!equ) return false
+        if (itemStack && itemStack.amount <= 0) itemStack = undefined
+
         equ.setEquipment(slot as EquipmentSlot, itemStack)
         return true
     } catch (e) {
@@ -183,7 +185,7 @@ export const addItem = (player: Player, item: ItemStack, overrideAmount?: number
         const slot = inv.getItem(i)
         if (!slot) continue
         if (
-            slot.typeId !== item.typeId &&
+            slot.typeId !== item.typeId ||
             slot?.nameTag !== item?.nameTag
         ) continue
 

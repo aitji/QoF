@@ -21,7 +21,6 @@ this file is only for top priority todo, if something like refactor some code or
   - [x] offhand seed work with [harvest], auto replant from offhand
 - [x] harvest support more things like coco bean cocoa ["direction"=0-3], this might be hard with offhand
 - [x] ongoing problem ; might ship without fix this
-  - [ ] composter bug with hopper again -.-
   - [x] composter not work with piston
   - [x] (24-Mar-2026) piston is change state to air when extract it will del piston
         ; (25-Mar-2026) still no clue how to fix "cleanly" tho\
@@ -33,12 +32,9 @@ this file is only for top priority todo, if something like refactor some code or
 - [x] picker is on vacation ; make everything config-able tmr(28 Mar 2026)
 - [x] add more thing for wet concrete powders, e.g. cauldron?
 - [x] add more config for new modules
-  - [ ] should powder concrete dye in cauldron turn into soildconcrete?
-  - [ ] max 16 each time player click cauldron (behave like tripped arrow)
-- [ ] if player have full inventory, container addItem will fail silently
-
-### request/sugg
-  - [rejected, good ux but bad vanilla feel] hit chest to store item -MondayHP
+  - [won't changed] should powder concrete dye in cauldron turn into soild concrete?
+  - [x] max 16 each time player click cauldron (behave like tripped arrow)
+- [x] if player have full inventory, container addItem will fail silently
 
 ### concern about dyp
 
