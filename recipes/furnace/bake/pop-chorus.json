@@ -1,7 +1,7 @@
 {
     "format_version": "1.20.10",
     "minecraft:recipe_furnace": {
-        "description": {"identifier": "pop-chorus"},
+        "description": {"identifier": "qof:pop-chorus"},
         "tags": ["smoker", "campfire"],
         "input": "minecraft:chorus_fruit",
         "output": "minecraft:popped_chorus_fruit",

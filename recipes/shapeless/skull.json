@@ -1,7 +1,7 @@
 {
     "format_version": "1.20.10",
     "minecraft:recipe_shapeless": {
-        "description": {"identifier": "banner_skull"},
+        "description": {"identifier": "qof:wbanner_skull"},
         "tags": ["crafting_table"],
         "group": "banner_pattern",
         "ingredients": [

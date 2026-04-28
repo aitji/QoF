@@ -1,7 +1,7 @@
 {
     "format_version": "1.20.10",
     "minecraft:recipe_furnace": {
-        "description": {"identifier": "blasting_glass2"},
+        "description": {"identifier": "qof:blasting_glass2"},
         "tags": ["blast_furnace"],
         "input": "minecraft:red_sand",
         "output": "minecraft:glass",

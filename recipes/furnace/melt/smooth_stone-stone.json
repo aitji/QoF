@@ -1,7 +1,7 @@
 {
     "format_version": "1.20.10",
     "minecraft:recipe_furnace": {
-        "description": {"identifier": "blasting_smooth_stone"},
+        "description": {"identifier": "qof:blasting_smooth_stone"},
         "tags": ["blast_furnace"],
         "input": "minecraft:stone",
         "output": "minecraft:smooth_stone",

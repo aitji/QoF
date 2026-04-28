@@ -1,7 +1,7 @@
 {
     "format_version": "1.20.10",
     "minecraft:recipe_furnace": {
-        "description": {"identifier": "charcoal-bamboo"},
+        "description": {"identifier": "qof:charcoal-bamboo"},
         "tags": ["furnace"],
         "input": "minecraft:bamboo_block",
         "output": "minecraft:charcoal",
