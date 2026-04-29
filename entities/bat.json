@@ -93,8 +93,7 @@
                 "speed_multiplier": 1.0,
                 "items": [
                     "glow_berries"
-                ],
-                "float_wander_has_move_control": true
+                ]
             },
             "minecraft:interact": {
                 "interactions": [
