@@ -1,4 +1,4 @@
-# **[QoF](https://aitji.xyz/QoF)** – Quality of Feature
+# **[QoF](https://qof.aitji.xyz)** – Quality of Feature
 
 > [!NOTE]
 > A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel. Requires **BetaAPIs** enabled under Experiments.
