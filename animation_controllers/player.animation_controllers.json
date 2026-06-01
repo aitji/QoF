@@ -1,0 +1,27 @@
+{
+	"format_version": "1.10.0",
+	"animation_controllers": {
+		"controller.animation.player.command_control": {
+			"initial_state": "default",
+			"states": {
+				"default": {
+					"transitions": [
+						{
+							"attacking": "v.attack_time"
+						}
+					]
+				},
+				"attacking": {
+					"on_entry": [
+						"/scriptevent aitji-lib:swing qof"
+					],
+					"transitions": [
+						{
+							"default": "v.attack_time == 0"
+						}
+					]
+				}
+			}
+		}
+	}
+}

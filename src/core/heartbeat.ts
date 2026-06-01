@@ -1,6 +1,6 @@
 import { ScoreboardObjective, ScriptEventCommandMessageAfterEvent, system, world } from "@minecraft/server"
 import { RUNTIME } from "../lib"
-const { DISABLED_HEARTBEAT } = RUNTIME
+const { DISABLED_HEARTBEAT, DEBUG } = RUNTIME
 
 let lib: ScoreboardObjective
 system.run(() => sendHeartbeat())
@@ -21,4 +21,8 @@ const sendHeartbeat = () => {
 export const heartbeat_scriptEventReceive = ({ id, message }: ScriptEventCommandMessageAfterEvent) => {
     if (message !== "qof" || DISABLED_HEARTBEAT) return
     if (id === "aitji-lib:heartbeat") sendHeartbeat()
+
+    if (DEBUG && id === 'aitji-lib:swing') {
+        world.sendMessage('swing')
+    }
 }
