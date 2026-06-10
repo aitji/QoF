@@ -39,6 +39,10 @@ src/
 build.gitignore
 *.git
 
+# legal file
+!COPYRIGHT.md
+!LICENSE
+
 
 .vscode/
 .idea/

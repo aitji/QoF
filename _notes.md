@@ -3,17 +3,24 @@
 Welcome!\
 The QoF `scripts` and `JSON` files in this addon are **minified** to reduce file size and improve distribution.
 
-If you would like to read or study the original,\
-readable source code, you can find it [here](https://github.com/aitji/QoF)
+If you would like to read or study the original readable source code, you can find it on [GitHub](https://github.com/aitji/QoF).
 
 # License
 
-This project is licensed under the **MIT License**.
-See the `LICENSE` file for details.
+The source code and software components of this addon are licensed under the [MIT License](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/LICENSE).\
+<small>See the `LICENSE` file included in this package for full terms.</small>
 
-```
-© 2026 QoF™ Licensed under the MIT License
-Made by (aitji & pickerth-12)
-* @aitji - scripting & design
-* @pickerth-12 - design, JSON & Molang
-```
+**Branding, media, documentation, and other non-code assets are not covered by the [MIT License](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/LICENSE).**\
+See [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/COPYRIGHT.md) for full details on what you can and cannot do with this project.
+<small>See the `COPYRIGHT.md` file included in this package for full terms.</small>
+
+> Redistribution of this addon to third-party sites is **not permitted**.
+> Silence or non-response from the maintainers does not constitute permission.
+
+## Credits
+
+- [@aitji](https://github.com/aitji) scripting & design
+- [@pickerth-12](https://github.com/pickerth-12) design, json & molang
+
+QoF™ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
+Licensed under the [MIT License]([LICENSE](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/License)) · [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/COPYRIGHT.md)

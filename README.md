@@ -5,7 +5,7 @@
 
 ## Table of Contents
 
-- [QoF – Quality of Feature](#qof--quality-of-feature)
+- [**QoF** – Quality of Feature](#qof--quality-of-feature)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Changelog](#changelog)
@@ -806,7 +806,9 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project's source code is licensed under the [MIT License](LICENSE).
+
+Branding, media, documentation, and other non-code assets are subject to additional restrictions. See [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/COPYRIGHT.md) for full details.
 
 ## Disclosure
 
@@ -817,22 +819,21 @@ English is not our native language. Thank you for your understanding!
 
 ## Credits
 
-- @aitji scripting & design
-- @pickerth-12 design, json & molang
+- [@aitji](https://github.com/aitji) scripting & design
+- [@pickerth-12](https://github.com/pickerth-12) design, json & molang
+
+QoF™ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
+Licensed under the [MIT License]([LICENSE](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/License)) · [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/behavior_packs/COPYRIGHT.md)
 
 ```
-QoF™
-Copyright (c) 2026 aitji & pickerth-12 Licensed under the MIT License
-Source: github.com/aitji/QoF
-
   README INFO
 Version: v1.5.0
-Last updated: 19 Apr 2026
-Has README Update: True
+Last updated: 10 Jun 2026
+Has README Update: False
 
   PACK INFO
 Last Release: v1.5.0
-Last Pre-Release: v1.4.1
+Last Pre-Release: v1.5.1
 Last Minecraft Version: 26.12
 Used Dependencies: ^2.7.0-beta.1.26.14-stable
 ```
