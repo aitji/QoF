@@ -1,4 +1,4 @@
 ## QoF's stats
 
-Downloads Stats
-- [CurseForge](./data/cf-downloads.json)
+Stats
+- [CurseForge](./data/curseforge.json)
