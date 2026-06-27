@@ -1,8 +1,8 @@
-<div align="center"><img src="./.github/img/brand/github banner.png" alt=""></div>
+<div align="center">
+
+<img src="./.github/img/brand/github banner.png" alt="">
 
 # **[QoF](https://qof.aitji.xyz)** – Quality of Feature
-
-<div align="center">
 
 [Releases](https://github.com/aitji/QoF/releases/latest) | [Behavior Packs](https://github.com/aitji/QoF/tree/behavior_packs) | [Resource Packs](https://github.com/aitji/QoF/tree/resource_packs) | [WiKi](https://qof.aitji.xyz) | [LICENSE](./LICENSE) & [COPYRIGHT](./COPYRIGHT.md)
 
@@ -806,12 +806,10 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 - `Limitations` Light blocks are placed only in air or liquid. Solid blocks are never replaced, which can cause light gaps in tight or enclosed spaces.
 - `Limitations` Armor stands do not support the equippable component in the current API. Items held by armor stands do not emit dynamic light. Only item frames are supported for static placed sources.
-- Very high render radius or sources-per-player values will increase tick time noticeably. Keep defaults unless your world has very few active players.
 
 **Composter+**
 
 - Hopper feed processes one item per interval tick. High-throughput automatic farms will be rate-limited by the hopper interval setting.
-- `Limitations` We have a system that prevents custom list items from being processed when vanilla items are already being processed. However, if our custom list items are processed first and vanilla items are in the next slots, the vanilla items will be processed at the same time as ours in the hopper.
 
 **Carrying Container**
 
@@ -849,7 +847,7 @@ Branding, media, and other protected materials are reserved under [COPYRIGHT.md]
 ```
   README INFO
 Version: v1.5.0
-Last updated: 10 Jun 2026
+Last updated: 27 Jun 2026
 Has README Update: False
 
   PACK INFO
