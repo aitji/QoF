@@ -1,6 +1,10 @@
 <div align="center">
 
-<img src="./.github/img/brand/github banner.png" alt="">
+<picture>
+  <img src="./.github/img/brand/github banner.png" alt="QoF's Banner">
+  <img src="https://qof.aitji.xyz/api/badge?type=downloads" height="30px" alt="QoF's Downloads">
+  <img src="https://qof.aitji.xyz/api/badge?type=version" height="30px" alt="QoF's Version">
+</picture>
 
 # **[QoF](https://qof.aitji.xyz)** – Quality of Feature
 
