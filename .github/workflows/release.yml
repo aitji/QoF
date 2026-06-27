@@ -1,0 +1,217 @@
+name: Auto Release!
+
+on:
+  workflow_dispatch:
+    inputs:
+      bp_version:
+        description: "Optional behavior_packs version override (use manifest version by
+          default)"
+        required: false
+      release_type:
+        description: "Optional release type override: release or prerelease"
+        required: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout sources branch
+        uses: actions/checkout@v6
+        with:
+          ref: sources
+          fetch-depth: 2
+
+      - name: Checkout behavior_packs branch
+        uses: actions/checkout@v6
+        with:
+          ref: behavior_packs
+          path: _bp
+          fetch-depth: 2
+
+      - name: Read manifest version (dispatch)
+        id: check_dispatch
+        run: |
+          VERSION=$(node -e "const m=require('./_bp/manifest.json'); const v=m.header.version; console.log(Array.isArray(v)?v.join('.'):v);")
+          if [ -n "${{ github.event.inputs.bp_version }}" ]; then
+            VERSION="${{ github.event.inputs.bp_version }}"
+          fi
+
+          PATCH=$(echo "$VERSION" | cut -d. -f3)
+          if [ -z "$PATCH" ]; then
+            PATCH=0
+          fi
+
+          if [ -n "${{ github.event.inputs.release_type }}" ]; then
+            RELEASE_TYPE="${{ github.event.inputs.release_type }}"
+          elif [ "$PATCH" -eq 0 ]; then
+            RELEASE_TYPE="release"
+          else
+            RELEASE_TYPE="prerelease"
+          fi
+
+          PACK_NAME="QoF-${VERSION}.mcaddon"
+
+          echo "version_string=${VERSION}" >> $GITHUB_OUTPUT
+          echo "pack_name=${PACK_NAME}" >> $GITHUB_OUTPUT
+          echo "release_type=${RELEASE_TYPE}" >> $GITHUB_OUTPUT
+          echo "changed=true" >> $GITHUB_OUTPUT
+
+          echo "Version: $VERSION"
+          echo "Release type: $RELEASE_TYPE"
+          echo "Pack: $PACK_NAME"
+
+      - name: Resolve version outputs
+        id: resolve
+        run: |
+          echo "changed=${{ steps.check_dispatch.outputs.changed }}"               >> $GITHUB_OUTPUT
+          echo "version_string=${{ steps.check_dispatch.outputs.version_string }}" >> $GITHUB_OUTPUT
+          echo "pack_name=${{ steps.check_dispatch.outputs.pack_name }}"           >> $GITHUB_OUTPUT
+          echo "release_type=${{ steps.check_dispatch.outputs.release_type }}"     >> $GITHUB_OUTPUT
+
+      - name: Read changelogs
+        if: steps.resolve.outputs.changed == 'true'
+        id: changelogs
+        run: |
+          VERSION="${{ steps.resolve.outputs.version_string }}"
+          MINOR_VERSION=$(echo "$VERSION" | cut -d. -f1-2)
+
+          EXACT_FILE=".github/changelogs/v${VERSION}.md"
+          MINOR_FILE=".github/changelogs/v${MINOR_VERSION}.md"
+
+          if [ -f "$EXACT_FILE" ]; then
+            echo "Found exact changelogs: $EXACT_FILE"
+            CHANGELOGS_SOURCE="$EXACT_FILE"
+          elif [ -f "$MINOR_FILE" ]; then
+            echo "Found minor fallback changelogs: $MINOR_FILE"
+            CHANGELOGS_SOURCE="$MINOR_FILE"
+          else
+            echo "No changelogs found for v${VERSION} or v${MINOR_VERSION}, using auto-generated notes"
+            echo "has_changelogs=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          cat "$CHANGELOGS_SOURCE" > /tmp/changelogs_body.md
+          echo "has_changelogs=true" >> $GITHUB_OUTPUT
+
+      - name: Set DEBUG to false (behavior_packs)
+        if: steps.resolve.outputs.changed == 'true'
+        working-directory: _bp
+        run: node ../.github/scripts/set-debug.js
+
+      - name: Cache dependencies
+        if: steps.resolve.outputs.changed == 'true'
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            _bp/node_modules
+            .github/scripts/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('_bp/package.json',
+            '.github/scripts/minify.js') }}
+          restore-keys: |
+            deps-${{ runner.os }}-
+
+      - name: Install dependencies (if not cached)
+        if: steps.resolve.outputs.changed == 'true' &&
+          steps.cache-deps.outputs.cache-hit != 'true'
+        run: |
+          npm install --prefix _bp --no-save typescript
+          npm install --prefix .github/scripts terser
+
+      - name: Build TypeScript (behavior_packs)
+        if: steps.resolve.outputs.changed == 'true'
+        working-directory: _bp
+        run: npm run build
+
+      - name: Minify JSON & JS (behavior_packs)
+        if: steps.resolve.outputs.changed == 'true'
+        working-directory: _bp
+        run: node ../.github/scripts/minify.js
+
+      - name: Zip behavior_packs mcpack
+        if: steps.resolve.outputs.changed == 'true'
+        run: |
+          BP_PACK="QoF_v${{ steps.resolve.outputs.version_string }}_behavior_packs.mcpack"
+
+          {
+            grep -v '^\s*#' build.gitignore | grep -v '^\s*$' | grep '^\!' | sed 's/^!/+ /'
+            grep -v '^\s*#' build.gitignore | grep -v '^\s*$' | grep -v '^\!' | sed 's|/*$||' | sed 's/^/- /'
+          } > /tmp/bp_filter.txt
+
+          mkdir -p /tmp/bp_build
+          rsync -a --filter='merge /tmp/bp_filter.txt' _bp/ /tmp/bp_build/
+          cd /tmp/bp_build && zip -r "$OLDPWD/$BP_PACK" .
+
+          echo "BP_PACK=$BP_PACK" >> $GITHUB_ENV
+          echo "Created: $BP_PACK"
+
+      - name: Checkout resource_packs branch
+        if: steps.resolve.outputs.changed == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: resource_packs
+          path: _rp
+
+      - name: Read resource_packs version
+        if: steps.resolve.outputs.changed == 'true'
+        id: rp_version
+        run: node .github/scripts/read-manifest.js _rp/manifest.json
+
+      - name: Set DEBUG to false (resource_packs)
+        if: steps.resolve.outputs.changed == 'true'
+        working-directory: _rp
+        run: node ../.github/scripts/set-debug.js --rp
+
+      - name: Minify JSON & JS (resource_packs)
+        if: steps.resolve.outputs.changed == 'true'
+        run: node .github/scripts/minify.js --rp
+
+      - name: Zip resource_packs mcpack
+        if: steps.resolve.outputs.changed == 'true'
+        run: |
+          RP_PACK="QoF_v${{ steps.rp_version.outputs.rp_version }}_resource_packs.mcpack"
+
+          {
+            grep -v '^\s*#' build.gitignore | grep -v '^\s*$' | grep '^\!' | sed 's/^!/+ /'
+            grep -v '^\s*#' build.gitignore | grep -v '^\s*$' | grep -v '^\!' | sed 's|/*$||' | sed 's/^/- /'
+          } > /tmp/rp_filter.txt
+
+          mkdir -p /tmp/rp_build
+          rsync -a --filter='merge /tmp/rp_filter.txt' _rp/ /tmp/rp_build/
+          cd /tmp/rp_build && zip -r "$OLDPWD/$RP_PACK" .
+
+          echo "RP_PACK=$RP_PACK" >> $GITHUB_ENV
+          echo "Created: $RP_PACK"
+
+      - name: Bundle into .mcaddon
+        if: steps.resolve.outputs.changed == 'true'
+        run: |
+          ADDON_NAME="${{ steps.resolve.outputs.pack_name }}"
+          zip "$ADDON_NAME" "$BP_PACK" "$RP_PACK"
+          echo "Created: $ADDON_NAME"
+
+      - name: Create / Update GitHub Release (with changelogs)
+        if: steps.resolve.outputs.changed == 'true' &&
+          steps.changelogs.outputs.has_changelogs == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ steps.resolve.outputs.version_string }}"
+          name: "QoF v${{ steps.resolve.outputs.version_string }}"
+          prerelease: ${{ steps.resolve.outputs.release_type == 'prerelease' }}
+          files: ${{ steps.resolve.outputs.pack_name }}
+          body_path: /tmp/changelogs_body.md
+          generate_release_notes: false
+
+      - name: Create / Update GitHub Release (auto notes)
+        if: steps.resolve.outputs.changed == 'true' &&
+          steps.changelogs.outputs.has_changelogs == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ steps.resolve.outputs.version_string }}"
+          name: "QoF v${{ steps.resolve.outputs.version_string }}"
+          prerelease: ${{ steps.resolve.outputs.release_type == 'prerelease' }}
+          files: ${{ steps.resolve.outputs.pack_name }}
+          generate_release_notes: true

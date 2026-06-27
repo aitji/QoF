@@ -1,0 +1,89 @@
+name: Update Release Notes
+
+on:
+  push:
+    branches:
+      - sources
+    paths:
+      - .github/changelogs/**.md
+
+jobs:
+  update-notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Get changed changelogs files
+        id: changed
+        run: |
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            CHANGED=$(git diff --name-only HEAD -- '.github/changelogs/*.md')
+          elif ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            echo "Warning: BEFORE commit $BEFORE not found, fallback diff"
+            CHANGED=$(git diff --name-only HEAD~1 HEAD -- '.github/changelogs/*.md' 2>/dev/null || \
+                      git diff --name-only HEAD -- '.github/changelogs/*.md')
+          else
+            CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" -- '.github/changelogs/*.md')
+          fi
+
+          echo "$CHANGED" | grep -v '^$' > changed_files.txt || true
+
+          echo "Changed files:"
+          cat changed_files.txt || true
+
+      - name: Update each matching release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -s changed_files.txt ]; then
+            echo "No changelogs files changed"
+            exit 0
+          fi
+
+          while IFS= read -r FILE; do
+
+            case "$FILE" in
+              .github/changelogs/*.md) ;;
+              *)
+                echo "Skip unexpected path: $FILE"
+                continue
+                ;;
+            esac
+
+            if [ ! -f "$FILE" ]; then
+              echo "File removed, skip: $FILE"
+              continue
+            fi
+
+            if [ ! -s "$FILE" ]; then
+              echo "File empty, skip: $FILE"
+              continue
+            fi
+
+            BASENAME=$(basename "$FILE" .md)
+
+            if ! echo "$BASENAME" | grep -qE '^v[0-9]+\.[0-9]+(\.[0-9]+)?$'; then
+              echo "Invalid version filename: $BASENAME"
+              continue
+            fi
+
+            TAG="$BASENAME"
+
+            if ! gh release view "$TAG" --json tagName > /dev/null 2>&1; then
+              echo "Release not found: $TAG"
+              continue
+            fi
+
+            echo "Updating release $TAG using $FILE"
+            gh release edit "$TAG" --notes-file "$FILE"
+
+          done < changed_files.txt

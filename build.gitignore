@@ -1,0 +1,49 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+out/
+*.js.map
+
+# typescript
+*.tsbuildinfo
+tsconfig.json
+tsconfig.build.json
+
+# minecraft
+# *.mcpack
+# *.mcaddon
+# *.zip
+
+# dev
+npm-debug.log*
+.env
+.env.*
+* copy*
+*test*
+light_damping.json
+light_block_dev.json
+*.txt
+
+# builder
+recipes/**/gen.js
+
+# repo
+*.md
+!_notes.md
+.github
+src/
+.gitattributes
+.gitignore
+build.gitignore
+*.git
+
+# legal file
+!COPYRIGHT.md
+!LICENSE
+
+
+.vscode/
+.idea/
+node_modules/

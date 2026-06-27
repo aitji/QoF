@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>get file date</title>
+</head>
+
+<body>
+    <p>drag file here (perfer: manifest.json)</p>
+    <pre id="out"></pre>
+
+    <script>
+        const out = document.getElementById("out")
+
+        document.addEventListener("dragover", e => e.preventDefault())
+        document.addEventListener("drop", e => {
+            e.preventDefault()
+
+            const f = e.dataTransfer.files[0]
+            if (!f) return
+
+            const d = new Date(f.lastModified)
+            const unix = Math.floor(d.getTime() / 1000)
+
+            const mon = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            const txt = `Release Date: [${mon[d.getUTCMonth()]}/${String(d.getUTCDate()).padStart(2, "0")}/${d.getUTCFullYear()} (${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}:${String(d.getUTCSeconds()).padStart(2, "0")})](https://time.is/Unix_time_converter/${unix})`
+            out.textContent = txt
+        })
+    </script>
+</body>
+
+</html>
