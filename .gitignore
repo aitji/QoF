@@ -23,6 +23,7 @@ Thumbs.db
 .env.*
 * copy*
 *test*
+archived/
 
 .vscode/
 .idea/
