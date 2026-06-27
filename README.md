@@ -1,12 +1,14 @@
+<div align="center"><img src="./.github/img/brand/github banner.png" alt=""></div>
+
 # **[QoF](https://qof.aitji.xyz)** – Quality of Feature
 
 > [!NOTE]
 > A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel. Requires **BetaAPIs** enabled under Experiments.
 
-## Table of Contents
+<details open>
+  <summary><strong><b>Table of Contents</b></strong></summary>
 
 - [**QoF** – Quality of Feature](#qof--quality-of-feature)
-  - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Changelog](#changelog)
   - [Installation](#installation)
@@ -36,6 +38,8 @@
   - [Disclosure](#disclosure)
   - [Credits](#credits)
 
+</details>
+
 ## Overview
 
 - [x] Dynamic lighting
@@ -52,6 +56,9 @@
 
 ## Changelog
 
+<details open>
+  <summary><strong>QoF's Releases</strong></summary>
+
 - QoF **Well Equipped** [v1.5.0](https://github.com/aitji/QoF/releases/tag/v1.5.0)
   - `Pre-Releases` Qof [v1.4.1](https://github.com/aitji/QoF/releases/tag/v1.4.1)
 - QoF **Seamless** [v1.4.0](https://github.com/aitji/QoF/releases/tag/v1.4.0)
@@ -67,6 +74,8 @@
   - `Pre-Releases` QoF [v1.1.1](https://github.com/aitji/QoF/releases/tag/v1.1.1)
 - QoF **Subtle Shift** [v1.1.0](https://github.com/aitji/QoF/releases/tag/v1.1.0)
 
+</details>
+
 ## Installation
 
 Download the `QoF` addon from one of these sources:
@@ -81,6 +90,8 @@ Download the `QoF` addon from one of these sources:
 4. Go to **Behavior Packs** and activate **QoF**.
 5. In **Experiments**, enable **Beta APIs**.
 6. Configure settings in the pack settings panel inside the world settings.
+
+> Still having trouble? try shooting it here: [/w/Installation](https://qof.aitji.xyz/w/Installation)
 
 > [!IMPORTANT]
 > **Beta APIs must be enabled**, otherwise the pack will not function.
