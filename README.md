@@ -2,6 +2,12 @@
 
 # **[QoF](https://qof.aitji.xyz)** – Quality of Feature
 
+<div align="center">
+
+[Releases](https://github.com/aitji/QoF/releases/latest) | [Behavior Packs](https://github.com/aitji/QoF/tree/behavior_packs) | [Resource Packs](https://github.com/aitji/QoF/tree/resource_packs) | [WiKi](https://qof.aitji.xyz) | [LICENSE](./LICENSE) & [COPYRIGHT](./COPYRIGHT.md)
+
+</div>
+
 > [!NOTE]
 > A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel. Requires **BetaAPIs** enabled under Experiments.
 
@@ -817,9 +823,11 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 ## License
 
-This project's source code is licensed under the [MIT License](LICENSE).
+This project's software components, including source code, scripts, behavior definitions, configuration files, and compiled addon files (`.mcaddon` / `.mcpack`), are licensed under the [QoF Noncommercial License 1.0](./LICENSE).
 
-Branding, media, documentation, and other non-code assets are subject to additional restrictions. See [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/COPYRIGHT.md) for full details.
+The software may be used, modified, and redistributed for free noncommercial purposes with proper attribution. Commercial use, monetized distribution, or inclusion in paid products requires separate written permission from the maintainers.
+
+Branding, trademarks, media, documentation, screenshots, promotional materials, and other non-code assets are not covered by the software license and remain subject to separate restrictions. See [COPYRIGHT.md](./COPYRIGHT.md) for full details.
 
 ## Disclosure
 
@@ -833,8 +841,10 @@ English is not our native language. Thank you for your understanding!
 - [@aitji](https://github.com/aitji) scripting & design
 - [@pickerth-12](https://github.com/pickerth-12) design, json & molang
 
-QoF™ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
-Licensed under the [MIT License]([LICENSE](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/License)) · [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/COPYRIGHT.md)
+QoF™ / Quality of Features™ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
+
+Software licensed under the [QoF Noncommercial License 1.0](./LICENSE).  
+Branding, media, and other protected materials are reserved under [COPYRIGHT.md](./COPYRIGHT.md).
 
 ```
   README INFO
