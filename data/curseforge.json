@@ -1,0 +1,522 @@
+{
+  "fetchedAt": "2026-06-27T05:37:42.022Z",
+  "screenshots": [
+    {
+      "id": 1606432,
+      "modId": 1500007,
+      "title": "MCPEDL.png",
+      "description": "MCPEDL.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/432/310/172/mcpedl-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/432/mcpedl-png.png"
+    },
+    {
+      "id": 1606511,
+      "modId": 1500007,
+      "title": "offhand.png",
+      "description": "offhand.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/511/310/172/offhand-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/511/offhand-png.png"
+    },
+    {
+      "id": 1606506,
+      "modId": 1500007,
+      "title": "crop.png",
+      "description": "crop.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/506/310/172/crop-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/506/crop-png.png"
+    },
+    {
+      "id": 1606510,
+      "modId": 1500007,
+      "title": "mobdrop.png",
+      "description": "mobdrop.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/510/310/172/mobdrop-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/510/mobdrop-png.png"
+    },
+    {
+      "id": 1606433,
+      "modId": 1500007,
+      "title": "anvil-repair.png",
+      "description": "anvil-repair.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/433/310/172/anvil-repair-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/433/anvil-repair-png.png"
+    },
+    {
+      "id": 1609840,
+      "modId": 1500007,
+      "title": "pop_campfire.png",
+      "description": "pop_campfire.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1609/840/310/172/pop_campfire-png.png",
+      "url": "https://media.forgecdn.net/attachments/1609/840/pop_campfire-png.png"
+    },
+    {
+      "id": 1610679,
+      "modId": 1500007,
+      "title": "fire.png",
+      "description": "fire.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1610/679/310/172/fire-png.png",
+      "url": "https://media.forgecdn.net/attachments/1610/679/fire-png.png"
+    },
+    {
+      "id": 1606502,
+      "modId": 1500007,
+      "title": "chest.jpg",
+      "description": "chest.jpg",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/502/310/172/chest-jpg.jpg",
+      "url": "https://media.forgecdn.net/attachments/1606/502/chest-jpg.jpg"
+    },
+    {
+      "id": 1606503,
+      "modId": 1500007,
+      "title": "chest2.png",
+      "description": "chest2.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/503/310/172/chest2-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/503/chest2-png.png"
+    },
+    {
+      "id": 1606434,
+      "modId": 1500007,
+      "title": "offhand.png",
+      "description": "offhand.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/434/310/172/offhand-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/434/offhand-png.png"
+    },
+    {
+      "id": 1606504,
+      "modId": 1500007,
+      "title": "composter.jpg",
+      "description": "composter.jpg",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/504/310/172/composter-jpg.jpg",
+      "url": "https://media.forgecdn.net/attachments/1606/504/composter-jpg.jpg"
+    },
+    {
+      "id": 1606505,
+      "modId": 1500007,
+      "title": "composter2.png",
+      "description": "composter2.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/505/310/172/composter2-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/505/composter2-png.png"
+    },
+    {
+      "id": 1606507,
+      "modId": 1500007,
+      "title": "light.png",
+      "description": "light.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/507/310/172/light-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/507/light-png.png"
+    },
+    {
+      "id": 1606508,
+      "modId": 1500007,
+      "title": "light2.png",
+      "description": "light2.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/508/310/172/light2-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/508/light2-png.png"
+    },
+    {
+      "id": 1606509,
+      "modId": 1500007,
+      "title": "light3.png",
+      "description": "light3.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/509/310/172/light3-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/509/light3-png.png"
+    },
+    {
+      "id": 1606512,
+      "modId": 1500007,
+      "title": "powder.png",
+      "description": "powder.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/512/310/172/powder-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/512/powder-png.png"
+    },
+    {
+      "id": 1606435,
+      "modId": 1500007,
+      "title": "recipe.png",
+      "description": "recipe.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/435/310/172/recipe-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/435/recipe-png.png"
+    },
+    {
+      "id": 1606513,
+      "modId": 1500007,
+      "title": "recipes.png",
+      "description": "recipes.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/513/310/172/recipes-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/513/recipes-png.png"
+    },
+    {
+      "id": 1606514,
+      "modId": 1500007,
+      "title": "charcoal-bamboo.png",
+      "description": "charcoal-bamboo.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/514/310/172/charcoal-bamboo-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/514/charcoal-bamboo-png.png"
+    },
+    {
+      "id": 1606515,
+      "modId": 1500007,
+      "title": "glass-sand.png",
+      "description": "glass-sand.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/515/310/172/glass-sand-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/515/glass-sand-png.png"
+    },
+    {
+      "id": 1606516,
+      "modId": 1500007,
+      "title": "gold_ingot-gilded.png",
+      "description": "gold_ingot-gilded.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/516/310/172/gold_ingot-gilded-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/516/gold_ingot-gilded-png.png"
+    },
+    {
+      "id": 1606517,
+      "modId": 1500007,
+      "title": "smooth_stone-stone.png",
+      "description": "smooth_stone-stone.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/517/310/172/smooth_stone-stone-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/517/smooth_stone-stone-png.png"
+    },
+    {
+      "id": 1606518,
+      "modId": 1500007,
+      "title": "stone-cobblestone.png",
+      "description": "stone-cobblestone.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/518/310/172/stone-cobblestone-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/518/stone-cobblestone-png.png"
+    },
+    {
+      "id": 1606519,
+      "modId": 1500007,
+      "title": "stonecutter-oak-log.png",
+      "description": "stonecutter-oak-log.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/519/310/172/stonecutter-oak-log-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/519/stonecutter-oak-log-png.png"
+    },
+    {
+      "id": 1606520,
+      "modId": 1500007,
+      "title": "stonecutter-warped-planks.png",
+      "description": "stonecutter-warped-planks.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/520/310/172/stonecutter-warped-planks-png.png",
+      "url": "https://media.forgecdn.net/attachments/1606/520/stonecutter-warped-planks-png.png"
+    },
+    {
+      "id": 1609841,
+      "modId": 1500007,
+      "title": "redSand_glass.png",
+      "description": "redSand_glass.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1609/841/310/172/redsand_glass-png.png",
+      "url": "https://media.forgecdn.net/attachments/1609/841/redsand_glass-png.png"
+    },
+    {
+      "id": 1609842,
+      "modId": 1500007,
+      "title": "rooted_dirt.png",
+      "description": "rooted_dirt.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1609/842/310/172/rooted_dirt-png.png",
+      "url": "https://media.forgecdn.net/attachments/1609/842/rooted_dirt-png.png"
+    },
+    {
+      "id": 1610678,
+      "modId": 1500007,
+      "title": "stonecutter.png",
+      "description": "stonecutter.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1610/678/310/172/stonecutter-png.png",
+      "url": "https://media.forgecdn.net/attachments/1610/678/stonecutter-png.png"
+    },
+    {
+      "id": 1610680,
+      "modId": 1500007,
+      "title": "stonecutter.png",
+      "description": "stonecutter.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1610/680/310/172/stonecutter-png.png",
+      "url": "https://media.forgecdn.net/attachments/1610/680/stonecutter-png.png"
+    },
+    {
+      "id": 1612778,
+      "modId": 1500007,
+      "title": "poppy.png",
+      "description": "poppy.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1612/778/310/172/poppy-png.png",
+      "url": "https://media.forgecdn.net/attachments/1612/778/poppy-png.png"
+    },
+    {
+      "id": 1612779,
+      "modId": 1500007,
+      "title": "RG_B.png",
+      "description": "RG_B.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1612/779/310/172/rg_b-png.png",
+      "url": "https://media.forgecdn.net/attachments/1612/779/rg_b-png.png"
+    },
+    {
+      "id": 1612780,
+      "modId": 1500007,
+      "title": "YB_G.png",
+      "description": "YB_G.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1612/780/310/172/yb_g-png.png",
+      "url": "https://media.forgecdn.net/attachments/1612/780/yb_g-png.png"
+    },
+    {
+      "id": 1612781,
+      "modId": 1500007,
+      "title": "BO_B.png",
+      "description": "BO_B.png",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1612/781/310/172/bo_b-png.png",
+      "url": "https://media.forgecdn.net/attachments/1612/781/bo_b-png.png"
+    }
+  ],
+  "id": 1500007,
+  "gameId": 78022,
+  "name": "Quality of Feature",
+  "slug": "quality-of-feature",
+  "links": {
+    "websiteUrl": "https://www.curseforge.com/minecraft-bedrock/addons/quality-of-feature",
+    "wikiUrl": "https://qof.aitji.xyz",
+    "issuesUrl": "",
+    "sourceUrl": "https://github.com/aitji/QoF"
+  },
+  "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
+  "status": 4,
+  "downloadCount": 17858,
+  "isFeatured": false,
+  "primaryCategoryId": 8830,
+  "categories": [
+    {
+      "id": 4994,
+      "gameId": 78022,
+      "name": "Realistic",
+      "slug": "realistic",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
+      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
+      "dateModified": "2024-02-11T14:06:11.48Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4987
+    },
+    {
+      "id": 8835,
+      "gameId": 78022,
+      "name": "Multiplayer",
+      "slug": "multiplayer",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/multiplayer",
+      "iconUrl": "https://media.forgecdn.net/avatars/1376/212/638893033575235347.png",
+      "dateModified": "2025-07-28T12:42:37.523Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4984
+    },
+    {
+      "id": 8831,
+      "gameId": 78022,
+      "name": "Survival",
+      "slug": "survival",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/survival",
+      "iconUrl": "https://media.forgecdn.net/avatars/1376/176/638893018991979073.png",
+      "dateModified": "2025-07-28T12:18:19.203Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4984
+    },
+    {
+      "id": 8830,
+      "gameId": 78022,
+      "name": "Vanilla+",
+      "slug": "vanilla",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/vanilla",
+      "iconUrl": "https://media.forgecdn.net/avatars/1376/175/638893017047987968.png",
+      "dateModified": "2025-07-28T12:15:04.8Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4984
+    },
+    {
+      "id": 8832,
+      "gameId": 78022,
+      "name": "Utility",
+      "slug": "utility",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/utility",
+      "iconUrl": "https://media.forgecdn.net/avatars/1376/177/638893019624079362.png",
+      "dateModified": "2025-07-28T12:19:22.413Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4984
+    }
+  ],
+  "classId": 4984,
+  "authors": [
+    {
+      "id": 114281228,
+      "name": "aitji",
+      "url": "https://www.curseforge.com/members/aitji",
+      "avatarUrl": "https://media.forgecdn.net/avatars/1734/95/639103772902093061.png"
+    }
+  ],
+  "logo": {
+    "id": 1741123,
+    "modId": 1500007,
+    "title": "639108428299642827.png",
+    "description": "",
+    "thumbnailUrl": "https://media.forgecdn.net/avatars/thumbnails/1741/123/256/256/639108428299642827.png",
+    "url": "https://media.forgecdn.net/avatars/1741/123/639108428299642827.png"
+  },
+  "mainFileId": 8194416,
+  "latestFiles": [
+    {
+      "id": 7864880,
+      "gameId": 78022,
+      "modId": 1500007,
+      "isAvailable": true,
+      "displayName": "QoF 1.3.4 (Pre-release)",
+      "fileName": "QoF-1.3.4.mcaddon",
+      "releaseType": 2,
+      "fileStatus": 4,
+      "hashes": [
+        {
+          "value": "0e9f2b288658505f8b60fb15ad0c1a930bd20ae7",
+          "algo": 1
+        },
+        {
+          "value": "259657e31af3c6a5a07dc0dea6439c02",
+          "algo": 2
+        }
+      ],
+      "fileDate": "2026-04-03T00:03:52.707Z",
+      "fileLength": 205715,
+      "downloadCount": 1548,
+      "fileSizeOnDisk": 402591,
+      "downloadUrl": "https://edge.forgecdn.net/files/7864/880/QoF-1.3.4.mcaddon",
+      "gameVersions": [
+        "26.10"
+      ],
+      "sortableGameVersions": [
+        {
+          "gameVersionName": "26.10",
+          "gameVersionPadded": "0000000026.0000000010",
+          "gameVersion": "26.10",
+          "gameVersionReleaseDate": "2026-03-25T00:00:00Z",
+          "gameVersionTypeId": 73249
+        }
+      ],
+      "dependencies": [],
+      "alternateFileId": 0,
+      "isServerPack": false,
+      "fileFingerprint": 2430692032,
+      "modules": [
+        {
+          "name": "QoF_v1.3.4_behavior_packs.mcpack",
+          "fingerprint": 226247832
+        },
+        {
+          "name": "QoF_v1.3.4_resource_packs.mcpack",
+          "fingerprint": 3716745399
+        }
+      ]
+    },
+    {
+      "id": 8194416,
+      "gameId": 78022,
+      "modId": 1500007,
+      "isAvailable": true,
+      "displayName": "QoF-1.5.1 (Pre-release)",
+      "fileName": "QoF-1.5.1.mcaddon",
+      "releaseType": 1,
+      "fileStatus": 4,
+      "hashes": [
+        {
+          "value": "0b91222be64efbca3bcd965dba2d917c8744da8a",
+          "algo": 1
+        },
+        {
+          "value": "a6a1bb078f8e82f878c91210aa564c6a",
+          "algo": 2
+        }
+      ],
+      "fileDate": "2026-06-04T05:55:36.367Z",
+      "fileLength": 216517,
+      "downloadCount": 1200,
+      "fileSizeOnDisk": 425349,
+      "downloadUrl": "https://edge.forgecdn.net/files/8194/416/QoF-1.5.1.mcaddon",
+      "gameVersions": [
+        "26.10"
+      ],
+      "sortableGameVersions": [
+        {
+          "gameVersionName": "26.10",
+          "gameVersionPadded": "0000000026.0000000010",
+          "gameVersion": "26.10",
+          "gameVersionReleaseDate": "2026-03-25T00:00:00Z",
+          "gameVersionTypeId": 73249
+        }
+      ],
+      "dependencies": [],
+      "alternateFileId": 0,
+      "isServerPack": false,
+      "fileFingerprint": 1190438963,
+      "modules": [
+        {
+          "name": "QoF_v1.5.1_behavior_packs.mcpack",
+          "fingerprint": 1733033381
+        },
+        {
+          "name": "QoF_v1.5.1_resource_packs.mcpack",
+          "fingerprint": 2196345385
+        }
+      ]
+    }
+  ],
+  "latestFilesIndexes": [
+    {
+      "gameVersion": "26.10",
+      "fileId": 8194416,
+      "filename": "QoF-1.5.1.mcaddon",
+      "releaseType": 1,
+      "gameVersionTypeId": 73249
+    },
+    {
+      "gameVersion": "26.10",
+      "fileId": 7864880,
+      "filename": "QoF-1.3.4.mcaddon",
+      "releaseType": 2,
+      "gameVersionTypeId": 73249
+    },
+    {
+      "gameVersion": "26.3",
+      "fileId": 7858448,
+      "filename": "QoF-1.2.3.mcpack",
+      "releaseType": 2,
+      "gameVersionTypeId": 73249
+    },
+    {
+      "gameVersion": "26.3",
+      "fileId": 7858408,
+      "filename": "QoF-1.2.0.mcpack",
+      "releaseType": 1,
+      "gameVersionTypeId": 73249
+    }
+  ],
+  "latestEarlyAccessFilesIndexes": [],
+  "dateCreated": "2026-03-31T13:03:36.853Z",
+  "dateModified": "2026-06-27T03:52:20.23Z",
+  "dateReleased": "2026-06-04T05:55:36.367Z",
+  "allowModDistribution": true,
+  "gamePopularityRank": 2240,
+  "isAvailable": true,
+  "hasCommentsEnabled": true,
+  "thumbsUpCount": 0,
+  "socialLinks": [
+    {
+      "type": 13,
+      "url": "https://github.com/aitji"
+    },
+    {
+      "type": 10,
+      "url": "https://www.youtube.com/@aitji-gamer"
+    },
+    {
+      "type": 2,
+      "url": "https://discord.gg/Q2ZjKnRpVU"
+    }
+  ],
+  "featuredProjectTag": 0
+}
