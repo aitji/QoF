@@ -16,10 +16,10 @@ type EquSlot = 'Mainhand' | 'Offhand' | 'Head' | 'Body' | 'Legs' | 'Feet'
 const { DEBUG } = E
 export const QOF_INFORMATION = {
     version: {
-        qof: '1.5.0',
+        qof: '1.5.1',
         minecraft: '1.26.12'
     },
-    license: 'MIT',
+    license: 'QoF Noncommercial License 1.0',
     dependencies: {
         '@minecraft/server': '^2.7.0-beta.1.26.14-stable',
         'typescript': '^6.0.2',

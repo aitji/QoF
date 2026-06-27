@@ -1,21 +1,182 @@
-MIT License
+# QoF Noncommercial License 1.0
 
-Copyright (c) 2026 aitji & pickerth-12
+Canonical text: https://github.com/aitji/QoF/blob/sources/LICENSE
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## Scope
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This license applies only to the **Software**: source code, scripts,
+behavior definitions, configuration files, and compiled addon files
+(e.g. `.mcaddon`, `.mcpack`) made available by the Licensor in this
+repository. It does **not** apply to artwork, logos, screenshots,
+documentation text, release notes, or other media, which remain
+governed by separate copyright terms set out in [COPYRIGHT.md](./COPYRIGHT.md).
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+## Acceptance
+
+In order to get any license under these terms, you must agree to
+them as both strict obligations and conditions to all your licenses.
+
+## Copyright License
+
+The Licensor grants you a copyright license for the Software to do
+everything you might do with the Software that would otherwise
+infringe the Licensor's copyright in it, for any Permitted Purpose.
+You may only distribute the Software according to the Distribution
+License, and make changes or new works based on the Software
+according to the Changes and New Works License.
+
+## Distribution License
+
+The Licensor grants you an additional copyright license to
+distribute copies of the Software, including copies with changes
+and new works permitted by the Changes and New Works License,
+provided you comply with the Notices and Attribution section below.
+
+## Changes and New Works License
+
+The Licensor grants you an additional copyright license to make
+changes and new works based on the Software, for any Permitted
+Purpose, including publicly sharing your changes or new works.
+
+## Patent License
+
+The Licensor grants you a patent license for the Software covering
+patent claims the Licensor can license, or becomes able to license,
+that you would infringe by using the Software.
+
+## Permitted Purpose
+
+"**Permitted Purpose**" means any Noncommercial Purpose, as defined
+below. A use is a "**Commercial Purpose**" — and is **not** a
+Permitted Purpose, and is **not licensed under these terms** —
+if it is primarily intended for or directed toward commercial
+advantage or monetary compensation. Without limiting that standard,
+each of the following is always a Commercial Purpose:
+
+(a) selling the Software, or any part of it, or any product or
+service that includes it, for money or other compensation;
+
+(b) requiring payment, a paid subscription, a "tip," a "donation,"
+or any other form of compensation as a condition of accessing,
+downloading, or using the Software or any copy of it;
+
+(c) generating advertising revenue from any page, app, or service
+whose primary purpose is distributing the Software, including
+ad-gated download links, forced redirects, or link shorteners used
+for ad revenue;
+
+(d) bundling the Software into any paid product, paid modpack, or
+monetized server offering; or
+
+(e) any other use primarily intended for or directed toward
+commercial advantage or monetary compensation.
+
+### Noncommercial Purposes
+
+Personal use for research, learning, experimentation, testing,
+private entertainment, hobby projects, amateur pursuits, or
+religious observance, without any anticipated Commercial Purpose,
+is a Permitted Purpose. This includes modifying the Software and
+publicly sharing your modified version at no cost, provided no part
+of that distribution is a Commercial Purpose under (a)–(e) above.
+
+Use by a charitable organization, educational institution, public
+research organization, public safety or health organization,
+environmental protection organization, or government institution is
+a Permitted Purpose regardless of the source of funding, unless that
+specific use independently qualifies as a Commercial Purpose under
+(a)–(e) above.
+
+If you are unsure whether your intended use is a Commercial Purpose,
+contact the Licensor before proceeding — see the Contact section of
+[COPYRIGHT.md](./COPYRIGHT.md).
+
+## Notices and Attribution
+
+Anyone who receives a copy of any part of the Software from you must
+also receive, unmodified:
+
+(a) a copy of these terms, or the canonical URL where they are
+published; and
+
+(b) the following Required Notice:
+
+> Required Notice: QoF / Quality of Features — Copyright © 2026
+> @aitji (https://github.com/aitji) & @pickerth-12
+> (https://github.com/pickerth-12). Licensed under the QoF
+> Noncommercial License 1.0. Source: https://github.com/aitji/QoF
+
+You must not remove, obscure, or alter the Required Notice. You must
+not state or imply that your copy or modified version is the
+official release of the Software, or that you are affiliated with,
+endorsed by, or acting on behalf of the Licensor.
+
+## Trademarks
+
+This license does not grant any right to use the "QoF" or "Quality
+of Features" names, logos, or any other trademark of the Licensor,
+beyond what the Notices and Attribution section above requires.
+
+## Fair Use
+
+You may have "fair use" or similar rights in the Software under
+applicable law. These terms do not limit them.
+
+## No Other Rights
+
+These terms do not allow you to sublicense or transfer any of your
+licenses to anyone else, or prevent the Licensor from granting
+licenses to anyone else. These terms do not imply any other
+licenses.
+
+## Patent Defense
+
+If you make any written claim that the Software infringes or
+contributes to infringement of any patent, your patent license for
+the Software under these terms ends immediately. If your company
+makes such a claim, your patent license ends immediately for work
+on behalf of your company.
+
+## Violations
+
+The first time you are notified in writing that you have violated
+any of these terms, or done anything with the Software not covered
+by your licenses, your licenses can continue if you come into full
+compliance with these terms and take practical steps to correct past
+violations, within 30 days of receiving notice. Otherwise, all your
+licenses under these terms end immediately.
+
+In addition to license termination, the Licensor may pursue a DMCA
+takedown notice, contact the relevant hosting platform directly, or
+pursue any other remedy available under applicable law. See
+[COPYRIGHT.md](./COPYRIGHT.md) for the project's full enforcement policy.
+
+## No Liability
+
+***As far as the law allows, the Software comes as is, without any
+warranty or condition, and the Licensor will not be liable to you
+for any damages arising out of these terms or the use or nature of
+the Software, under any kind of legal claim.***
+
+## Definitions
+
+The **Licensor** is the individual(s) or entity offering these
+terms — currently @aitji and @pickerth-12 — and the **Software** is
+the software the Licensor makes available under these terms, as
+described in Scope above.
+
+**You** refers to the individual or entity agreeing to these terms.
+
+**Your company** is any legal entity, sole proprietorship, or other
+kind of organization that you work for, plus all organizations that
+have control over, are under the control of, or are under common
+control with that organization. **Control** means ownership of
+substantially all the assets of an entity, or the power to direct
+its management and policies by vote, contract, or otherwise. Control
+can be direct or indirect.
+
+**Your licenses** are all the licenses granted to you for the
+Software under these terms.
+
+**Use** means anything you do with the Software requiring one of
+your licenses.

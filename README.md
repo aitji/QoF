@@ -9,20 +9,25 @@ If you would like to read or study the original readable source code, you can fi
 
 # License
 
-The source code and software components of this addon are licensed under the [MIT License](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/LICENSE).\
-<small>See the `LICENSE` file included in this package for full terms.</small>
+The source code and software components of this addon are licensed under the [QoF Noncommercial License 1.0](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/LICENSE).
 
-**Branding, media, documentation, and other non-code assets are not covered by the [MIT License](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/LICENSE).**\
-See [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/COPYRIGHT.md) for full details on what you can and cannot do with this project.
-<small>See the `COPYRIGHT.md` file included in this package for full terms.</small>
+<small>See the `LICENSE` file included in this package for the complete terms.</small>
 
-> Redistribution of this addon to third-party sites is **not permitted**.
-> Silence or non-response from the maintainers does not constitute permission.
+You may use, modify, and redistribute the software for **free noncommercial purposes** with proper attribution.
+
+Commercial use, monetized distribution, paid access, advertising-based distribution, or inclusion in paid products is **not permitted** without written permission from the maintainers.
+
+**Branding, media, documentation, screenshots, and other non-code assets are not covered by the software license.**
+See [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/COPYRIGHT.md) for full details.
+
+<small>See the `COPYRIGHT.md` file included in this package for the complete terms.</small>
 
 ## Credits
 
 - [@aitji](https://github.com/aitji) scripting & design
 - [@pickerth-12](https://github.com/pickerth-12) design, json & molang
 
-QoF™ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
-Licensed under the [MIT License]([LICENSE](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/License)) · [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/COPYRIGHT.md)
+QoF™ / Quality of Features™ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
+
+Software licensed under the [QoF Noncommercial License 1.0](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/LICENSE).
+Branding, media, and other protected materials are reserved under [COPYRIGHT.md](https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/COPYRIGHT.md).

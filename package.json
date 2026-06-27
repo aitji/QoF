@@ -5,7 +5,7 @@
         "email": "aitji@duck.com",
         "url": "https://github.com/aitji/QoF"
     },
-    "license": "MIT",
+    "license": "QoF Noncommercial License 1.0",
     "devDependencies": {
         "@minecraft/server": "^2.7.0-beta.1.26.14-stable",
         "typescript": "^6.0.2"
