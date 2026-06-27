@@ -1,0 +1,58 @@
+name: CurseForge Stats
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          package-manager-cache: false
+
+      - name: Fetch Curse data
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          CF_MOD_ID: "1500007"
+        run: node .github/scripts/stats/curseforge.js
+
+      - name: Commit to stats branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin stats --depth=1 2>/dev/null || true
+
+          if git show-ref --verify --quiet refs/remotes/origin/stats; then
+            git checkout -B stats origin/stats
+          else
+            git checkout --orphan stats
+            git rm -rf . --quiet || true
+          fi
+
+          mkdir -p data
+          cp /tmp/curseforge.json data/curseforge.json
+
+          git add data/curseforge.json
+
+          if git diff --cached --quiet; then
+            echo "no changes"
+          else
+            git commit -m "chore: update curseforge stats [skip ci]"
+            git push origin stats
+          fi

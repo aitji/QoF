@@ -5,6 +5,7 @@ node_modules/
 dist/
 out/
 *.js.map
+tmp/
 # ^ if you want [map] run tsc
 
 # typescript cache
