@@ -22,7 +22,5 @@ export const heartbeat_scriptEventReceive = ({ id, message }: ScriptEventCommand
     if (message !== "qof" || DISABLED_HEARTBEAT) return
     if (id === "aitji-lib:heartbeat") sendHeartbeat()
 
-    if (DEBUG && id === 'aitji-lib:swing') {
-        world.sendMessage('swing')
-    }
+    if (DEBUG && id === 'aitji-lib:swing') { }
 }

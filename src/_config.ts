@@ -13,6 +13,7 @@ export const SETTINGS = Object.freeze({
     DISABLED_COMMANDFEEDBACK: false,
     DISABLED_HEARTBEAT: false,
     INTERVAL_DELAY: 1, // delay for each interval
+    BAT_ENABLED: true,
 
     // share config
     BLOCK_INTERACTION_DELAY: 4, // tick

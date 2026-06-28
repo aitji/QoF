@@ -47,6 +47,12 @@
       "step": 1,
       "default": 1
     },
+    {
+      "type": "toggle",
+      "text": "§7Enable Barter Bat? §8(trade glow berry with bat)",
+      "name": "qof:BAT.ENABLED",
+      "default": true
+    },
 
 
 
