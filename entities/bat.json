@@ -1,12 +1,20 @@
 {
     "format_version": "1.26.0",
+    "$schema": "../dev/entity.json",
+
     "minecraft:entity": {
         "description": {
             "identifier": "minecraft:bat",
             "is_experimental": false,
             "is_summonable": true,
             "is_spawnable": true,
-            "spawn_category": "ambient"
+            "spawn_category": "ambient",
+            "properties": {
+                "qof:bat_barter": {
+                    "type": "bool",
+                    "default": true
+                }
+            }
         },
         "components": {
             "minecraft:behavior.float": {
@@ -111,6 +119,12 @@
                                         "test": "is_family",
                                         "subject": "other",
                                         "value": "player"
+                                    },
+                                    {
+                                        "test": "bool_property",
+                                        "domain": "qof:bat_barter",
+                                        "operator": "==",
+                                        "value": true
                                     }
                                 ]
                             }
@@ -123,17 +137,6 @@
                     }
                 ]
             },
-            // "minecraft:shareables": {
-            //     "singular_pickup": true,
-            //     "items": [
-            //         {
-            //             "item": "minecraft:glow_berries",
-            //             "priority": 1,
-            //             "pickup_limit": 1,
-            //             "barter": true
-            //         }
-            //     ]
-            // },
             "minecraft:behavior.barter": {
                 "priority": 2
             },

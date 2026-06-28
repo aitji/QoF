@@ -112,6 +112,13 @@ world.afterEvents.playerGameModeChange.subscribe(data => {
 world.afterEvents.pistonActivate.subscribe(data => {
     if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER) composter.composter_pistonActivate(data)
 })
+world.afterEvents.entitySpawn.subscribe(({ entity }) => { // temporary testing
+    if (entity.typeId === "minecraft:bat") {
+        if (RUNTIME.DEBUG) world.sendMessage(`spawn bat detected, runtime=${RUNTIME.BAT_ENABLED}`)
+        entity.setProperty("qof:bat_barter", RUNTIME.BAT_ENABLED === true)
+        if (RUNTIME.DEBUG) world.sendMessage(`bat_barter = ${entity.getProperty("qof:bat_barter")}`)
+    }
+})
 
 // core routes
 world.beforeEvents.entityItemPickup.subscribe(data => { lib.helper.helper_entityItemPickup(data) }, { entityFilter: { type: "minecraft:player" } })
