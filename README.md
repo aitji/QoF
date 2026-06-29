@@ -798,7 +798,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 <details>
   <summary><strong>Full Settings Table</strong></summary>
-  <img src="./.github/img/showcase/settings.png" alt="full settings of manifest.json">
+  <img src="https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/.github/img/settings/v1.5.1.png" alt="full settings of manifest.json">
 </details>
 
 ## Known Limitations & Notes
