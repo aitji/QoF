@@ -56,3 +56,7 @@ jobs:
             git commit -m "chore: update curseforge stats [skip ci]"
             git push origin stats
           fi
+
+      - name: Purge Camo cache
+        run: |
+          curl -X PURGE "https://camo.githubusercontent.com/642423ab4f763371ac6d6b5aaa60d2c4479fef8c7fb94a25f0c89fe30224f134/68747470733a2f2f716f662e6169746a692e78797a2f6170692f62616467653f747970653d646f776e6c6f616473"
