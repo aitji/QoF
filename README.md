@@ -8,7 +8,7 @@
 
 # **[QoF](https://qof.aitji.xyz)** – Quality of Feature
 
-[Releases](https://github.com/aitji/QoF/releases/latest) | [Behavior Packs](https://github.com/aitji/QoF/tree/behavior_packs) | [Resource Packs](https://github.com/aitji/QoF/tree/resource_packs) | [WiKi](https://qof.aitji.xyz) | [LICENSE](./LICENSE) & [COPYRIGHT](./COPYRIGHT.md)
+[Releases](https://github.com/aitji/QoF/releases/latest) | [Curseforge](https://www.curseforge.com/minecraft-bedrock/addons/quality-of-feature) & [MCPEDL](https://mcpedl.com/quality-of-feature) | [Behavior Code](https://github.com/aitji/QoF/tree/behavior_packs) | [Resource Code](https://github.com/aitji/QoF/tree/resource_packs) | [WiKi](https://qof.aitji.xyz) | [LICENSE](./LICENSE) & [COPYRIGHT](./COPYRIGHT.md)
 
 </div>
 
