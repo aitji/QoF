@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-28T04:06:13.598Z",
+  "fetchedAt": "2026-07-01T05:21:25.164Z",
   "screenshots": [
     {
       "id": 1606432,
@@ -278,7 +278,7 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 17985,
+  "downloadCount": 18346,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
@@ -360,32 +360,32 @@
     "thumbnailUrl": "https://media.forgecdn.net/avatars/thumbnails/1741/123/256/256/639108428299642827.png",
     "url": "https://media.forgecdn.net/avatars/1741/123/639108428299642827.png"
   },
-  "mainFileId": 8194416,
+  "mainFileId": 7948295,
   "latestFiles": [
     {
-      "id": 7864880,
+      "id": 7948295,
       "gameId": 78022,
       "modId": 1500007,
       "isAvailable": true,
-      "displayName": "QoF 1.3.4 (Pre-release)",
-      "fileName": "QoF-1.3.4.mcaddon",
-      "releaseType": 2,
+      "displayName": "QoF 1.5.0 /Well Equipped",
+      "fileName": "QoF-1.5.0.mcaddon",
+      "releaseType": 1,
       "fileStatus": 4,
       "hashes": [
         {
-          "value": "0e9f2b288658505f8b60fb15ad0c1a930bd20ae7",
+          "value": "7c5389ffcd0e7902460acc12d8e96bb31ed5cc46",
           "algo": 1
         },
         {
-          "value": "259657e31af3c6a5a07dc0dea6439c02",
+          "value": "4ceb4d05c464cb57a4629ff095bfc845",
           "algo": 2
         }
       ],
-      "fileDate": "2026-04-03T00:03:52.707Z",
-      "fileLength": 205715,
-      "downloadCount": 1548,
-      "fileSizeOnDisk": 402591,
-      "downloadUrl": "https://edge.forgecdn.net/files/7864/880/QoF-1.3.4.mcaddon",
+      "fileDate": "2026-04-19T03:04:28.91Z",
+      "fileLength": 213908,
+      "downloadCount": 4847,
+      "fileSizeOnDisk": 422610,
+      "downloadUrl": "https://edge.forgecdn.net/files/7948/295/QoF-1.5.0.mcaddon",
       "gameVersions": [
         "26.10"
       ],
@@ -401,15 +401,15 @@
       "dependencies": [],
       "alternateFileId": 0,
       "isServerPack": false,
-      "fileFingerprint": 2430692032,
+      "fileFingerprint": 3242417541,
       "modules": [
         {
-          "name": "QoF_v1.3.4_behavior_packs.mcpack",
-          "fingerprint": 226247832
+          "name": "QoF_v1.5.0_behavior_packs.mcpack",
+          "fingerprint": 1052728269
         },
         {
-          "name": "QoF_v1.3.4_resource_packs.mcpack",
-          "fingerprint": 3716745399
+          "name": "QoF_v1.5.0_resource_packs.mcpack",
+          "fingerprint": 1363597233
         }
       ]
     },
@@ -420,7 +420,7 @@
       "isAvailable": true,
       "displayName": "QoF-1.5.1 (Pre-release)",
       "fileName": "QoF-1.5.1.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "fileStatus": 4,
       "hashes": [
         {
@@ -434,7 +434,7 @@
       ],
       "fileDate": "2026-06-04T05:55:36.367Z",
       "fileLength": 216517,
-      "downloadCount": 1263,
+      "downloadCount": 1344,
       "fileSizeOnDisk": 425349,
       "downloadUrl": "https://edge.forgecdn.net/files/8194/416/QoF-1.5.1.mcaddon",
       "gameVersions": [
@@ -470,14 +470,14 @@
       "gameVersion": "26.10",
       "fileId": 8194416,
       "filename": "QoF-1.5.1.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "gameVersionTypeId": 73249
     },
     {
       "gameVersion": "26.10",
-      "fileId": 7864880,
-      "filename": "QoF-1.3.4.mcaddon",
-      "releaseType": 2,
+      "fileId": 7948295,
+      "filename": "QoF-1.5.0.mcaddon",
+      "releaseType": 1,
       "gameVersionTypeId": 73249
     },
     {
@@ -497,7 +497,7 @@
   ],
   "latestEarlyAccessFilesIndexes": [],
   "dateCreated": "2026-03-31T13:03:36.853Z",
-  "dateModified": "2026-06-27T08:29:42.17Z",
+  "dateModified": "2026-06-29T04:09:41.07Z",
   "dateReleased": "2026-06-04T05:55:36.367Z",
   "allowModDistribution": true,
   "gamePopularityRank": 2240,
