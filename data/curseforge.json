@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-07-01T05:21:25.164Z",
+  "fetchedAt": "2026-07-02T03:32:01.827Z",
   "screenshots": [
     {
       "id": 1606432,
@@ -278,7 +278,7 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 18346,
+  "downloadCount": 18445,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
