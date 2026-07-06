@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-07-05T03:20:32.326Z",
+  "fetchedAt": "2026-07-06T03:28:25.940Z",
   "screenshots": [
     {
       "id": 1606432,
@@ -278,7 +278,7 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 18666,
+  "downloadCount": 18793,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
@@ -383,7 +383,7 @@
       ],
       "fileDate": "2026-04-19T03:04:28.91Z",
       "fileLength": 213908,
-      "downloadCount": 4847,
+      "downloadCount": 4983,
       "fileSizeOnDisk": 422610,
       "downloadUrl": "https://edge.forgecdn.net/files/7948/295/QoF-1.5.0.mcaddon",
       "gameVersions": [
