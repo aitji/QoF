@@ -2,8 +2,8 @@
 
 <picture>
   <img src="./.github/img/brand/github banner.png" alt="QoF's Banner">
-  <img src="https://qof.aitji.xyz/api/badge?type=downloads" height="30px" alt="QoF's Downloads">
-  <img src="https://qof.aitji.xyz/api/badge?type=version" height="30px" alt="QoF's Version">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@stats/data/downloads.svg" height="30px" alt="QoF's Downloads">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@stats/data/version.svg" height="30px" alt="QoF's Version">
 </picture>
 
 # **[QoF](https://qof.aitji.xyz)** – Quality of Feature
