@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-07-07T01:57:15.291Z",
+  "fetchedAt": "2026-07-07T03:19:00.403Z",
   "screenshots": [
     {
       "id": 1606432,
@@ -278,22 +278,10 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 18920,
+  "downloadCount": 18936,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
-    {
-      "id": 4994,
-      "gameId": 78022,
-      "name": "Realistic",
-      "slug": "realistic",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
-      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
-      "dateModified": "2024-02-11T14:06:11.48Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4987
-    },
     {
       "id": 8835,
       "gameId": 78022,
@@ -341,6 +329,18 @@
       "isClass": false,
       "classId": 4984,
       "parentCategoryId": 4984
+    },
+    {
+      "id": 4994,
+      "gameId": 78022,
+      "name": "Realistic",
+      "slug": "realistic",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
+      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
+      "dateModified": "2024-02-11T14:06:11.48Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4987
     }
   ],
   "classId": 4984,
