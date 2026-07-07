@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="178" height="32" viewBox="0 0 178 32" role="img" aria-label="DOWNLOADS: 18,920">
+  <defs>
+    <clipPath id="clip"><rect width="178" height="32" rx="4"/></clipPath>
+    <linearGradient id="bevel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="0.14" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="0.86" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.28"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect width="0" height="32" fill="#161b22"/>
+    <rect x="0" width="99" height="32" fill="#0e1217"/>
+    <rect x="99" width="79" height="32" fill="#161b22"/>
+    <rect x="-0.5" width="1" height="32" fill="#000000" opacity="0.35"/>
+    <rect x="98.5" width="1" height="32" fill="#000000" opacity="0.35"/>
+
+    <text x="49.5" y="20" font-family="Verdana, 'Segoe UI', sans-serif" font-size="11" font-weight="700" letter-spacing="0.6" fill="#e6edf3" text-anchor="middle">DOWNLOADS</text>
+
+    <text x="138.5" y="20.6" font-family="Verdana, 'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="0.2" fill="#ffd84d" stroke="#21262d" stroke-width="1.8" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">18,920</text>
+    <rect width="178" height="32" rx="4" fill="url(#bevel)"/>
+  </g>
+  <rect x="0.5" y="0.5" width="177" height="31" rx="4" fill="none" stroke="#30363d"/>
+</svg>
