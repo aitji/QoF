@@ -47,8 +47,12 @@ jobs:
 
           mkdir -p data
           cp /tmp/curseforge.json data/curseforge.json
+          cp /tmp/downloads.svg data/downloads.svg
+          cp /tmp/downloads-square.svg data/downloads-square.svg
+          cp /tmp/version.svg data/version.svg
+          cp /tmp/version-square.svg data/version-square.svg
 
-          git add data/curseforge.json
+          git add data/curseforge.json data/downloads.svg data/downloads-square.svg data/version.svg data/version-square.svg
 
           if git diff --cached --quiet; then
             echo "no changes"
@@ -57,6 +61,8 @@ jobs:
             git push origin stats
           fi
 
-      - name: Purge Camo cache
+      - name: Purge jsDelivr cache
         run: |
-          curl -X PURGE "https://camo.githubusercontent.com/642423ab4f763371ac6d6b5aaa60d2c4479fef8c7fb94a25f0c89fe30224f134/68747470733a2f2f716f662e6169746a692e78797a2f6170692f62616467653f747970653d646f776e6c6f616473"
+          for f in curseforge.json downloads.svg downloads-square.svg version.svg version-square.svg; do
+            curl -fsS "https://purge.jsdelivr.net/gh/aitji/QoF@stats/data/$f" || true
+          done
