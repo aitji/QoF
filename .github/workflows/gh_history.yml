@@ -1,0 +1,56 @@
+name: Rewrite History
+
+on:
+    pull_request_review:
+        types: [ submitted ]
+
+permissions:
+    contents: write
+    pull-requests: write
+
+jobs:
+    land-rewrite:
+        if: >
+            github.event.review.state == 'approved' &&
+            startsWith(github.event.pull_request.head.ref, 'rewrite/')
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+
+            - name: Tag old history for rollback, then force-push new history
+              shell: bash
+              env:
+                  HEAD_REF: ${{ github.event.pull_request.head.ref }}
+                  BASE_REF: ${{ github.event.pull_request.base.ref }}
+                  PR_NUMBER: ${{ github.event.pull_request.number }}
+              run: |
+                  set -euo pipefail
+
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+                  git fetch origin "$HEAD_REF" "$BASE_REF"
+
+                  OLD_SHA="$(git rev-parse "origin/${BASE_REF}")"
+                  TIMESTAMP="$(date -u +%Y%m%d-%H%M%S)"
+                  BACKUP_TAG="backup/${BASE_REF}/${TIMESTAMP}-pr${PR_NUMBER}"
+
+                  git tag -a "$BACKUP_TAG" "$OLD_SHA" \
+                    -m "Backup of ${BASE_REF} before history rewrite via PR #${PR_NUMBER}. Old tip: ${OLD_SHA}"
+                  git push origin "refs/tags/${BACKUP_TAG}"
+
+                  echo "Backup tag: $BACKUP_TAG (points at $OLD_SHA)" >> "$GITHUB_STEP_SUMMARY"
+
+                  git push --force-with-lease origin "origin/${HEAD_REF}:refs/heads/${BASE_REF}"
+
+            - name: Close PR and delete temp branch
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  PR_NUMBER: ${{ github.event.pull_request.number }}
+              run: |
+                  set -euo pipefail
+                  gh pr close "$PR_NUMBER" --delete-branch \
+                    --comment "Landed automatically after approval."
