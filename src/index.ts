@@ -26,6 +26,7 @@ system.run(() => {
     system.runInterval(() => {
         const tick = system.currentTick
         const players = cache.getCachedPlayers()
+        const isCacheUp = tick % 1200 === 0
 
         if (LIGHT.ENABLED) {
             light.light_pending(tick)
@@ -41,11 +42,12 @@ system.run(() => {
             if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_player(player, tick)
 
             // cache update
-            if (tick % 1200 === 0) {
+            if (isCacheUp) {
                 cache.update(
                     "player", player.id,
                     { permissionLevel: player.playerPermissionLevel }
                 )
+
                 // more later?
             }
         }
@@ -55,7 +57,7 @@ system.run(() => {
 })
 
 world.afterEvents.entityDie.subscribe(data => {
-    if (RUNTIME.CARRIED_CHEST.ENABLED && !world.gameRules.keepInventory) chest.chest_entityDie(data)
+    if (RUNTIME.CARRIED_CHEST.ENABLED && !cache.getGameRule("keepInventory")) chest.chest_entityDie(data)
 }, { entityTypes: ['minecraft:player'] })
 
 world.afterEvents.entityRemove.subscribe(data => {
@@ -109,6 +111,9 @@ world.afterEvents.playerSpawn.subscribe(data => {
 world.afterEvents.playerGameModeChange.subscribe(data => {
     cache.player_gamemode_update(data)
 })
+world.afterEvents.gameRuleChange.subscribe((data) =>
+    cache.gamerule_update(data)
+)
 world.afterEvents.pistonActivate.subscribe(data => {
     if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER) composter.composter_pistonActivate(data)
 })

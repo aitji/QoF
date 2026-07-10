@@ -190,10 +190,15 @@ export const debug_startup = (event: StartupEvent) => {
         if (!players) {
             const data = cache.worldData
             msg = `There is ${data.size} world data §7(cache)§r in the list\n`
-            let index = 0
-            for (const [key, value] of data) {
-                index++
-                msg += `§8${index}. §7${key} §e${value}§r\n`
+
+            for (const [, value] of data) {
+                for (const category in value) {
+                    msg += `§8| §7${category}\n`
+                    const entry = Object.entries(value[category as "gamerule"])
+
+                    let index = 1
+                    for (const [key, val] of entry) msg += `  §8${index++}. §7${key}=§e${val}§r\n`
+                }
             }
         } else {
             const plr = getPlayers(players)

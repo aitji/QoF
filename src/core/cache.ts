@@ -1,4 +1,4 @@
-import { Dimension, GameMode, PlatformType, Player, PlayerGameModeChangeAfterEvent, PlayerLeaveAfterEvent, PlayerPermissionLevel, PlayerSpawnAfterEvent, system, world } from "@minecraft/server"
+import { Dimension, GameMode, GameRuleChangeAfterEvent, PlatformType, Player, PlayerGameModeChangeAfterEvent, PlayerLeaveAfterEvent, PlayerPermissionLevel, PlayerSpawnAfterEvent, system, world } from "@minecraft/server"
 import { RUNTIME } from "../_store" // "cache" got use in "lib" as lazy import, use setting from store directly
 const { DEBUG } = RUNTIME
 
@@ -9,15 +9,21 @@ const PlayerDataShape = {
     permissionLevel: 0 as PlayerPermissionLevel
 }
 const WorldDataShape = {
-    gamerule: { keepInventory: false as boolean }
+    gamerule: { keepInventory: false as boolean | number }
 }
 
+const TRACKED_GAME_RULES = ["keepInventory"] as const
+export const WORLD_CACHE_ID = "world"
+const trackedGameRuleSet = new Set<string>(TRACKED_GAME_RULES)
+
 export type PlayerData = typeof PlayerDataShape
+export type TrackedGameRule = (typeof TRACKED_GAME_RULES)[number]
 export type WorldData = typeof WorldDataShape
 export type CacheData = keyof PlayerData
 
 export const playerDataKeys = Object.keys(PlayerDataShape) as (keyof PlayerData)[]
 export const worldDataKeys = Object.keys(WorldDataShape) as (keyof WorldData)[]
+export const worldGameRuleKeys = Object.keys(WorldDataShape.gamerule) as (keyof WorldData['gamerule'])[]
 
 // maps, "core/cache" is [ONLY] for caching globally
 export const playerData = new Map<string, PlayerData>()
@@ -44,9 +50,26 @@ system.run(() => {
 
     for (const player of allPlayers)
         player_init_update(player)
+
+    world_init_update()
 })
 
 // external routes
+export const world_init_update = () => {
+    const gamerule = {} as WorldData['gamerule']
+    for (const rule of worldGameRuleKeys) {
+        const val = (world.gameRules as any)[rule]
+        gamerule[rule] = (typeof val === 'boolean' || typeof val === 'number') ? (val as boolean | number) : false
+    }
+
+    return update('world', WORLD_CACHE_ID, { gamerule })
+}
+
+export const gamerule_update = (data: GameRuleChangeAfterEvent) => {
+    if (!trackedGameRuleSet.has(data.rule)) return
+    return update('world', WORLD_CACHE_ID, { gamerule: { [data.rule as unknown as keyof WorldData['gamerule']]: data.value as any } })
+}
+
 export const player_init_update = (player: Player) => {
     const { id, name, playerPermissionLevel } = player
     const platformType = player.clientSystemInfo.platformType
@@ -101,6 +124,12 @@ export const getPlayer = (player: Player | string, get?: CacheData | string) => 
     }
 
     return get ? data[get as CacheData] : data
+}
+
+export const getGameRule = (rule: TrackedGameRule): boolean | number | null => {
+    const data = worldData.get(WORLD_CACHE_ID)
+    if (!data) return null
+    return data.gamerule[rule]
 }
 
 export const getCachedPlayers = (): Player[] => cachedPlayers
