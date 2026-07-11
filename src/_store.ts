@@ -7,7 +7,6 @@ function buildRuntime() {
     try { ps = world.getPackSettings() }
     catch (e) { if (S.DEBUG) world.sendMessage(`§cpack setting unable to load, using fallback: ${e}`) }
 
-    const r1 = (name: string, def: number) => Math.round(g(name, def) * 10) / 10
     const g = <T>(name: string, def: T): T => {
         const v = ps[name]
         return (v !== undefined && typeof v === typeof def) ? v as T : def
@@ -17,13 +16,69 @@ function buildRuntime() {
     const A = S.REPAIR_ANVIL
     const W = S.WATER_CONCRETE
     const C = S.COMPOSTER
-    const WC = S.WATER_CAULDRON
     const CH = S.CARRIED_CHEST
     const OH = S.OFFHAND
     const CR = S.HARVEST
     const DD = S.DOUBLE_DOOR
     const WF = S.WAXED_OF
 
+    // player helper
+    const consumeDurability = g("qof:CONSUME_DURABILITY", true)
+    const LIGHT_MODE: Record<string, { ENABLED: boolean; BRIGHTNESS: number }> = {
+        off: { ENABLED: false, BRIGHTNESS: L.REDUCE_LIGHT },
+        dim: { ENABLED: true, BRIGHTNESS: 4 },
+        normal: { ENABLED: true, BRIGHTNESS: L.REDUCE_LIGHT },
+        bright: { ENABLED: true, BRIGHTNESS: 10 },
+    }
+    const lightMode = LIGHT_MODE[g("qof:LIGHT.MODE", "normal")] ?? LIGHT_MODE.normal
+
+    const CONCRETE_MODE: Record<string, { ENABLED: boolean; SLOW_BASE: number; SLOW_MULTIPLIER: number }> = {
+        off: { ENABLED: false, SLOW_BASE: W.SLOW_BASE, SLOW_MULTIPLIER: W.SLOW_MULTIPLIER },
+        slow: { ENABLED: true, SLOW_BASE: W.SLOW_BASE * 2, SLOW_MULTIPLIER: W.SLOW_MULTIPLIER * 2 },
+        normal: { ENABLED: true, SLOW_BASE: W.SLOW_BASE, SLOW_MULTIPLIER: W.SLOW_MULTIPLIER },
+        fast: { ENABLED: true, SLOW_BASE: Math.round(W.SLOW_BASE / 3), SLOW_MULTIPLIER: Math.round(W.SLOW_MULTIPLIER / 2) },
+    }
+    const concreteMode = CONCRETE_MODE[g("qof:WATER_CONCRETE.MODE", "normal")] ?? CONCRETE_MODE.normal
+
+    const COMPOSTER_MODE: Record<string, { ENABLED: boolean; WORK_WITH_HOPPER: boolean }> = {
+        off: { ENABLED: false, WORK_WITH_HOPPER: false },
+        basic: { ENABLED: true, WORK_WITH_HOPPER: false },
+        hopper: { ENABLED: true, WORK_WITH_HOPPER: true },
+    }
+    const composterMode = COMPOSTER_MODE[g("qof:COMPOSTER.MODE", "hopper")] ?? COMPOSTER_MODE.hopper
+
+    const CARRIED_CHEST_MODE: Record<string, { ENABLED: boolean; NO_JUMP_HOLD_CHEST: boolean }> = {
+        off: { ENABLED: false, NO_JUMP_HOLD_CHEST: false },
+        jump: { ENABLED: true, NO_JUMP_HOLD_CHEST: false },
+        no_jump: { ENABLED: true, NO_JUMP_HOLD_CHEST: true },
+    }
+    const carriedChestMode = CARRIED_CHEST_MODE[g("qof:CARRIED_CHEST.MODE", "jump")] ?? CARRIED_CHEST_MODE.jump
+
+    const OFFHAND_MODE: Record<string, { ENABLED: boolean; ALLOW_BLOCK_PLACEMENT: boolean }> = {
+        off: { ENABLED: false, ALLOW_BLOCK_PLACEMENT: false },
+        on: { ENABLED: true, ALLOW_BLOCK_PLACEMENT: false },
+        on_blocks: { ENABLED: true, ALLOW_BLOCK_PLACEMENT: true },
+    }
+    const offhandMode = OFFHAND_MODE[g("qof:OFFHAND.MODE", "on_blocks")] ?? OFFHAND_MODE.on_blocks
+
+    const HARVEST_MODE: Record<string, { ENABLED: boolean; LOSS_SEED: boolean }> = {
+        off: { ENABLED: false, LOSS_SEED: false },
+        free: { ENABLED: true, LOSS_SEED: false },
+        consume: { ENABLED: true, LOSS_SEED: true },
+    }
+    const harvestMode = HARVEST_MODE[g("qof:HARVEST.MODE", "consume")] ?? HARVEST_MODE.consume
+
+    const CAULDRON_MODE: Record<string, { ENABLED: boolean; FIND_NEAR_COLOR: boolean; HARDENED_POWDER: boolean }> = {
+        off: { ENABLED: false, FIND_NEAR_COLOR: false, HARDENED_POWDER: false },
+        dye: { ENABLED: true, FIND_NEAR_COLOR: true, HARDENED_POWDER: false },
+        concrete: { ENABLED: true, FIND_NEAR_COLOR: false, HARDENED_POWDER: true },
+        both: { ENABLED: true, FIND_NEAR_COLOR: true, HARDENED_POWDER: true },
+    }
+    const cauldronMode = CAULDRON_MODE[g("qof:WATER_CAULDRON.MODE", "both")] ?? CAULDRON_MODE.both
+
+
+
+    // configs
     return Object.freeze({
         DEBUG: g("qof:DEBUG", S.DEBUG),
         DISABLED_COMMANDFEEDBACK: S.DISABLED_COMMANDFEEDBACK,
@@ -39,9 +94,9 @@ function buildRuntime() {
         BLOCKFACE_TO_DIR: S.BLOCKFACE_TO_DIR,
 
         LIGHT: Object.freeze({
-            ENABLED: g("qof:LIGHT.ENABLED", L.ENABLED),
-            REDUCE_LIGHT: parseFloat((g("qof:LIGHT.REDUCE_LIGHT", L.REDUCE_LIGHT) / 10).toFixed(1)),
-            LIGHT_REDUCE_LINEAR: g("qof:LIGHT.LIGHT_REDUCE_LINEAR", L.LIGHT_REDUCE_LINEAR),
+            ENABLED: lightMode.ENABLED,
+            REDUCE_LIGHT: parseFloat((lightMode.BRIGHTNESS / 10).toFixed(1)),
+            LIGHT_REDUCE_LINEAR: L.LIGHT_REDUCE_LINEAR,
 
             // static
             DECAY_LIGHT_TICK: L.DECAY_LIGHT_TICK,
@@ -67,7 +122,7 @@ function buildRuntime() {
 
         REPAIR_ANVIL: Object.freeze({
             ENABLED: g("qof:REPAIR_ANVIL.ENABLED", A.ENABLED),
-            REPAIR_HELD_DELAY: g("qof:REPAIR_ANVIL.REPAIR_HELD_DELAY", A.REPAIR_HELD_DELAY),
+            REPAIR_HELD_DELAY: A.REPAIR_HELD_DELAY,
 
             // static
             ITEM_TYPEID: A.ITEM_TYPEID,
@@ -76,9 +131,9 @@ function buildRuntime() {
         }),
 
         WATER_CONCRETE: Object.freeze({
-            ENABLED: g("qof:WATER_CONCRETE.ENABLED", W.ENABLED),
-            SLOW_BASE: g("qof:WATER_CONCRETE.SLOW_BASE", W.SLOW_BASE),
-            SLOW_MULTIPLIER: g("qof:WATER_CONCRETE.SLOW_MULTIPLIER", W.SLOW_MULTIPLIER),
+            ENABLED: concreteMode.ENABLED,
+            SLOW_BASE: concreteMode.SLOW_BASE,
+            SLOW_MULTIPLIER: concreteMode.SLOW_MULTIPLIER,
 
             // static
             MAX_PROCESS: W.MAX_PROCESS,
@@ -92,8 +147,8 @@ function buildRuntime() {
         }),
 
         COMPOSTER: Object.freeze({
-            ENABLED: g("qof:COMPOSTER.ENABLED", C.ENABLED),
-            WORK_WITH_HOPPER: g("qof:COMPOSTER.WORK_WITH_HOPPER", C.WORK_WITH_HOPPER),
+            ENABLED: composterMode.ENABLED,
+            WORK_WITH_HOPPER: composterMode.WORK_WITH_HOPPER,
 
             // static
             HOPPER_TYPEID: C.HOPPER_TYPEID,
@@ -112,9 +167,9 @@ function buildRuntime() {
         }),
 
         CARRIED_CHEST: Object.freeze({
-            ENABLED: g("qof:CARRIED_CHEST.ENABLED", CH.ENABLED),
+            ENABLED: carriedChestMode.ENABLED,
             PLAYER_JUMP: Object.freeze({
-                NO_JUMP_HOLD_CHEST: CH.PLAYER_JUMP.NO_JUMP_HOLD_CHEST,
+                NO_JUMP_HOLD_CHEST: carriedChestMode.NO_JUMP_HOLD_CHEST,
                 ALLOW_JUMP_IN_WATER: CH.PLAYER_JUMP.ALLOW_JUMP_IN_WATER,
                 ALLOW_JUMP_IN_LAVA: CH.PLAYER_JUMP.ALLOW_JUMP_IN_LAVA,
                 ALLOW_JUMP_IN_SCAFFOLDING: CH.PLAYER_JUMP.ALLOW_JUMP_IN_SCAFFOLDING,
@@ -134,8 +189,8 @@ function buildRuntime() {
             SOUND_PICK_UP: CH.SOUND_PICK_UP,
         }),
         OFFHAND: Object.freeze({
-            ENABLED: g("qof:OFFHAND.ENABLED", OH.ENABLED),
-            ALLOW_BLOCK_PLACEMENT: g("qof:OFFHAND.ALLOW_BLOCK_PLACEMENT", OH.ALLOW_BLOCK_PLACEMENT),
+            ENABLED: offhandMode.ENABLED,
+            ALLOW_BLOCK_PLACEMENT: offhandMode.ALLOW_BLOCK_PLACEMENT,
             DOUBLE_SNEAK_WINDOW_MOBILE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE", OH.DOUBLE_SNEAK_WINDOW_MOBILE),
             DOUBLE_SNEAK_WINDOW_CONSOLE: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_CONSOLE", OH.DOUBLE_SNEAK_WINDOW_CONSOLE),
             DOUBLE_SNEAK_WINDOW_DEFAULT: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT", OH.DOUBLE_SNEAK_WINDOW_DEFAULT),
@@ -154,9 +209,9 @@ function buildRuntime() {
             CAN_ALWAYS_USE: OH.CAN_ALWAYS_USE
         }),
         HARVEST: Object.freeze({
-            ENABLED: g("qof:HARVEST.ENABLED", CR.ENABLED),
-            LOSS_SEED: g("qof:HARVEST.LOSS_SEED", CR.LOSS_SEED),
-            DURABILITY: g("qof:HARVEST.DURABILITY", CR.DURABILITY),
+            ENABLED: harvestMode.ENABLED,
+            LOSS_SEED: harvestMode.LOSS_SEED,
+            DURABILITY: consumeDurability,
 
             // static
             PLANT_LEVEL: CR.PLANT_LEVEL,
@@ -168,12 +223,12 @@ function buildRuntime() {
         }),
         WAXED_OF: Object.freeze({
             ENABLED: g("qof:WAXED_OF.ENABLED", WF.ENABLED),
-            DURABILITY: g("qof:WAXED_OF.DURABILITY", WF.DURABILITY),
+            DURABILITY: consumeDurability,
         }),
         WATER_CAULDRON: Object.freeze({
-            ENABLED: g("qof:WATER_CAULDRON.ENABLED", WC.ENABLED),
-            FIND_NEAR_COLOR: g("qof:WATER_CAULDRON.FIND_NEAR_COLOR", WC.FIND_NEAR_COLOR),
-            HARDENED_POWDER: g("qof:WATER_CAULDRON.HARDENED_POWDER", WC.HARDENED_POWDER)
+            ENABLED: cauldronMode.ENABLED,
+            FIND_NEAR_COLOR: cauldronMode.FIND_NEAR_COLOR,
+            HARDENED_POWDER: cauldronMode.HARDENED_POWDER,
         }),
     })
 }

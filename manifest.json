@@ -22,268 +22,169 @@
     {"type": "script","uuid": "d71d1934-0d8d-46aa-b148-bb701eba33aa","version": "1.0.0","entry": "scripts/index.js", "language": "javascript"}
   ],
   "subpacks": [
-      {
-      "folder_name": "heartbeat-off",
-      "name": "§cDisabled Heartbeat§r for BetaAPIs check §e(addon will won't notify you when BetaAPIs not enabled)",
+    {
+      "folder_name": "bat-disabled",
+      "name": "§l§cQ§r§lo§cF§r §7by §c@aitji§r (script) & §9@pickerth-12§r (design). Tweak anything below to your liking!\n§cDon't forget to turn on BetaAPIs in Experiments.\n§7Changing a setting requires §l§4/reload§r§7 or §l§4relog§r§7 to take effect.\n\nDisable §6Bat Barter§7 players can no longer trade glow berries with bats",
       "memory_performance_tier": 0
     },
     {
-      "folder_name": "heartbeat-on",
-      "name": "§aEnabled §cHeartbeat§r for BetaAPIs check §c(can affect performance, does help new users)",
+      "folder_name": "bat-enabled",
+      "name": "§l§cQ§r§lo§cF§r §7by §c@aitji§r (script) & §9@pickerth-12§r (design). Tweak anything below to your liking!\n§cDon't forget to turn on BetaAPIs in Experiments.\n§7Changing a setting requires §l§4/reload§r§7 or §l§4relog§r§7 to take effect.\n\nEnable §6Bat Barter§7 players can trade glow berries with bats",
       "memory_performance_tier": 0
     }
   ],
   "settings": [
     {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r was made by §c@aitji§r (script) and §9@pickerth-12§r (ideas & design). §7You can tweak everything below to your liking!\n§cTurn on BetaAPIs in Experiments\n\n§mChanging setting in-game requires §l§4/reload§r§m to restart the runtime. This approach is used to improve performance."
-    },
-    {
       "type": "slider",
-      "text": "§7How often should QoF run? §8(lower = faster updates) §r",
+      "text": "§l§6General§r §7------------------------------------------------\n§7Update speed §8(lower = more responsive, higher = better performance)",
       "name": "qof:INTERVAL_DELAY",
       "min": 0,
       "max": 20,
       "step": 1,
       "default": 1
     },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Dynamic Light System §7----------------------------------"
-    },
     {
       "type": "toggle",
-      "text": "§7Enable dynamic light?",
-      "name": "qof:LIGHT.ENABLED",
+      "text": "§7tool durability use by Auto Harvest and sign-unwaxing ",
+      "name": "qof:CONSUME_DURABILITY",
       "default": true
     },
+
+
+
     {
-      "type": "slider",
-      "text": "§7How §f'much'§7 should light be reduced? §8(final = lightLevel * §o[value / 10]§r§8) §r",
-      "name": "qof:LIGHT.REDUCE_LIGHT",
-      "min": 0,
-      "max": 10,
-      "step": 1,
-      "default": 7
+      "type": "dropdown",
+      "text": "§l§6Dynamic Light§r §7------------------------------------------\n§7Light up your hand when holding a light source:",
+      "name": "qof:LIGHT.MODE",
+      "options": [
+        {"name": "off", "text": "Off"},
+        {"name": "dim", "text": "Dim"},
+        {"name": "normal", "text": "Normal"},
+        {"name": "bright", "text": "Bright"}
+      ],
+      "default": "normal"
     },
+
+
+
     {
-      "type": "slider",
-      "text": "§7When fading, how much light is lost each step? §r",
-      "name": "qof:LIGHT.LIGHT_REDUCE_LINEAR",
-      "min": 1,
-      "max": 15,
-      "step": 1,
-      "default": 2
+      "type": "dropdown",
+      "text": "§l§6Composter§r §7---------------------------------------------\n§7Compost more items than vanilla allows:",
+      "name": "qof:COMPOSTER.MODE",
+      "options": [
+        {"name": "off", "text": "Off"},
+        {"name": "basic", "text": "On"},
+        {"name": "hopper", "text": "On & hopper feeding §c(can affect performance)"}
+      ],
+      "default": "hopper"
+    },
+
+
+
+    {
+      "type": "dropdown",
+      "text": "§l§6Carry Containers§r §7--------------------------------------\n§7Sneak + click a chest or barrel to pick it up and carry it\n§7Carrying containers:",
+      "name": "qof:CARRIED_CHEST.MODE",
+      "options": [
+        {"name": "off", "text": "Off§7, can't carry container"},
+        {"name": "jump", "text": "On§7, can jump while carrying"},
+        {"name": "no_jump", "text": "On§7, can't jump while carrying §8(still can swim)"}
+      ],
+      "default": "jump"
+    },
+
+
+
+    {
+      "type": "dropdown",
+      "text": "§l§6Harden Powder§r §7----------------------------------------\n§7Let concrete powder harden when it touches water:",
+      "name": "qof:WATER_CONCRETE.MODE",
+      "options": [
+        {"name": "off", "text": "Off"},
+        {"name": "slow", "text": "Slow"},
+        {"name": "normal", "text": "Normal"},
+        {"name": "fast", "text": "Fast"}
+      ],
+      "default": "normal"
+    },
+
+
+
+    {
+      "type": "dropdown",
+      "text": "§l§6Offhand§r §7------------------------------------------------\n§7Double-sneak to swap an item into your offhand. §8(Not supported yet for named, enchanted, or dyed items)\n§7Offhand slot:",
+      "name": "qof:OFFHAND.MODE",
+      "options": [
+        {"name": "off", "text": "Off"},
+        {"name": "on", "text": "On"},
+        {"name": "on_blocks", "text": "On & block placement"}
+      ],
+      "default": "on_blocks"
+    },
+
+
+
+    {
+      "type": "dropdown",
+      "text": "§l§6Auto Harvest§r §7------------------------------------------\n§7Automatically harvest and replant fully-grown crops:",
+      "name": "qof:HARVEST.MODE",
+      "options": [
+        {"name": "off", "text": "Off"},
+        {"name": "free", "text": "On, free replanting"},
+        {"name": "consume", "text": "On, consumes a seed per replant"}
+      ],
+      "default": "consume"
+    },
+
+
+
+    {
+      "type": "dropdown",
+      "text": "§l§6Cauldrons§r §7---------------------------------------------\n§7Allow more items to interact with cauldrons:",
+      "name": "qof:WATER_CAULDRON.MODE",
+      "options": [
+        {"name": "off", "text": "Off"},
+        {"name": "dye", "text": "Dye§7, color-matching only"},
+        {"name": "concrete", "text": "Concrete§7, hardening only"},
+        {"name": "both", "text": "Both§7, Dye & Concrete"}
+      ],
+      "default": "both"
     },
 
 
 
     {
       "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Anvil Repair §7-----------------------------------------"
+      "text": "§l§6Misc§r §7---------------------------------------------------"
     },
     {
       "type": "toggle",
-      "text": "§7Enable anvil repairing? §r",
+      "text": "§7Repair anvils with Iron Ingots §8(custom feature, not vanilla)",
       "name": "qof:REPAIR_ANVIL.ENABLED",
       "default": true
     },
     {
-      "type": "slider",
-      "text": "§7How long§8(game tick)§7 to hold before repairing starts again? §r",
-      "name": "qof:REPAIR_ANVIL.REPAIR_HELD_DELAY",
-      "min": 0,
-      "max": 20,
-      "step": 1,
-      "default": 7
-    },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Compost More Items §7-----------------------------------"
-    },
-    {
       "type": "toggle",
-      "text": "§7Enable improved composter? §r",
-      "name": "qof:COMPOSTER.ENABLED",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Should hopper work with composter? §c(can affect performance) §r",
-      "name": "qof:COMPOSTER.WORK_WITH_HOPPER",
-      "default": true
-    },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Carry Container System §7-------------------------------"
-    },
-    {
-      "type": "toggle",
-      "text": "§7Allow carrying a container?",
-      "name": "qof:CARRIED_CHEST.ENABLED",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Disable §fjumping§7 while holding a container? §r",
-      "name": "qof:CARRIED_CHEST.PLAYER_JUMP.NO_JUMP_HOLD_CHEST",
-      "default": false
-    },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r CONCRETE POWDER §7-------------------------------------"
-    },
-    {
-      "type": "toggle",
-      "text": "§7Allow convert concrete powder hardening in water?",
-      "name": "qof:WATER_CONCRETE.ENABLED",
-      "default": true
-    },
-    {
-      "type": "label",
-      "text": "§7Wait time is calculated* as: §qgame tick§7 = §8[BASE] §7+ √(§gamount§7 - 1) × §8[MULTIPLIER]§7\n§7*§pfinal wait time§7 use floor from §qgame tick"
-    },
-    {
-      "type": "slider",
-      "text": "§7How long§8(game tick)§7 should base time take? §8(larger = slower)",
-      "name": "qof:WATER_CONCRETE.SLOW_BASE",
-      "min": 0,
-      "max": 360,
-      "step": 5,
-      "default": 60
-    },
-    {
-      "type": "slider",
-      "text": "§7Concrete conversion slowness §8(larger = slower)",
-      "name": "qof:WATER_CONCRETE.SLOW_MULTIPLIER",
-      "min": 0,
-      "max": 60,
-      "step": 1,
-      "default": 10
-    },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r OFFHAND System §7--------------------------------------\n§f*Due to minecraft scripts limitation §l§cQ§r§fo§l§cF§r§f currently not support transfer item with nametag/enchantment/color"
-    },
-    {
-      "type": "toggle",
-      "text": "§7Allow offhand? §8(by double sneaking)",
-      "name": "qof:OFFHAND.ENABLED",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Allow blocks placement from offhand?",
-      "name": "qof:OFFHAND.ALLOW_BLOCK_PLACEMENT",
-      "default": true
-    },
-  
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Harvest System §7--------------------------------------"
-    },
-    {
-      "type": "toggle",
-      "text": "§7Allow harvest crop?",
-      "name": "qof:HARVEST.ENABLED",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Use hoe/shovel durability on harvest?",
-      "name": "qof:HARVEST.DURABILITY",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Consume seeds for replant?",
-      "name": "qof:HARVEST.LOSS_SEED",
-      "default": true
-    },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Double Door §7-----------------------------------------"
-    },
-    {
-      "type": "toggle",
-      "text": "§7Allow double door?",
+      "text": "§7Open/close both sides of a double door together",
       "name": "qof:DOUBLE_DOOR.ENABLED",
       "default": true
     },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Unwaxed Sign §7----------------------------------------"
-    },
     {
       "type": "toggle",
-      "text": "§7Allow signs to be unwaxed with an axe?",
+      "text": "§7Allow unwaxing signs with an axe",
       "name": "qof:WAXED_OF.ENABLED",
       "default": true
     },
-    {
-      "type": "toggle",
-      "text": "§7Consume durability when unwaxing a sign?",
-      "name": "qof:WAXED_OF.DURABILITY",
-      "default": true
-    },
 
 
 
     {
       "type": "label",
-      "text": "§l§cQ§r§lo§cF§r Cauldron+ §7-------------------------------------------"
+      "text": "§l§cDeveloper§r §7---------------------------------------------"
     },
     {
       "type": "toggle",
-      "text": "§7Allow more items to interact with cauldrons?",
-      "name": "qof:WATER_CAULDRON.ENABLED",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Match nearest color?",
-      "name": "qof:WATER_CAULDRON.FIND_NEAR_COLOR",
-      "default": true
-    },
-    {
-      "type": "toggle",
-      "text": "§7Hardened concrete powder?",
-      "name": "qof:WATER_CAULDRON.HARDENED_POWDER",
-      "default": true
-    },
-
-
-
-    {
-      "type": "label",
-      "text": "§l§cQ§r§lo§cF§r's developer settings §7----------------------------------"
-    },
-    {
-      "type": "toggle",
-      "text": "§cDebug mode? §7(Show spam logs in chat/console) §r",
+      "text": "§cDebug mode §8(spammy logs in chat/console, leave off)",
       "name": "qof:DEBUG",
       "default": true
     }

@@ -123,17 +123,6 @@
                     }
                 ]
             },
-            // "minecraft:shareables": {
-            //     "singular_pickup": true,
-            //     "items": [
-            //         {
-            //             "item": "minecraft:glow_berries",
-            //             "priority": 1,
-            //             "pickup_limit": 1,
-            //             "barter": true
-            //         }
-            //     ]
-            // },
             "minecraft:behavior.barter": {
                 "priority": 2
             },
