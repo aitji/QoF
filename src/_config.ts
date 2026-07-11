@@ -779,8 +779,9 @@ export const SETTINGS = Object.freeze({
             "minecraft:carrots": Object.freeze({ level: 7, seed: "minecraft:carrot" }),
             "minecraft:potatoes": Object.freeze({ level: 7, seed: "minecraft:potato" }),
             "minecraft:beetroot": Object.freeze({ level: 7, seed: "minecraft:beetroot_seeds" }),
+            "minecraft:sweet_berry_bush": Object.freeze({ level: 2, seed: "minecraft:sweet_berries", harvested: 1, harvested_state: "growth" }),
             "minecraft:nether_wart": Object.freeze({ level: 3, seed: "minecraft:nether_wart" }),
-        }) as Readonly<Record<string, { level: number, seed: string }>>,
+        }) as Readonly<Record<string, { level: number, seed: string, harvested?: number, harvested_state?: string }>>,
         COCOA_VALID_LOGS: Object.freeze(new Set([
             'minecraft:jungle_log',
             'minecraft:stripped_jungle_log',

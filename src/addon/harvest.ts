@@ -1,5 +1,5 @@
 import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player, GameMode, Direction } from "@minecraft/server"
-import { applyItemDamage, reduceItem, RUNTIME, helper, cache, getEqu, getInv } from "../lib"
+import { applyItemDamage, reduceItem, RUNTIME, helper, cache, getEqu, getInv, sumLoc, checkRandom } from "../lib"
 const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY, COCOA_VALID_LOGS, COCOA_DIRECTIONS } } = RUNTIME
 
 export const resolveCocoaPermutation = (block: Block, originalDir: number) => {
@@ -66,9 +66,20 @@ export const harvest_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
                     const swapTypeId = offhandEntry?.[0]
                     const plantTypeId = (isHoe && swapTypeId === 'minecraft:cocoa') ? typeId : (swapTypeId ?? typeId)
                     const plantSeed = (isHoe && swapTypeId === 'minecraft:cocoa') ? seed : (offhandEntry?.[1]?.seed ?? seed)
+                    const target = dimension.getBlock(location)!
 
+                    let isPlanted = false
                     const apply = () => {
-                        const target = dimension.getBlock(location)!
+                        isPlanted = true
+
+                        const harvested = PLANT_LEVEL[typeId]?.harvested
+                        if (harvested && harvested > 0) return target.setPermutation(
+                            BlockPermutation.resolve(
+                                plantTypeId, {
+                                [PLANT_LEVEL[typeId]?.harvested_state as string]: harvested
+                            })
+                        )
+
                         if (plantTypeId === 'minecraft:cocoa') target.setPermutation(resolveCocoaPermutation(target, originalDir))
                         else target.setPermutation(BlockPermutation.resolve(plantTypeId))
                     }
@@ -106,6 +117,11 @@ export const harvest_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
                                 } finally { return apply() }
                             }
                         }
+                    }
+
+                    if (!isPlanted) {
+                        const fail = () => dimension.spawnParticle("minecraft:villager_angry", sumLoc(location, { x: checkRandom([.4, .7]), y: checkRandom([.2, .6]), z: checkRandom([.4, .7]) }))
+                        fail()
                     }
                 })
             } else if (!player.isSneaking) data.cancel = true
