@@ -1,5 +1,5 @@
 {
-    "format_version": "1.26.10",
+    "format_version": "1.26.20",
     "minecraft:block": {
         "description": {
             "identifier": "qof:light_block",
@@ -14,7 +14,7 @@
                 "*": {
                     "texture": "light_block_0",
                     "render_method": "blend",
-                    "ambient_occlusion": false,
+                    "ambient_occlusion": 0.0,
                     "face_dimming": false
                 }
             },
@@ -25,6 +25,8 @@
             "minecraft:destructible_by_mining": { "seconds_to_destroy": 0 },
             "minecraft:display_name": "QoF Light Block",
             "minecraft:light_emission": 0,
+            "minecraft:light_dampening": 0,
+            "minecraft:precipitation_interactions": { "precipitation_behavior": "none" },
             "minecraft:liquid_detection": {
                 "detection_rules": [
                     {
