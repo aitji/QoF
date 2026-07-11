@@ -23,11 +23,11 @@ const { DEBUG } = E
 export const QOF_INFORMATION = {
     version: {
         qof: '1.5.1',
-        minecraft: '1.26.12'
+        minecraft: '1.26.33'
     },
     license: 'QoF Noncommercial License 1.0',
     dependencies: {
-        '@minecraft/server': '^2.7.0-beta.1.26.14-stable',
+        '@minecraft/server': '^2.9.0-beta.1.26.33-stable',
         'typescript': '^6.0.2',
     },
     authors: ['aitji', 'pickerth-12'],
