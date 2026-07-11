@@ -113,6 +113,7 @@ export const debug_startup = (event: StartupEvent) => {
         name: `${PREFIX}info`,
         description: 'get infomation about Quality of Feature',
         permissionLevel: CommandPermissionLevel.Any,
+        cheatsRequired: false
     }, (origin) => {
         const player = origin.sourceEntity as Player
         if (player.typeId !== 'minecraft:player')
@@ -141,7 +142,8 @@ export const debug_startup = (event: StartupEvent) => {
             { name: 'dyp_action', type: CustomCommandParamType.Enum, enumName: `${PREFIX}dyp_action` },
             { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
         ],
-        permissionLevel: CommandPermissionLevel.GameDirectors
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
     }, (_, dyp_action: dypActionType, log: logType) => {
 
         const ids = world.getDynamicPropertyIds()
@@ -184,7 +186,8 @@ export const debug_startup = (event: StartupEvent) => {
             { name: 'player', type: CustomCommandParamType.PlayerSelector },
             { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
         ],
-        permissionLevel: CommandPermissionLevel.GameDirectors
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
     }, (_, players: Players, log: logType) => {
         let msg = ''
         if (!players) {
@@ -228,7 +231,8 @@ export const debug_startup = (event: StartupEvent) => {
             { name: 'type', type: CustomCommandParamType.Enum, enumName: `${PREFIX}components` },
             { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
         ],
-        permissionLevel: CommandPermissionLevel.Admin
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
     }, (origin, types: componentsType, log: logType) => {
         const player = origin.sourceEntity as Player
         if (player.typeId !== 'minecraft:player') return { status: CustomCommandStatus.Failure, message: "origin not player" }
@@ -264,7 +268,8 @@ export const debug_startup = (event: StartupEvent) => {
         optionalParameters: [
             { name: 'light_dampening', type: CustomCommandParamType.Integer }
         ],
-        permissionLevel: CommandPermissionLevel.Admin
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
     }, (origin, light_dampening: number) => {
         const player = origin.sourceEntity as Player
         if (player.typeId !== 'minecraft:player') return { status: CustomCommandStatus.Failure, message: "origin not player" }
@@ -281,7 +286,7 @@ export const debug_startup = (event: StartupEvent) => {
 }
 
 export const debug_playerPlaceBlock = (data: PlayerPlaceBlockAfterEvent) => {
-    const { player, dimension, block } = data
+    const { player, block } = data
 
     if (block && block.typeId === 'qof:light_damp_dev') {
         const equ = getEqu(player)!

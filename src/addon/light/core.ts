@@ -81,19 +81,39 @@ export const entityLights = new Map<string, Set<BlockKey>>()
 export const suppressedLocs = new Map<BlockKey, number>()
 export const SUPP_BREAK = 8
 
-const frozenKeys = new Set()
+const frozenKeys = new Set<BlockKey>()
+const frozenDypKeys = new Map<BlockKey, string>()
 const bKey = (dim: string, x: number | string, y: number | string, z: number | string) => `${dim}:${x}:${y}:${z}`
 const parseKey = (k: BlockKey) => {
     const [dim, x, y, z] = k.split(':')
     return { dim, x: +x, y: +y, z: +z }
 }
 export const blockBKey = (b: Block) => bKey(dimId(b), b.location.x, b.location.y, b.location.z)
+const _frozenDypId = (k: BlockKey, e: LightEntry) => `frozen:${k}:${e.level}:${e.isWater}:${e.owner}`
+function _mirrorFreeze(k: BlockKey, e: LightEntry) {
+    try {
+        const next = _frozenDypId(k, e)
+        const prev = frozenDypKeys.get(k)
+        if (prev === next) return
+        if (prev) world.setDynamicProperty(prev, undefined)
+        world.setDynamicProperty(next, true)
+        frozenDypKeys.set(k, next)
+    } catch (_) { }
+}
+function _mirrorThaw(k: BlockKey) {
+    const prev = frozenDypKeys.get(k)
+    if (!prev) return
+    try { world.setDynamicProperty(prev, undefined) } catch (_) { }
+    frozenDypKeys.delete(k)
+}
+
 export const suppressLight = (block: Block, checkLightBlock = true, cleanLight = true, needTick = false, tick = system.currentTick) => {
     if (!ENABLED) return false
     if (checkLightBlock && !block.permutation.matches(LIGHT_BLOCK)) return false
 
     const k = blockBKey(block)
     lightMap.delete(k)
+    if (frozenKeys.delete(k)) _mirrorThaw(k)
     suppressedLocs.set(k, tick + SUPP_BREAK)
 
     if (!cleanLight) return true
@@ -121,6 +141,21 @@ function* _restoreFromDYP() {
                 if (!lightMap.has(k))
                     lightMap.set(k, { time: 0, level: +p[6], isWater: p[7] === 'true', owner: p[8] })
                 world.setDynamicProperty(dy, undefined)
+                break
+            }
+            case 'frozen': {
+                // frozen:dim:x:y:z:level:isWater:owner
+                const k = bKey(p[1], p[2], p[3], p[4])
+                const owner = p[7]
+                if (!lightMap.has(k)) {
+                    lightMap.set(k, { time: 0, level: +p[5], isWater: p[6] === 'true', owner })
+                    if (owner !== 'Infinity') {
+                        if (!entityLights.has(owner)) entityLights.set(owner, new Set())
+                        entityLights.get(owner)!.add(k)
+                    }
+                }
+                frozenKeys.add(k)
+                frozenDypKeys.set(k, dy)
                 break
             }
             case 'frame':
@@ -247,11 +282,17 @@ export const light_pending = (tick: number) => {
             const block = world.getDimension(dim).getBlock({ x, y, z })
             if (!block) {
                 frozenKeys.add(k)
-                if (!isFrozen) v.time -= LIGHT_REDUCE_LINEAR
+                if (!isFrozen) {
+                    _mirrorFreeze(k, v)
+                    v.time -= LIGHT_REDUCE_LINEAR
+                }
                 continue
             }
 
-            if (isFrozen) frozenKeys.delete(k)
+            if (isFrozen) {
+                frozenKeys.delete(k)
+                _mirrorThaw(k)
+            }
 
             if (v.time < 0) {
                 const lig = block.permutation.getState('qof:light_level' as any) ?? 0
@@ -277,7 +318,7 @@ export const light_pending = (tick: number) => {
         const v = lightMap.get(k)
         const owner = v?.owner as string
         if (owner && owner !== 'Infinity') entityLights.get(owner)?.delete(k)
-        frozenKeys.delete(k)
+        if (frozenKeys.delete(k)) _mirrorThaw(k)
         lightMap.delete(k)
         _pendingKeys.length = 0
     }
@@ -353,7 +394,7 @@ export const light_entityRemove = ({ removedEntityId }: EntityRemoveAfterEvent) 
 
     for (const k of keys) {
         lightMap.delete(k)
-        frozenKeys.delete(k)
+        if (frozenKeys.delete(k)) _mirrorThaw(k)
         const { dim, x, y, z } = parseKey(k)
         try { world.getDimension(dim).getBlock({ x, y, z })?.setPermutation(AIR) }
         catch { world.getDimension(dim).runCommand(`setblock ${x} ${y} ${z} air`) }
@@ -402,4 +443,17 @@ export const light_playerPlaceBlock_before = ({ block }: PlayerPlaceBlockBeforeE
 export const light_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
     const { block } = data
     suppressedLocs.set(blockBKey(block), system.currentTick + SUPP_BREAK)
+}
+
+export function* light_resyncFrozenDYP() {
+    let n = 0
+    for (const k of frozenKeys) {
+        const e = lightMap.get(k)
+        if (e) _mirrorFreeze(k, e)
+        if (++n % 200 === 0) yield
+    }
+    for (const k of [...frozenDypKeys.keys()]) {
+        if (!frozenKeys.has(k)) _mirrorThaw(k)
+        if (++n % 200 === 0) yield
+    }
 }
