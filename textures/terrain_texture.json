@@ -3,7 +3,5 @@
 	"texture_name": "atlas.terrain",
 	"padding": 8,
 	"num_mip_levels": 4,
-	"texture_data": {
-		"light_block_0": { "textures": "textures/null" }
-	}
+	"texture_data": {}
 }
