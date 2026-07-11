@@ -1,5 +1,5 @@
-import { world, system, EquipmentSlot, BlockPermutation, GameMode, PlayerInteractWithBlockBeforeEvent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity, ItemStack } from "@minecraft/server"
-import { applyItemDamage, checkRandom, getEqu, reduceItem, RUNTIME, setEqu, pickupCooldown, cache, playSound, checkPerm } from "../../lib"
+import { world, system, EquipmentSlot, BlockPermutation, GameMode, PlayerInteractWithBlockBeforeEvent, Block, ItemStack } from "@minecraft/server"
+import { applyItemDamage, getEqu, reduceItem, RUNTIME, setEqu, pickupCooldown, cache, playSound, checkPerm } from "../../lib"
 import { suppressLight } from "./core"
 const {
     DEBUG, BLOCKFACE_TO_DIR, BLOCK_INTERACTION_DELAY,
@@ -9,7 +9,6 @@ const {
         LIGHT_BLOCK
     }
 } = RUNTIME
-export const isFrame = (b: Block) => b.permutation.matches('minecraft:frame') || b.permutation.matches('minecraft:glow_frame')
 
 let HANGING_ROOTS: ItemStack
 let DIRT: BlockPermutation

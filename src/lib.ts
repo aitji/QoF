@@ -1,4 +1,10 @@
-import { Block, BlockInventoryComponent, Dimension, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EquipmentSlot, GameMode, ItemComponentTypes, ItemDurabilityComponent, ItemStack, Player, PlayerPermissionLevel, system, Vector3, world } from "@minecraft/server"
+import {
+    Block, Dimension, Entity,
+    EntityComponentTypes, EquipmentSlot, GameMode,
+    ItemComponentTypes, ItemStack, Player,
+    PlayerPermissionLevel, system, Vector3,
+    world
+} from "@minecraft/server"
 // lazy import ---
 import { RUNTIME as E } from "./_store"
 import * as H from "./core/helper"
@@ -38,6 +44,16 @@ export const checkRandom = (arr: number | number[]) => {
             return 1
     }
 }
+
+export function* roundRobin<T>(items: readonly T[], cursor: number, budget: number): Generator<T> {
+    const total = items.length
+    if (total === 0) return
+
+    const n = Math.min(budget, total)
+    for (let i = 0; i < n; i++) yield items[(cursor + i) % total]
+}
+export const cursor = (cursor: number, total: number, budget: number) =>
+    total === 0 ? 0 : (cursor + Math.min(budget, total)) % total
 
 export const applyItemDamage = (player: Player, item: ItemStack) => { // only for weapon, not armor
     const enchant = item?.getComponent(ItemComponentTypes.Enchantable)

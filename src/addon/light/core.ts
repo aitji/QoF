@@ -1,5 +1,5 @@
-import { world, system, EquipmentSlot, BlockPermutation, GameMode, EntityComponentTypes, Player, PlayerInteractWithBlockBeforeEvent, ItemComponentTypes, EntityEquippableComponent, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity, ItemStack, EntityRemoveAfterEvent, PlayerPlaceBlockAfterEvent } from "@minecraft/server"
-import { applyItemDamage, checkRandom, clamp, getEqu, playSound, reduceItem, roundLoc, RUNTIME, setEqu, sumLoc } from "../../lib"
+import { world, system, EquipmentSlot, BlockPermutation, EntityComponentTypes, Player, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity, EntityRemoveAfterEvent, PlayerPlaceBlockAfterEvent } from "@minecraft/server"
+import { cursor, clamp, getEqu, playSound, roundLoc, roundRobin, RUNTIME, sumLoc } from "../../lib"
 
 const {
     DEBUG,
@@ -40,11 +40,11 @@ if (ENABLED) system.run(() => {
     LAVA = BlockPermutation.resolve('minecraft:lava')
     BASE_LIGHT = BlockPermutation.resolve(LIGHT_BLOCK)
     FIRE = BlockPermutation.resolve('minecraft:fire')
-    _restoreFromDYP()
+    system.runJob(_restoreFromDYP())
 })
 
-const lightPerm = (lv: number) => BASE_LIGHT.withState('qof:light_level' as any, lv < 1 ? 0 : lv > 15 ? 15 : lv)
 const clamp15 = (n: number) => clamp(n, 0, 15)
+const lightPerm = (lv: number) => BASE_LIGHT.withState('qof:light_level' as any, clamp15(lv))
 const dimId = (b: Player | Entity | Block) => b.dimension.id.split(':')[1]
 const isLightable = (b: Block, liq: boolean) => b.isAir || (liq && b.isLiquid) || b.permutation.matches(LIGHT_BLOCK)
 const getItemLight = (id: string | undefined, en: Player | Entity, tick: number) => {
@@ -82,8 +82,11 @@ export const suppressedLocs = new Map<BlockKey, number>()
 export const SUPP_BREAK = 8
 
 const frozenKeys = new Set()
-const FROZEN_RECHECK = 20 // ~1 s at 20 tps
 const bKey = (dim: string, x: number | string, y: number | string, z: number | string) => `${dim}:${x}:${y}:${z}`
+const parseKey = (k: BlockKey) => {
+    const [dim, x, y, z] = k.split(':')
+    return { dim, x: +x, y: +y, z: +z }
+}
 export const blockBKey = (b: Block) => bKey(dimId(b), b.location.x, b.location.y, b.location.z)
 export const suppressLight = (block: Block, checkLightBlock = true, cleanLight = true, needTick = false, tick = system.currentTick) => {
     if (!ENABLED) return false
@@ -99,7 +102,8 @@ export const suppressLight = (block: Block, checkLightBlock = true, cleanLight =
     return true
 }
 
-function _restoreFromDYP() {
+function* _restoreFromDYP() {
+    let n = 0
     for (const dy of world.getDynamicPropertyIds()) {
         const p = dy.split(':')
         switch (p[0]) {
@@ -128,6 +132,7 @@ function _restoreFromDYP() {
                 break
             default: break
         }
+        if (++n % 200 === 0) yield
     }
 }
 
@@ -168,7 +173,7 @@ function spreadLight(block: Block, level: number, en: Player, height = 2, force 
         const k = blockBKey(blo)!
         if (seen.has(k)) return
         try { if (blo.below(1)!.typeId === 'minecraft:grass_path') return } catch { }
-        if (blo.isLiquid || blo.isAir || blo.permutation.matches(LIGHT_BLOCK)) {
+        if (isLightable(blo, true)) {
             seen.add(k)
             put_light(blo, level, en, force)
         }
@@ -193,7 +198,7 @@ function spreadLight(block: Block, level: number, en: Player, height = 2, force 
 }
 function processEntity(en: Player, isPlayer = false, tick: number) {
     try {
-        const equip = en.getComponent('equippable')
+        const equip = getEqu(en)
         const mItem = isPlayer ? equip?.getEquipment(EquipmentSlot.Mainhand) : en.getComponent('item')?.itemStack
         const oItem = isPlayer ? equip?.getEquipment(EquipmentSlot.Offhand) : undefined
 
@@ -223,15 +228,10 @@ export const light_pending = (tick: number) => {
         _pendingCursor = _pendingCursor % (_pendingKeys.length || 1)
     }
 
-    const total = _pendingKeys.length
-    const budget = Math.min(LIGHT_PENDING_BATCH, total)
-    const dead = []
-    const tryThaw = (tick % FROZEN_RECHECK) === 0
+    const dead: string[] = []
+    const tryThaw = (tick % 20) === 0
 
-    for (let i = 0; i < budget; i++) {
-        const idx = (_pendingCursor + i) % total
-        const k = _pendingKeys[idx]
-
+    for (const k of roundRobin(_pendingKeys, _pendingCursor, LIGHT_PENDING_BATCH)) {
         const v = lightMap.get(k)
         if (!v) continue
 
@@ -242,9 +242,9 @@ export const light_pending = (tick: number) => {
             continue
         }
 
-        const [dim, x, y, z] = k.split(':')
         try {
-            const block = world.getDimension(dim).getBlock({ x: +x, y: +y, z: +z })
+            const { dim, x, y, z } = parseKey(k)
+            const block = world.getDimension(dim).getBlock({ x, y, z })
             if (!block) {
                 frozenKeys.add(k)
                 if (!isFrozen) v.time -= LIGHT_REDUCE_LINEAR
@@ -270,7 +270,7 @@ export const light_pending = (tick: number) => {
         } catch { }
     }
 
-    _pendingCursor = (_pendingCursor + budget) % total
+    _pendingCursor = cursor(_pendingCursor, _pendingKeys.length, LIGHT_PENDING_BATCH)
 
     for (let i = 0; i < dead.length; i++) {
         const k = dead[i]
@@ -322,16 +322,10 @@ function _buildEntityQueue(players: Player[], tick: number) {
 export const light_player = (pl: Player, tick: number) => {
     processEntity(pl, true, tick)
 
-    const players = [...world.getPlayers()]
-    _buildEntityQueue(players, tick)
+    _buildEntityQueue([...world.getPlayers()], tick)
+    if (_entityQueue.length === 0) return
 
-    const total = _entityQueue.length
-    if (total === 0) return
-
-    const budget = Math.min(LIGHT_PLAYER_BATCH, total)
-
-    for (let i = 0; i < budget; i++) {
-        const en = _entityQueue[(_playerCursor + i) % total]
+    for (const en of roundRobin(_entityQueue, _playerCursor, LIGHT_PLAYER_BATCH)) {
         if (!en) continue
 
         if (en.typeId === 'minecraft:item') {
@@ -349,7 +343,7 @@ export const light_player = (pl: Player, tick: number) => {
         spreadLight(en.dimension.getBlock(en.location)!, clamp15(lightLevel), en as Player, 2)
     }
 
-    _playerCursor = (_playerCursor + budget) % total
+    _playerCursor = cursor(_playerCursor, _entityQueue.length, LIGHT_PLAYER_BATCH)
 }
 
 export const light_entityRemove = ({ removedEntityId }: EntityRemoveAfterEvent) => {
@@ -358,10 +352,10 @@ export const light_entityRemove = ({ removedEntityId }: EntityRemoveAfterEvent) 
     if (!keys) return
 
     for (const k of keys) {
-        const [dim, x, y, z] = k.split(':')
         lightMap.delete(k)
         frozenKeys.delete(k)
-        try { world.getDimension(dim).getBlock({ x: +x, y: +y, z: +z })?.setPermutation(AIR) }
+        const { dim, x, y, z } = parseKey(k)
+        try { world.getDimension(dim).getBlock({ x, y, z })?.setPermutation(AIR) }
         catch { world.getDimension(dim).runCommand(`setblock ${x} ${y} ${z} air`) }
     }
     entityLights.delete(id)
@@ -381,8 +375,8 @@ export const light_processFrames = (_tick: number) => {
 
     for (const k of frameSet) {
         try {
-            const [dim, x, y, z] = k.split(':')
-            const block = world.getDimension(dim).getBlock({ x: +x, y: +y, z: +z })
+            const { dim, x, y, z } = parseKey(k)
+            const block = world.getDimension(dim).getBlock({ x, y, z })
             if (!block || block.permutation.matches('minecraft:air')) { dead.push(k); continue }
 
             const item = block.getItemStack(1)

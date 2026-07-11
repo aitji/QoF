@@ -12,7 +12,7 @@
             "minecraft:geometry": { "identifier": "geometry.light_block" },
             "minecraft:material_instances": {
                 "*": {
-                    "texture": "light_block_0",
+                    "texture": "null",
                     "render_method": "blend",
                     "ambient_occlusion": 0.0,
                     "face_dimming": false
