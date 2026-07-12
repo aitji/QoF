@@ -1,7 +1,7 @@
 <div align="center">
 
 <picture>
-  <img src="./.github/img/brand/github banner.png" alt="QoF's Banner">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/brand/github%20banner.png" alt="QoF's Banner">
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@stats/data/downloads.svg" height="30px" alt="QoF's Downloads">
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@stats/data/version.svg" height="30px" alt="QoF's Version">
 </picture>
@@ -111,27 +111,27 @@ Download the `QoF` addon from one of these sources:
 ### Dynamic Light
 
 <p align="center">
-  <img src=".github/img/showcase/light.png" alt="Dynamic Light night walk with soul lantern" width="1080">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light.png" alt="Dynamic Light night walk with soul lantern" width="1080">
 </p>
 
 Held and dropped items emit light based on their type. The light smoothly fades after the source moves away or is removed. `burning entities`, `glowing entities` and `item frames` also emit light based on what they contain. Dynamic lights are processed using a **round-robin batch system** for better overall performance and exist only in memory no dynamic properties are used.
 
 **How It Works:**
 
-<img src=".github/img/showcase/light-fade.gif" alt="Player picks up soul lantern in mushroom cave, light fades after drop" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light-fade.gif" alt="Player picks up soul lantern in mushroom cave, light fades after drop" width="1080">
 
 > **alt-message** In a mushroom cave, a soul lantern sits on the ground emitting light. The player walks in from the right, picks it up, and the room goes dark. And then drops it back in the same spot and walks away.
 >
 > - When a player holds or drops a light-emitting item, a `qof:light_block` is placed at the relevant position each tick.
 > - When the source is gone, the light level decreases linearly each tick until it reaches zero, then the block is restored to air or water.
 
-<img src=".github/img/showcase/light-fire.gif" alt="Player shoots flame arrows into targets, picks up arrow, walks away" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light-fire.gif" alt="Player shoots flame arrows into targets, picks up arrow, walks away" width="1080">
 
 > **alt-message** A flaming arrow is fired into a target block. While the arrow is burning, it emits light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
 >
 > - Nearby glowing or burning entities also emit light passively.
 
-<img src=".github/img/showcase/light-water.gif" alt="Player holds conduit while swimming in ocean, light visible underwater" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light-water.gif" alt="Player holds conduit while swimming in ocean, light visible underwater" width="1080">
 
 > **alt-message** In the open ocean, the player rows a boat while holding a lantern, making the water surface glow below. They stop, jump in, switch to a conduit, and swim deeper. The `qof:light_block` is placed inside the water itself, illuminating the seafloor and kelp.
 >
@@ -246,7 +246,7 @@ Held and dropped items emit light based on their type. The light smoothly fades 
 ### Anvil Repairing
 
 <p align="center">
-  <img src=".github/img/showcase/anvil-repair.png" alt="Anvil Repair repairing at a chipped anvil in a spruce house" width="1080">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/anvil-repair.png" alt="Anvil Repair repairing at a chipped anvil in a spruce house" width="1080">
 </p>
 
 Damaged anvils can be repaired by interacting with them while holding an iron ingot. The anvil steps up one stage per ingot consumed.
@@ -259,7 +259,7 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 
 #### Full Repairing Loop
 
-<img src="https://github.com/aitji/QoF/blob/sources/.github/img/showcase/repair-anvil.gif?raw=true" alt="Player repairs anvil twice, mines it, places damaged one, and walks out" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/repair-anvil.gif" alt="Player repairs anvil twice, mines it, places damaged one, and walks out" width="1080">
 
 > **alt-message** The player walks into a cozy spruce house, repairs a damaged anvil twice to bring it back to full, mines it with an iron pickaxe, places a new damaged anvil, and walks out.
 
@@ -280,7 +280,7 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 ### Double Door
 
 <div align="center">
-  <img src=".github/img/showcase/doubledoor.gif" alt="Double door opening both sides simultaneously" width="1080">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/doubledoor.gif" alt="Double door opening both sides simultaneously" width="1080">
 </div>
 
 Interacting with one door automatically opens or closes the adjacent door at the same time. Works with all door types, keeping paired doors in sync without any extra input.
@@ -300,11 +300,9 @@ The delay formula is:
 
 $$ \text{DELAY} = BASE + \lfloor \sqrt{item_amount - 1} \cdot MULTIPLIER \rfloor $$
 
-where `BASE` and `MULTIPLIER` are configurable in pack settings.
-
 #### Conversion In Action
 
-<img src=".github/img/showcase/powder-result.gif" alt="Top-down view: player throws concrete powder into water pool, allay nearby, powder converts to concrete" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/powder-result.gif" alt="Top-down view: player throws concrete powder into water pool, allay nearby, powder converts to concrete" width="1080">
 
 > **alt-message** Top-down view centered on a water pool with an allay floating nearby emitting soft light. The player walks in from the bottom-center and throws concrete powder into the pool. After a short delay the powder converts, and the player picks up the resulting concrete and walks off.
 
@@ -343,13 +341,13 @@ Expands the composter to accept many more item types not supported in vanilla, i
 
 #### Hopper Integration
 
-<img src=".github/img/showcase/composter-work_hopper.gif" alt="Player composts string, places hopper on top, throws rotten flesh in, composter fills automatically" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/composter-work_hopper.gif" alt="Player composts string, places hopper on top, throws rotten flesh in, composter fills automatically" width="1080">
 
 > **alt-message** The player manually composts some string _`(not in the vanilla list)`_, then places a hopper above the composter and throws in rotten flesh _`(also not in the vanilla list)`_. The hopper feeds the composter automatically until it fills and becomes ready.
 
 #### Stew & Soup Bowl Returning
 
-<img src=".github/img/showcase/composter-stew.gif" alt="Player composts stew and soup items, receives empty bowls back" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/composter-stew.gif" alt="Player composts stew and soup items, receives empty bowls back" width="1080">
 
 > **alt-message** Stew and soup items are composted one by one. After each is consumed, an empty bowl is returned in player hand matching the vanilla eating behavior.
 
@@ -455,20 +453,20 @@ Allows players to pick up chests and other containers while preserving their con
 **Behavior while Carrying:**
 
 - [x] Slowness is applied continuously.
-- [x] Jumping is disabled by default (configurable).
+- [x] Jumping is enabled by default (configurable).
 - [x] Jumping in water or lava can be allowed independently.
 - [x] Climbing scaffolding and ladders can be allowed independently.
 - [x] Players in Creative mode are exempt from jump restrictions.
 
 Full Carry Example
 
-<img src=".github/img/showcase/chest-flow.gif" alt="Player puts cod in barrel, picks it up, walks to composter area, places barrel on hopper" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/chest-flow.gif" alt="Player puts cod in barrel, picks it up, walks to composter area, places barrel on hopper" width="1080">
 
 > **alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene, with slowness visible, and place it on top of a hopper. The barrel lands with its contents intact.
 
 #### Slowness and Double Chest
 
-<img src=".github/img/showcase/chest-slownessdouble.gif" alt="Player picks up chest near sheep, walks slowly, places it into double chest formation" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/chest-slownessdouble.gif" alt="Player picks up chest near sheep, walks slowly, places it into double chest formation" width="1080">
 
 > **alt-message** The player runs in, picks up a chest next to a black sheep, then visibly slows down while carrying it. They walk to a second chest and place theirs beside it, forming a double chest. Contents from both halves are preserved.
 
@@ -518,15 +516,15 @@ Durability is consumed by default, but this can be configured in the in-game set
 ### Offhand
 
 <p align="center">
-  <img src=".github/img/showcase/offhand.png" alt="Offhand swap and torch placement banner" width="1080">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/offhand.png" alt="Offhand swap and torch placement banner" width="1080">
 </p>
 
 Allows players to double-sneak to swap items between their mainhand and offhand. Additionally, torches and other light sources held in the offhand can be placed directly without switching slots. **All seed types** can now be planted directly from the offhand.
 
 **How It Works:**
 
-- Double sneak within a configurable time window to swap mainhand ↔ offhand.
-- The sneak window gap is independently configurable for **Mobile**, **Console**, and **Windows**.
+- Double sneak within a time window to swap mainhand ↔ offhand.
+- The sneak window gap is for **Mobile**, **Console**, and **Windows**.
 - Torches placed from the offhand correctly consume the offhand item stack.
 - Seeds held in the offhand can be planted directly this also integrates with the Harvest module for auto-replanting priority.
 
@@ -535,7 +533,7 @@ Allows players to double-sneak to swap items between their mainhand and offhand.
 
 #### Swap and Torch Placement
 
-<img src=".github/img/showcase/offhand-swap.gif" alt="Player double sneaks to swap sword and torch, places torch from offhand" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/offhand-swap.gif" alt="Player double sneaks to swap sword and torch, places torch from offhand" width="1080">
 
 > **alt-message** First-person view. The player is holding a `Trident` in the main hand and a `Soul Torch` in the offhand. They double-sneak, causing the `Trident` and `Soul Torch` to swap places, while another player walks across the screen.
 
@@ -556,7 +554,7 @@ Allows players to double-sneak to swap items between their mainhand and offhand.
 ### Harvest
 
 <p align="center">
-  <img src=".github/img/showcase/harvesting.gif" alt="Player harvesting wheat field with hoe" width="1080">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/harvesting.gif" alt="Player harvesting wheat field with hoe" width="1080">
 </p>
 
 Allows players to harvest fully grown crops while holding any hoe. Seeds are automatically replanted after harvesting, and the hoe loses durability on each harvest to balance the automation. And **Cocoa Beans** are supported harvest them using an axe. Seeds placed in the **offhand** are prioritized for replanting over inventory seeds.
@@ -578,7 +576,7 @@ where `level` is the hoe's `Unbreaking` enchantment level.
 ### Mob Loot+
 
 <p align="center">
-  <img src=".github/img/showcase/mobloot.gif" alt="Mob Loot+ showcase banner" width="1080">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/mobloot.gif" alt="Mob Loot+ showcase banner" width="1080">
 </p>
 
 Adds drops to previously mobs without loot, making them more rewarding to farm.
@@ -635,14 +633,14 @@ $$ P(\text{Drop}) \in \langle 0,\ 1 \rangle $$
 ### Recipe+
 
 <p align="center">
-  <img src=".github/img/showcase/recipe.png" alt="Recipe+ banner showing various crafting and smelting screens" width="1080">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/recipe.png" alt="Recipe+ banner showing various crafting and smelting screens" width="1080">
 </p>
 
 Adds new crafting, smelting, and stonecutter recipes for a more accessible way to obtain items.
 
 #### Recipe Showcase
 
-<img src=".github/img/showcase/recipe.gif" alt="Player demonstrates several new recipes at furnace, blast furnace and crafting table" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/recipe.gif" alt="Player demonstrates several new recipes at furnace, blast furnace and crafting table" width="1080">
 
 <details>
   <summary><strong>Full Recipe List</strong></summary>
@@ -798,7 +796,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 <details>
   <summary><strong>Full Settings Table</strong></summary>
-  <img src="https://raw.githubusercontent.com/aitji/QoF/refs/heads/sources/.github/img/settings/v1.5.1.png" alt="full settings of manifest.json">
+  <img src="https://rawhttps://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/imgusercontent.com/aitji/QoF/refs/heads/sources/https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/settings/v1.6.0.png" alt="full settings of manifest.json">
 </details>
 
 ## Known Limitations & Notes
@@ -850,13 +848,13 @@ Branding, media, and other protected materials are reserved under [COPYRIGHT.md]
 
 ```
   README INFO
-Version: v1.5.0
-Last updated: 27 Jun 2026
+Version: v1.6.0
+Last updated: 12 July 2026
 Has README Update: False
 
   PACK INFO
 Last Release: v1.5.0
 Last Pre-Release: v1.5.1
-Last Minecraft Version: 26.12
-Used Dependencies: ^2.7.0-beta.1.26.14-stable
+Last Minecraft Version: 26.33
+Used Dependencies: ^2.9.0-beta.1.26.33-stable
 ```
