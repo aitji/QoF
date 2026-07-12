@@ -99,7 +99,7 @@ jobs:
       - name: Set DEBUG to false (behavior_packs)
         if: steps.resolve.outputs.changed == 'true'
         working-directory: _bp
-        run: node ../.github/scripts/set-debug.js
+        run: node ../.github/scripts/release/debug.js
 
       - name: Cache dependencies
         if: steps.resolve.outputs.changed == 'true'
@@ -110,7 +110,7 @@ jobs:
             _bp/node_modules
             .github/scripts/node_modules
           key: deps-${{ runner.os }}-${{ hashFiles('_bp/package.json',
-            '.github/scripts/minify.js') }}
+            '.github/scripts/release/minify.js') }}
           restore-keys: |
             deps-${{ runner.os }}-
 
@@ -129,7 +129,7 @@ jobs:
       - name: Minify JSON & JS (behavior_packs)
         if: steps.resolve.outputs.changed == 'true'
         working-directory: _bp
-        run: node ../.github/scripts/minify.js
+        run: node ../.github/scripts/release/minify.js
 
       - name: Zip behavior_packs mcpack
         if: steps.resolve.outputs.changed == 'true'
@@ -158,16 +158,16 @@ jobs:
       - name: Read resource_packs version
         if: steps.resolve.outputs.changed == 'true'
         id: rp_version
-        run: node .github/scripts/read-manifest.js _rp/manifest.json
+        run: node .github/scripts/release/manifest.js _rp/manifest.json
 
       - name: Set DEBUG to false (resource_packs)
         if: steps.resolve.outputs.changed == 'true'
         working-directory: _rp
-        run: node ../.github/scripts/set-debug.js --rp
+        run: node ../.github/scripts/release/debug.js --rp
 
       - name: Minify JSON & JS (resource_packs)
         if: steps.resolve.outputs.changed == 'true'
-        run: node .github/scripts/minify.js --rp
+        run: node .github/scripts/release/minify.js --rp
 
       - name: Zip resource_packs mcpack
         if: steps.resolve.outputs.changed == 'true'
