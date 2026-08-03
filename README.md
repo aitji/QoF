@@ -796,7 +796,7 @@ All settings are accessible through the pack settings panel in-game. No manual f
 
 <details>
   <summary><strong>Full Settings Table</strong></summary>
-  <img src="https://rawhttps://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/imgusercontent.com/aitji/QoF/refs/heads/sources/https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/settings/v1.6.0.png" alt="full settings of manifest.json">
+  <img src="https://rawhttps://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/imgusercontent.com/aitji/QoF/refs/heads/sources/https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/settings/v1.5.2.png" alt="full settings of manifest.json">
 </details>
 
 ## Known Limitations & Notes
@@ -848,7 +848,7 @@ Branding, media, and other protected materials are reserved under [COPYRIGHT.md]
 
 ```
   README INFO
-Version: v1.6.0
+Version: v1.5.3
 Last updated: 12 July 2026
 Has README Update: False
 
