@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-08-18T01:09:13.724Z",
+  "fetchedAt": "2026-08-19T01:10:11.267Z",
   "screenshots": [
     {
       "id": 1606432,
@@ -278,34 +278,10 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 22822,
+  "downloadCount": 22871,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
-    {
-      "id": 4994,
-      "gameId": 78022,
-      "name": "Realistic",
-      "slug": "realistic",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
-      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
-      "dateModified": "2024-02-11T14:06:11.48Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4987
-    },
-    {
-      "id": 8835,
-      "gameId": 78022,
-      "name": "Multiplayer",
-      "slug": "multiplayer",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/multiplayer",
-      "iconUrl": "https://media.forgecdn.net/avatars/1376/212/638893033575235347.png",
-      "dateModified": "2025-07-28T12:42:37.523Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4984
-    },
     {
       "id": 8831,
       "gameId": 78022,
@@ -341,6 +317,30 @@
       "isClass": false,
       "classId": 4984,
       "parentCategoryId": 4984
+    },
+    {
+      "id": 8835,
+      "gameId": 78022,
+      "name": "Multiplayer",
+      "slug": "multiplayer",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/multiplayer",
+      "iconUrl": "https://media.forgecdn.net/avatars/1376/212/638893033575235347.png",
+      "dateModified": "2025-07-28T12:42:37.523Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4984
+    },
+    {
+      "id": 4994,
+      "gameId": 78022,
+      "name": "Realistic",
+      "slug": "realistic",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
+      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
+      "dateModified": "2024-02-11T14:06:11.48Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4987
     }
   ],
   "classId": 4984,
@@ -597,7 +597,7 @@
   "dateModified": "2026-08-03T07:03:51.68Z",
   "dateReleased": "2026-08-03T06:55:45.27Z",
   "allowModDistribution": true,
-  "gamePopularityRank": 3748,
+  "gamePopularityRank": 3805,
   "isAvailable": true,
   "hasCommentsEnabled": true,
   "thumbsUpCount": 0,
