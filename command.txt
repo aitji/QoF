@@ -1,0 +1,16 @@
+src/addon/light/core.ts(1,95): error TS2724: '"@minecraft/server"' has no exported member named 'PlayerPlaceBlockBeforeEvent'. Did you mean 'PlayerPlaceBlockAfterEvent'?
+src/addon/light/patcher.ts(179,35): error TS2339: Property 'isSolid' does not exist on type 'Block'.
+src/addon/offhand/handlers.ts(23,50): error TS2339: Property 'isSolid' does not exist on type 'Block'.
+src/addon/offhand/handlers.ts(52,27): error TS2339: Property 'isSolid' does not exist on type 'Block'.
+src/addon/offhand/handlers.ts(104,51): error TS2339: Property 'isSolid' does not exist on type 'Block'.
+src/addon/offhand/handlers.ts(155,27): error TS2339: Property 'isSolid' does not exist on type 'Block'.
+src/addon/offhand/placement.ts(115,41): error TS2339: Property 'isSolid' does not exist on type 'Block'.
+src/core/debug.ts(65,29): error TS2339: Property 'watchdogTerminate' does not exist on type 'SystemBeforeEvents'.
+src/core/debug.ts(65,58): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/core/debug.ts(142,70): error TS2353: Object literal may only specify known properties, and 'enumName' does not exist in type 'CustomCommandParameter'.
+src/core/debug.ts(143,63): error TS2353: Object literal may only specify known properties, and 'enumName' does not exist in type 'CustomCommandParameter'.
+src/core/debug.ts(187,63): error TS2353: Object literal may only specify known properties, and 'enumName' does not exist in type 'CustomCommandParameter'.
+src/core/debug.ts(231,64): error TS2353: Object literal may only specify known properties, and 'enumName' does not exist in type 'CustomCommandParameter'.
+src/core/debug.ts(232,63): error TS2353: Object literal may only specify known properties, and 'enumName' does not exist in type 'CustomCommandParameter'.
+src/index.ts(76,20): error TS2339: Property 'playerPlaceBlock' does not exist on type 'WorldBeforeEvents'.
+src/index.ts(76,47): error TS7006: Parameter 'data' implicitly has an 'any' type.
