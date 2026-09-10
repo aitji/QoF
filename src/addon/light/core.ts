@@ -1,4 +1,4 @@
-import { world, system, EquipmentSlot, BlockPermutation, EntityComponentTypes, Player, Block, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, Entity, EntityRemoveAfterEvent, PlayerPlaceBlockAfterEvent } from "@minecraft/server"
+import { world, system, EquipmentSlot, BlockPermutation, EntityComponentTypes, Player, Block, PlayerBreakBlockBeforeEvent, Entity, EntityRemoveAfterEvent, PlayerPlaceBlockAfterEvent } from "@minecraft/server"
 import { cursor, clamp, getEqu, playSound, roundLoc, roundRobin, RUNTIME, sumLoc } from "../../lib"
 
 const {
@@ -404,8 +404,9 @@ export const light_entityRemove = ({ removedEntityId }: EntityRemoveAfterEvent) 
 }
 
 export const light_playerPlaceBlock = ({ block }: PlayerPlaceBlockAfterEvent) => {
-    if (!isFrame(block)) return
     const k = blockBKey(block)
+    suppressedLocs.set(k, system.currentTick + SUPP_BREAK)
+    if (!isFrame(block)) return
     frameSet.add(k)
     world.setDynamicProperty(`frame:${k}`, 1)
     if (DEBUG) world.sendMessage(`§8add frame:§7 ${k}`)
@@ -439,7 +440,6 @@ export const light_processFrames = (_tick: number) => {
     }
 }
 
-export const light_playerPlaceBlock_before = ({ block }: PlayerPlaceBlockBeforeEvent) => suppressedLocs.set(blockBKey(block), system.currentTick + SUPP_BREAK)
 export const light_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
     const { block } = data
     suppressedLocs.set(blockBKey(block), system.currentTick + SUPP_BREAK)

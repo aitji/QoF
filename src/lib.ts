@@ -1,7 +1,7 @@
 import {
-    Block, Dimension, Entity,
+    Block, BlockPermutation, Dimension, Entity,
     EntityComponentTypes, EquipmentSlot, GameMode,
-    ItemComponentTypes, ItemStack, Player,
+    ItemComponentTypes, ItemStack, LiquidType, Player,
     PlayerPermissionLevel, system, Vector3,
     world
 } from "@minecraft/server"
@@ -32,6 +32,13 @@ export const QOF_INFORMATION = {
     },
     authors: ['aitji', 'pickerth-12'],
     url: 'https://github.com/aitji/QoF'
+}
+
+export const isSolid = (block?: Block): boolean => {
+    if (!block || block.isAir || block.isLiquid || block.isWaterlogged) return false
+
+    return block.isLiquidBlocking(LiquidType.Water) &&
+        !block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)
 }
 
 export const clamp = (n: number, min: number = 0, max: number = 8) => Math.max(min, Math.min(max, Math.ceil(n)))

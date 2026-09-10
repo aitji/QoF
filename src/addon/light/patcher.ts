@@ -1,4 +1,4 @@
-import { world, system, EquipmentSlot, BlockPermutation, GameMode, PlayerInteractWithBlockBeforeEvent, Block, ItemStack } from "@minecraft/server"
+import { world, system, EquipmentSlot, BlockPermutation, GameMode, PlayerInteractWithBlockBeforeEvent, Block, ItemStack, LiquidType } from "@minecraft/server"
 import { applyItemDamage, getEqu, reduceItem, RUNTIME, setEqu, pickupCooldown, cache, playSound, checkPerm } from "../../lib"
 import { suppressLight } from "./core"
 const {
@@ -176,7 +176,7 @@ export const light_playerInteractWithBlock = (data: PlayerInteractWithBlockBefor
                     try {
                         const below = cache.below(1)!
                         if (
-                            below.isSolid &&
+                            below.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water) &&
                             (cache.permutation.matches('minecraft:air') || cache.permutation.matches(LIGHT_BLOCK))
                         ) {
                             cache.setType('minecraft:fire')

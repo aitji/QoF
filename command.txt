@@ -1,4 +1,5 @@
 src/addon/light/core.ts(1,95): error TS2724: '"@minecraft/server"' has no exported member named 'PlayerPlaceBlockBeforeEvent'. Did you mean 'PlayerPlaceBlockAfterEvent'?
+
 src/addon/light/patcher.ts(179,35): error TS2339: Property 'isSolid' does not exist on type 'Block'.
 src/addon/offhand/handlers.ts(23,50): error TS2339: Property 'isSolid' does not exist on type 'Block'.
 src/addon/offhand/handlers.ts(52,27): error TS2339: Property 'isSolid' does not exist on type 'Block'.

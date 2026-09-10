@@ -2,7 +2,7 @@ import {
     Block, BlockPermutation, Direction, EquipmentSlot,
     GameMode, ItemComponentTypes, LiquidType, PlayerInteractWithBlockBeforeEvent, system, world
 } from "@minecraft/server"
-import { applyItemDamage, getDistance, getEqu, playSound, RUNTIME, sumLoc } from "../../lib"
+import { applyItemDamage, getDistance, getEqu, isSolid, playSound, RUNTIME, sumLoc } from "../../lib"
 import { suppressLight } from "../light/core"
 import { resolveCocoaPermutation } from "../harvest"
 import { getSpecialPermutation, hasEntityInBlock, isReplaceableTarget, resolveOrientedPermutation, DISALLOW_PLACEMENT_BLOCK } from "./placement"
@@ -20,7 +20,7 @@ export function canPlaceTorchOn(block: Block) {
     if (block.permutation.matches(LIGHT)) return true
     const replace = ALLOW_REPLACE[block.typeId]
     if (replace === true) return true
-    if (replace === false) return block.below()?.isSolid ?? false
+    if (replace === false) return isSolid(block.below()) ?? false
     return false
 }
 
@@ -49,9 +49,9 @@ export const torchHandle = (data: PlayerInteractWithBlockBeforeEvent, creative: 
     if (block.isLiquid) return
 
     const isLightBlock = block.permutation.matches(LIGHT)
-    const isSolid = block.isSolid && !isLightBlock
+    const solidBlock = isSolid(block) && !isLightBlock
 
-    const isInteractive = isSolid && (
+    const isInteractive = solidBlock && (
         NEED_SNEAK[block.typeId] ||
         block.typeId.endsWith('_door') ||
         block.typeId.endsWith('_trapdoor') ||
@@ -67,7 +67,7 @@ export const torchHandle = (data: PlayerInteractWithBlockBeforeEvent, creative: 
         })
     }
 
-    if (isSolid) {
+    if (solidBlock) {
         if (
             CARRIED_CHEST.ENABLED &&
             NEED_SNEAK[block.typeId] &&
@@ -101,7 +101,7 @@ export const torchHandle = (data: PlayerInteractWithBlockBeforeEvent, creative: 
 
     data.cancel = true
     system.run(() => {
-        if (replace === false && !(block.below()?.isSolid)) return
+        if (replace === false && !isSolid(block.below())) return
         if (!canPlaceTorchOn(block)) return
         block.setPermutation(BlockPermutation.resolve(blockId as string).withState('torch_facing_direction', 'top'))
         reduceItem()
@@ -152,7 +152,7 @@ export const fireHandle = (data: PlayerInteractWithBlockBeforeEvent) => {
             try {
                 const below = cache.below(1)!
                 if (
-                    below.isSolid &&
+                    isSolid(below) &&
                     (cache.permutation.matches('minecraft:air') || cache.permutation.matches(LIGHT_BLOCK))
                 ) {
                     cache.setType('minecraft:fire')
