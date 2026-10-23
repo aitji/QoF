@@ -6,63 +6,59 @@
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@stats/data/version.svg" height="30px" alt="QoF's Version">
 </picture>
 
-# $${\color{#fff000}\textsf{QoF}}\textsf{ - }{\color{#fff000}\textsf{Q}}\textsf{uality }{\color{#fff000}\textsf{o}}\textsf{f }{\color{#fff000}\textsf{F}}\textsf{eature}$$
+<h1>
+
+$${\color{#fff000}\textsf{Q}}\textsf{uality }{\color{#fff000}\textsf{o}}\textsf{f }{\color{#fff000}\textsf{F}}\textsf{eature}$$
+
+</h1>
 
 [Releases](https://github.com/aitji/QoF/releases/latest) | [Curseforge](https://www.curseforge.com/minecraft-bedrock/addons/quality-of-feature) & [MCPEDL](https://mcpedl.com/quality-of-feature) | [Behavior Code](https://github.com/aitji/QoF/tree/behavior_packs) | [Resource Code](https://github.com/aitji/QoF/tree/resource_packs) | [WiKi](https://qof.aitji.xyz) | [LICENSE](./LICENSE) & [COPYRIGHT](./COPYRIGHT.md)
 
 </div>
 
 > [!NOTE]
-> A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel. Requires **BetaAPIs** enabled under Experiments.
+> A Minecraft Bedrock addon that adds small ${\color{#fff000}\textsf{vanilla-friendly}}$ features. Each module is configurable through the in-game pack settings panel. ${\color{#fff000}\textsf{Requires \textbf{BetaAPIs} enabled under Experiments.}}$
 
 <details open>
   <summary><strong><b>Table of Contents</b></strong></summary>
 
-- [**QoF** – Quality of Feature](#qof--quality-of-feature)
-  - [Overview](#overview)
-  - [Changelog](#changelog)
-  - [Installation](#installation)
-  - [Modules](#modules)
-    - [Dynamic Light](#dynamic-light)
-    - [Anvil Repairing](#anvil-repairing)
-      - [Full Repairing Loop](#full-repairing-loop)
-    - [Double Door](#double-door)
-    - [Wet Concrete Powder](#wet-concrete-powder)
-      - [Conversion In Action](#conversion-in-action)
-    - [Cauldron+](#cauldron)
-    - [Composter+](#composter)
-      - [Hopper Integration](#hopper-integration)
-      - [Stew \& Soup Bowl Returning](#stew--soup-bowl-returning)
-    - [Carrying Container](#carrying-container)
-      - [Slowness and Double Chest](#slowness-and-double-chest)
-    - [Unwaxed Sign](#unwaxed-sign)
-    - [Offhand](#offhand)
-      - [Swap and Torch Placement](#swap-and-torch-placement)
-    - [Harvest](#harvest)
-    - [Mob Loot+](#mob-loot)
-    - [Recipe+](#recipe)
-      - [Recipe Showcase](#recipe-showcase)
-  - [Configuration References](#configuration-references)
-  - [Known Limitations \& Notes](#known-limitations--notes)
-  - [License](#license)
-  - [Disclosure](#disclosure)
-  - [Credits](#credits)
+- [Overview](#overview)
+- [Changelog](#changelog)
+- [Installation](#installation)
+- [Modules](#modules)
+  - [Dynamic Light](#dynamic-light)
+  - [Double Door](#double-door)
+  - [Anvil Repairing](#anvil-repairing)
+  - [Hardens Concrete Powder](#hardens-concrete-powder)
+  - [Cauldron+](#cauldron)
+  - [Composter+](#composter)
+  - [Offhand](#offhand)
+  - [Unwaxed Sign](#unwaxed-sign)
+  - [Carrying Container](#carrying-container)
+  - [Harvest](#harvest)
+  - [Mob Loot+](#mob-loot)
+  - [Recipe+](#recipe)
+- [Configuration References](#configuration-references)
+- [Take a Look](#take-a-look)
+- [License](#license)
+- [Disclosure](#disclosure)
+- [Credits](#credits)
 
 </details>
 
 ## Overview
 
 - [x] Dynamic lighting
-- [x] Open adjacent doors automatically with a single interaction
-- [x] Repair damaged anvils
-- [x] Concrete powder hardens when it touches water as an item entity
-- [x] Composter accepts more items
-- [x] Pick up and carry containers while preserving their contents
-- [x] Swap mainhand and offhand with a double sneak, place torches and plant seeds from the offhand
-- [x] Hold harvest crops with automatic seed replanting with Hoe, supports Cocoa Bean and offhand seed priority
+- [x] Open adjacent doors with a single interaction
+- [x] Repair damaged anvils with iron ingot
+- [x] Hardens Concrete powder when touches water
+- [x] Composter, Cauldron accepts more items
+- [x] Carry containers while preserving their contents
+- [x] Swap mainhand and offhand with a double sneak
+- [x] Harvest crops with automatic seed replanting, supports offhand seed priority
 - [x] Extra mob drops
+- [x] Battering Bat with ${\color{#fff000}\textsf{glow berry}}$
 - [x] Extra crafting and smelting recipes
-- [ ] And many more to come later
 
 ## Changelog
 
@@ -110,11 +106,11 @@ Download the `QoF` addon from one of these sources:
 
 ### Dynamic Light
 
-<p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light.png" alt="Dynamic Light night walk with soul lantern" width="1080">
-</p>
+Held and dropped items emit light based on their type. The light smoothly fades after the source moves away or is removed. `burning entities`, `glowing entities` and `item frames` also emit light based on what they contain.
 
-Held and dropped items emit light based on their type. The light smoothly fades after the source moves away or is removed. `burning entities`, `glowing entities` and `item frames` also emit light based on what they contain. Dynamic lights are processed using a **round-robin batch system** for better overall performance and exist only in memory no dynamic properties are used.
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light-water.gif" alt="Player holds conduit while swimming in ocean, light visible underwater" width="1080">
+
+> **alt-message** In the open ocean, the player rows a boat while holding a lantern, making the water surface glow below. They stop, jump in, switch to a conduit, and swim deeper. The `qof:light_block` is placed inside the water itself, illuminating the seafloor and kelp.
 
 **How It Works:**
 
@@ -122,22 +118,13 @@ Held and dropped items emit light based on their type. The light smoothly fades 
 
 > **alt-message** In a mushroom cave, a soul lantern sits on the ground emitting light. The player walks in from the right, picks it up, and the room goes dark. And then drops it back in the same spot and walks away.
 >
-> - When a player holds or drops a light-emitting item, a `qof:light_block` is placed at the relevant position each tick.
+> - When a player holds or drops a ${\color{#fff000}\textsf{light-emitting}}$ item, a `qof:light_block` is placed at the relevant position each tick.
 > - When the source is gone, the light level decreases linearly each tick until it reaches zero, then the block is restored to air or water.
 
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light-fire.gif" alt="Player shoots flame arrows into targets, picks up arrow, walks away" width="1080">
 
-> **alt-message** A flaming arrow is fired into a target block. While the arrow is burning, it emits light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
->
-> - Nearby glowing or burning entities also emit light passively.
-
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light-water.gif" alt="Player holds conduit while swimming in ocean, light visible underwater" width="1080">
-
-> **alt-message** In the open ocean, the player rows a boat while holding a lantern, making the water surface glow below. They stop, jump in, switch to a conduit, and swim deeper. The `qof:light_block` is placed inside the water itself, illuminating the seafloor and kelp.
->
-> - Some items are prevented from emitting light underwater.
-
-<div align="center">
+<details>
+  <summary><strong>Dynamic Light List</strong></summary>
+  <div align="center">
 
 | Item               | Reaction                        | Level |
 | ------------------ | ------------------------------- | ----- |
@@ -158,6 +145,13 @@ Held and dropped items emit light based on their type. The light smoothly fades 
 | Sea Pickle         | **Only** emits light underwater | 6     |
 
 </div>
+</details>
+
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/light-fire.gif" alt="Player shoots flame arrows into targets, picks up arrow, walks away" width="1080">
+
+> **alt-message** A flaming arrow is fired into a target block. While the arrow is burning, it emits light. The player walks through the lit area, picks the arrow up, and leaves. Light disappears when the source is gone.
+>
+> - Nearby glowing or burning entities also emit light passively.
 
 <details>
   <summary><strong>Items That Emit Light</strong></summary>
@@ -243,39 +237,6 @@ Held and dropped items emit light based on their type. The light smoothly fades 
 </div>
 </details>
 
-### Anvil Repairing
-
-<p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/anvil-repair.png" alt="Anvil Repair repairing at a chipped anvil in a spruce house" width="1080">
-</p>
-
-Damaged anvils can be repaired by interacting with them while holding an iron ingot. The anvil steps up one stage per ingot consumed.
-
-**Repair chain:**
-
-```
-Damaged Anvil  ->  Chipped Anvil  ->  Anvil
-```
-
-#### Full Repairing Loop
-
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/repair-anvil.gif" alt="Player repairs anvil twice, mines it, places damaged one, and walks out" width="1080">
-
-> **alt-message** The player walks into a cozy spruce house, repairs a damaged anvil twice to bring it back to full, mines it with an iron pickaxe, places a new damaged anvil, and walks out.
-
-> [!TIP]
-> Hold the interact button to repair continuously. A short delay between repairs is applied to prevent accidental over-use.
-
-<details>
-  <summary><strong>Repairing Item & Cost</strong></summary>
-
-| Input         | Cost          | Output         |
-| ------------- | ------------- | -------------- |
-| Damaged Anvil | 1x Iron_ingot | chipped_anvil  |
-| chipped_anvil | 1x iron_ingot | anvil          |
-| anvil         |               | not repairable |
-
-</details>
 
 ### Double Door
 
@@ -285,22 +246,30 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 
 Interacting with one door automatically opens or closes the adjacent door at the same time. Works with all door types, keeping paired doors in sync without any extra input.
 
-### Wet Concrete Powder
+<p>*script might take up to 2 ticks to update block permutation.</p>
 
-Concrete powder items automatically convert to concrete when they enter water. The conversion happens after a short delay that scales with the stack size, and the resulting concrete item inherits the original velocity.
+### Anvil Repairing
 
-**How It Works:**
+Damaged anvils can be repaired by interacting with them while holding an iron ingot. The anvil steps up one stage per ingot consumed.
 
-1. When a concrete powder item entity spawns, QoF begins tracking it.
-2. Once the item enters water, a timer starts. Larger stacks wait slightly longer.
-3. After the timer expires, the powder entity is removed and a concrete item entity is spawned in its place.
-4. A particle and sound effect play on conversion.
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/repair-anvil.gif" alt="Player repairs anvil twice, mines it, places damaged one, and walks out" width="1080">
 
-The delay formula is:
+> **alt-message** The player walks into a cozy spruce house, repairs a damaged anvil twice to bring it back to full, mines it with an iron pickaxe, places a new damaged anvil, and walks out.
 
-$$ \text{DELAY} = BASE + \lfloor \sqrt{item_amount - 1} \cdot MULTIPLIER \rfloor $$
+**Repair chain:**
 
-#### Conversion In Action
+```
+Damaged Anvil  ->  Chipped Anvil  ->  Anvil
+```
+
+> [!TIP]
+> Hold the interact button to repair continuously. A short delay between repairs is applied to prevent accidental over-use.
+
+### Hardens Concrete Powder
+
+Concrete powder items will automatically convert to concrete when they enter water. The conversion happens after a short delay that scales with the stack size*, and the resulting concrete.
+
+<small>*non linearly</small>
 
 <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/powder-result.gif" alt="Top-down view: player throws concrete powder into water pool, allay nearby, powder converts to concrete" width="1080">
 
@@ -311,7 +280,7 @@ $$ \text{DELAY} = BASE + \lfloor \sqrt{item_amount - 1} \cdot MULTIPLIER \rfloor
 > [!NOTE]
 > Sorry we didn't have a GIFs to show (yet)
 
-Cauldrons in Bedrock Edition now have expanded functionality with QoF (Quality of Feature)
+Cauldrons in Bedrock Edition now have expanded functionality with $\color{#fff000}\textsf{QoF (Quality of Feature)}$
 
 | Item                  | Dye                    | Clean                   |
 | --------------------- | ---------------------- | ----------------------- |
@@ -333,26 +302,18 @@ Cauldrons in Bedrock Edition now have expanded functionality with QoF (Quality o
 
 Expands the composter to accept many more item types not supported in vanilla, including mob drops, food, wool, and various materials.
 
-**How It Works:**
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/composter-work_hopper.gif" alt="Player composts string, places hopper on top, throws rotten flesh in, composter fills automatically" width="1080">
+
+> **alt-message** The player manually composts some string _`(not in the vanilla list)`_, then places a hopper above the composter and throws in rotten flesh _`(also not in the vanilla list)`_. The hopper feeds the composter automatically until it fills and becomes ready.
+
+**How It Works:** $\color{#ffa500}\textsf{(nerd warning)}$
 
 1. Player interaction with supported items triggers compost fill with a per-item success chance.
 2. On reaching level 7, a short delay passes before the composter becomes ready (level 8).
 3. Hoppers check for composting items on a configurable interval and process one item per check.
 
-#### Hopper Integration
-
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/composter-work_hopper.gif" alt="Player composts string, places hopper on top, throws rotten flesh in, composter fills automatically" width="1080">
-
-> **alt-message** The player manually composts some string _`(not in the vanilla list)`_, then places a hopper above the composter and throws in rotten flesh _`(also not in the vanilla list)`_. The hopper feeds the composter automatically until it fills and becomes ready.
-
-#### Stew & Soup Bowl Returning
-
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/composter-stew.gif" alt="Player composts stew and soup items, receives empty bowls back" width="1080">
-
-> **alt-message** Stew and soup items are composted one by one. After each is consumed, an empty bowl is returned in player hand matching the vanilla eating behavior.
-
 > [!WARNING]
-> Enabling hopper integration with many composters and hoppers in a loaded area may affect performance. Tune the hopper interval setting if needed.
+> Enabling hopper integration **with many composters** and hoppers in a loaded area may affect performance. Tune the hopper interval setting *if needed.*
 
 <details>
   <summary><strong>Additional Compostable Items (QoF Only)</strong></summary>
@@ -446,32 +407,51 @@ These are items added by QoF on top of the vanilla compost table. Vanilla items 
 
 </details>
 
+
+### Offhand
+
+Allows players to double-sneak to swap items between their mainhand and offhand. Additionally, torches and other light sources held in the offhand can be placed directly without switching slots. **All seed types** can now be planted directly from the offhand.
+
+<p align="center">
+  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/offhand.png" alt="Offhand swap and torch placement banner" width="1080">
+</p>
+
+**How It Works:**
+
+- $\color{#fff000}\textsf{Double sneak}$ within a time window to swap mainhand and offhand.
+- Block placed from the offhand will consume the offhand item stack.
+- Seeds held in the offhand can be planted directly this also $\color{#fff000}\textsf{integrates}$ with the Harvest module for auto-replanting priority.
+
+> [!NOTE]
+> Enchantments and item color cannot be transferred between hands due to API limitations that do not allow editing the offhand cleanly.
+
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/offhand-swap.gif" alt="Player double sneaks to swap sword and torch, places torch from offhand" width="1080">
+
+> **alt-message** First-person view. The player is holding a `Trident` in the main hand and a `Soul Torch` in the offhand. They double-sneak, causing the `Trident` and `Soul Torch` to swap places, while another player walks across the screen.
+
+
+### Unwaxed Sign
+
+> [!NOTE]
+> Sorry we didn't have a GIFs to show (yet)
+
+Signs can now be $\color{#fff000}\textsf{unwaxed using an axe}$.
+Durability is consumed by default, but this can be configured in the in-game settings panel.
+
 ### Carrying Container
 
-Allows players to pick up chests and other containers while preserving their contents. Sneaking and interacting with a container picks it up. Placing the carried item puts the container back down with all items restored.
-
-**Behavior while Carrying:**
-
-- [x] Slowness is applied continuously.
-- [x] Jumping is enabled by default (configurable).
-- [x] Jumping in water or lava can be allowed independently.
-- [x] Climbing scaffolding and ladders can be allowed independently.
-- [x] Players in Creative mode are exempt from jump restrictions.
-
-Full Carry Example
-
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/chest-flow.gif" alt="Player puts cod in barrel, picks it up, walks to composter area, places barrel on hopper" width="1080">
-
-> **alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene, with slowness visible, and place it on top of a hopper. The barrel lands with its contents intact.
-
-#### Slowness and Double Chest
+Allows players to pick up $\color{#fff000}\textsf{chests and other containers}$ while preserving their contents. Sneaking and interacting with a container picks it up. Placing the carried item puts the container back down with all items restored.
 
 <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/chest-slownessdouble.gif" alt="Player picks up chest near sheep, walks slowly, places it into double chest formation" width="1080">
 
 > **alt-message** The player runs in, picks up a chest next to a black sheep, then visibly slows down while carrying it. They walk to a second chest and place theirs beside it, forming a double chest. Contents from both halves are preserved.
 
-> [!WARNING]
-> ~~Double chest support is partially implemented. Picking up one half of a double chest will attempt to preserve both halves, but edge cases may result in item loss. Always **back up world** before carrying important chests carrying them.~~ 100% working. It has been extensively tested.
+- Slowness is applied continuously.
+- Players in Creative mode are exempt from jump restrictions.
+
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/chest-flow.gif" alt="Player puts cod in barrel, picks it up, walks to composter area, places barrel on hopper" width="1080">
+
+> **alt-message** The player walks in holding a cod, places it inside a barrel, then picks the barrel up. They carry it slowly across the scene, with slowness visible, and place it on top of a hopper. The barrel lands with its contents intact.
 
 <details>
   <summary><strong>Supported Containers</strong></summary>
@@ -499,87 +479,28 @@ Any block with a `minecraft:inventory` component can be picked up. Common exampl
 </div>
 
 > [!NOTE]
-> ~~(Shulker boxes, Crafter & Brewing Stand) are also inventory blocks and should work, but have not been extensively tested.~~\
-> `*` For furnace items, the contents remain 100% correct, but the heat state is lost.\
-> `**` Copper chests currently have a bug in Minecraft vanilla where the oxidized state of copper affects the behavior of double chests
+> `*` For furnace items, the contents remain. However, the heat state is lost.\
+> `**` Copper chests currently have a bug in Minecraft vanilla where the oxidized state of copper affects the behavior of double chests.
 
-</details>
-
-### Unwaxed Sign
-
-> [!NOTE]
-> Sorry we didn't have a GIFs to show (yet)
-
-Signs can now be unwaxed using an axe.
-Durability is consumed by default, but this can be configured in the in-game settings panel
-
-### Offhand
-
-<p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/offhand.png" alt="Offhand swap and torch placement banner" width="1080">
-</p>
-
-Allows players to double-sneak to swap items between their mainhand and offhand. Additionally, torches and other light sources held in the offhand can be placed directly without switching slots. **All seed types** can now be planted directly from the offhand.
-
-**How It Works:**
-
-- Double sneak within a time window to swap mainhand ↔ offhand.
-- The sneak window gap is for **Mobile**, **Console**, and **Windows**.
-- Torches placed from the offhand correctly consume the offhand item stack.
-- Seeds held in the offhand can be planted directly this also integrates with the Harvest module for auto-replanting priority.
-
-> [!NOTE]
-> Enchantments and item color cannot be transferred between hands due to API limitations that do not allow editing the offhand cleanly.
-
-#### Swap and Torch Placement
-
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/offhand-swap.gif" alt="Player double sneaks to swap sword and torch, places torch from offhand" width="1080">
-
-> **alt-message** First-person view. The player is holding a `Trident` in the main hand and a `Soul Torch` in the offhand. They double-sneak, causing the `Trident` and `Soul Torch` to swap places, while another player walks across the screen.
-
-<details>
-  <summary><strong>Torch Types Supported for Offhand Placement</strong></summary>
-  <div align="center">
-
-| Item           |
-| -------------- |
-| Torch          |
-| Redstone Torch |
-| Copper Torch   |
-| Soul Torch     |
-
-</div>
 </details>
 
 ### Harvest
+
+Allows players to $\color{#fff000}\textsf{harvest fully grown crops}$ while holding any hoe. Seeds are automatically replanted after harvesting, and the hoe loses durability on each harvest to balance the automation. And **Cocoa Beans** are supported harvest them using an axe. Seeds placed in the **offhand** are prioritized for replanting over inventory seeds.
 
 <p align="center">
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/harvesting.gif" alt="Player harvesting wheat field with hoe" width="1080">
 </p>
 
-Allows players to harvest fully grown crops while holding any hoe. Seeds are automatically replanted after harvesting, and the hoe loses durability on each harvest to balance the automation. And **Cocoa Beans** are supported harvest them using an axe. Seeds placed in the **offhand** are prioritized for replanting over inventory seeds.
-
-**How It Works:**
-
-- Hold any hoe and interact with a fully grown crop to harvest it. Use an **axe** for Cocoa Bean pods.
-- Seeds are automatically replanted in the same location. If seeds are in the offhand, they are used first.
-- If seeds drop on the ground and the player has none in inventory, dropped seeds used for replanting are reduced by 1, with a `40 gametick` delay before the player can pick them up.
-- Hoe durability loss follows the vanilla formula:
-
-$$ \mathrm{Loss} = \mathrm{random} < \frac{1}{\mathrm{level} + 1} $$
-
-where `level` is the hoe's `Unbreaking` enchantment level.
-
-> [!TIP]
-> Using a hoe with high Unbreaking reduces durability loss significantly on large farms.
+> **alt-message** First-person view. The player holds a hoe and interacts with a fully grown wheat crop. The wheat is harvested, the drops are collected, and a wheat seed is automatically replanted in the same spot.
 
 ### Mob Loot+
+
+Adds drops to $\color{#fff000}\textsf{previously mobs without loot}$, making them more rewarding to farm.
 
 <p align="center">
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/mobloot.gif" alt="Mob Loot+ showcase banner" width="1080">
 </p>
-
-Adds drops to previously mobs without loot, making them more rewarding to farm.
 
 <details>
   <summary><strong>Mob Loot Table</strong></summary>
@@ -618,7 +539,7 @@ $$ P(\text{drop}) = \frac{1}{5} = 20\% $$
 
 **3. Sniffer drops `Moss Block`**
 
-$$ P(\text{Drop}) = 1 $$
+$$ \text{Drop} = 1 $$
 
 > Looting does not affect the drop quantity
 
@@ -632,202 +553,34 @@ $$ P(\text{Drop}) \in \langle 0,\ 1 \rangle $$
 
 ### Recipe+
 
+Adds new $\color{#fff000}\textsf{crafting, smelting, and stonecutter}$ recipes for a more accessible way to obtain items.
+
 <p align="center">
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/recipe.png" alt="Recipe+ banner showing various crafting and smelting screens" width="1080">
 </p>
 
-Adds new crafting, smelting, and stonecutter recipes for a more accessible way to obtain items.
-
-#### Recipe Showcase
-
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/recipe.gif" alt="Player demonstrates several new recipes at furnace, blast furnace and crafting table" width="1080">
-
-<details>
-  <summary><strong>Full Recipe List</strong></summary>
-
-**Smelting** `(Furnace)`
-
-<div align="center">
-
-| Input                 | Output   | Station |
-| --------------------- | -------- | ------- |
-| Bamboo Block          | Charcoal | Furnace |
-| Stripped Bamboo Block | Charcoal | Furnace |
-
-</div>
-
-**Smelting** `(Blast Furnace / Furnace)`
-
-<div align="center">
-
-| Input             | Output       | Station                |
-| ----------------- | ------------ | ---------------------- |
-| Sand              | Glass        | Blast Furnace          |
-| Gilded Blackstone | Gold Ingot   | Blast Furnace, Furnace |
-| Stone             | Smooth Stone | Blast Furnace          |
-| Cobblestone       | Stone        | Blast Furnace          |
-
-</div>
-
-**Crafting** `(Crafting Table)`
-
-<div align="center">
-
-| Input                | Output         | Notes     |
-| -------------------- | -------------- | --------- |
-| 9x Charcoal          | Coal Block     | Shapeless |
-| Dirt + Hanging Roots | Rooted Dirt    | Shapeless |
-| Any Skull + Paper    | Banner Pattern | Shapeless |
-
-</div>
-
-> [!CAUTION]
-> **Removed recipes**: `(rebalanced)`
->
-> - Rotten Flesh -> Rabbit Hide `(Furnace / Smoker / Campfire / Soul Campfire)` — `removed` in [v1.2.2](https://github.com/aitji/QoF/releases/tag/v1.2.2)
-> - Charcoal -> Coal Block `(Crafting Table)` — `removed` in [v1.2.2](https://github.com/aitji/QoF/releases/tag/v1.2.2)
-
-**Stonecutter (Wood)**
-
-All 11 wood types (Acacia, Birch, Cherry, Crimson, Dark Oak, Jungle, Mangrove, Oak, Pale Oak, Spruce, Warped) can be processed in the Stonecutter.
-
-<details>
-  <summary><strong>Wood Material Inputs</strong></summary>
-
-1. Log `x4`
-2. Stripped Wood `x4`
-3. Wood `x4`
-4. Stripped Log `x4`
-5. Planks `x1`
-
-Nether wood edge cases (Warped & Crimson):
-
-6. Stem `x4`
-7. Hyphae `x4`
-
-</details>
-
-<details>
-  <summary><strong>Wood Result Items</strong></summary>
-
-1. Slab `x2`
-2. Stick `x2`
-3. Sign `x1`
-4. Door `x1`
-5. Pressure Plate `x1`
-6. Trapdoor `x1`
-7. Fence Gate `x1`
-8. Gate `x1`
-
-Wood transfer back & forth:
-
-9.  Stripped Wood
-10. Stripped Log
-11. Wood
-12. Log
-
-Nether wood edge cases:
-
-13. Stripped Stem
-14. Stripped Hyphae
-15. Stem
-16. Hyphae
-
-</details>
-
-**Crafting (Slab to Block (2 Slabs -> 1 Block))**
-
-Two of the same slab stacked vertically craft back into their corresponding full block.
-
-| Slab                           | Block                      |
-| ------------------------------ | -------------------------- |
-| Smooth Stone Slab              | Smooth Stone               |
-| Stone Slab                     | Stone                      |
-| Cobblestone Slab               | Cobblestone                |
-| Mossy Cobblestone Slab         | Mossy Cobblestone          |
-| Mossy Stone Brick Slab         | Mossy Stone Bricks         |
-| Cut Sandstone Slab             | Cut Sandstone              |
-| Smooth Sandstone Slab          | Smooth Sandstone           |
-| Cut Red Sandstone Slab         | Cut Red Sandstone          |
-| Smooth Red Sandstone Slab      | Smooth Red Sandstone       |
-| Granite Slab                   | Granite                    |
-| Polished Granite Slab          | Polished Granite           |
-| Diorite Slab                   | Diorite                    |
-| Polished Diorite Slab          | Polished Diorite           |
-| Andesite Slab                  | Andesite                   |
-| Polished Andesite Slab         | Polished Andesite          |
-| Brick Slab                     | Brick Block                |
-| Red Nether Brick Slab          | Red Nether Bricks          |
-| End Stone Brick Slab           | End Stone Bricks           |
-| Smooth Quartz Slab             | Smooth Quartz              |
-| Prismarine Slab                | Prismarine                 |
-| Dark Prismarine Slab           | Dark Prismarine            |
-| Prismarine Brick Slab          | Prismarine Bricks          |
-| Blackstone Slab                | Blackstone                 |
-| Polished Blackstone Brick Slab | Polished Blackstone Bricks |
-| Polished Deepslate Slab        | Polished Deepslate         |
-| Deepslate Tile Slab            | Deepslate Tiles            |
-| Deepslate Brick Slab           | Deepslate Bricks           |
-| Polished Tuff Slab             | Polished Tuff              |
-| Mud Brick Slab                 | Mud Bricks                 |
-| Bamboo Mosaic Slab             | Bamboo Mosaic              |
-| Oak Slab                       | Oak Planks                 |
-| Spruce Slab                    | Spruce Planks              |
-| Birch Slab                     | Birch Planks               |
-| Jungle Slab                    | Jungle Planks              |
-| Acacia Slab                    | Acacia Planks              |
-| Dark Oak Slab                  | Dark Oak Planks            |
-| Mangrove Slab                  | Mangrove Planks            |
-| Cherry Slab                    | Cherry Planks              |
-| Pale Oak Slab                  | Pale Oak Planks            |
-| Crimson Slab                   | Crimson Planks             |
-| Warped Slab                    | Warped Planks              |
-
-> **Note** If a block is not listed here, it may already have a vanilla recipe or may not yet be included in this version (26.10).
-
-</details>
-
 > [!NOTE]
-> This list may be `outdated`. You can find the most up-to-date information here: [https://github.com/aitji/QoF/wiki/Recipes](https://github.com/aitji/QoF/wiki/Recipes)
+> This may be `outdated`. You can find the most up-to-date information here: [w/Recipe](https://qof.aitji.xyz/w/Recipe)
 
 ## Configuration References
 
-All settings are accessible through the pack settings panel in-game. No manual file editing is required.
+All settings are accessible through the $\color{#fff000}\textsf{pack settings panel in-game}$. No manual file editing is required.
 
-<details>
-  <summary><strong>Full Settings Table</strong></summary>
-  <img src="https://rawhttps://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/imgusercontent.com/aitji/QoF/refs/heads/sources/https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/settings/v1.5.2.png" alt="full settings of manifest.json">
-</details>
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/setting.png" alt="QoF's how to enter settings pannels from version 1.5.1 'till today" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/settings/v1.5.3.png" alt="QoF's settings pannels from version 1.5.3 'till today" width="1080">
 
-## Known Limitations & Notes
+## Take a Look
+If you enjoyed this project, be sure to check out our other project:
 
-> [!NOTE]
-> These are known behavioral constraints, not all of which will be fixed in the short term. Most stem from Bedrock scripting API limitations.
-
-**Dynamic Light**
-
-- `Limitations` Light blocks are placed only in air or liquid. Solid blocks are never replaced, which can cause light gaps in tight or enclosed spaces.
-- `Limitations` Armor stands do not support the equippable component in the current API. Items held by armor stands do not emit dynamic light. Only item frames are supported for static placed sources.
-
-**Composter+**
-
-- Hopper feed processes one item per interval tick. High-throughput automatic farms will be rate-limited by the hopper interval setting.
-
-**Carrying Container**
-
-- Only the player who picked up the container can place it back. Other players cannot interact with the carried item slot.
-
-**Offhand**
-
-- `Limitations` Enchantments and item color cannot be transferred between hands due to API limitations that do not allow editing the offhand cleanly.
+- [CoM (Chain o' Mining)](https://github.com/aitji/CoM) breaking a single block to instantly mine an entire $\color{#ffa500}\textsf{ore vein, tree, crop field, or cluster of leaves.}$
 
 ## License
 
-This project's software components, including source code, scripts, behavior definitions, configuration files, and compiled addon files (`.mcaddon` / `.mcpack`), are licensed under the [QoF Noncommercial License 1.0](./LICENSE).
+This project's software components, including $\color{#ff0000}\textsf{source code, scripts, behavior definitions, configuration files, and compiled addon files}$ (`.mcaddon` / `.mcpack`), are licensed under the [QoF Noncommercial License 1.0](./LICENSE).
 
-The software may be used, modified, and redistributed for free noncommercial purposes with proper attribution. Commercial use, monetized distribution, or inclusion in paid products requires separate written permission from the maintainers.
+The software may be used, modified, and redistributed for free noncommercial purposes with proper attribution. $\color{#ff0000}\textsf{Commercial use, monetized distribution, or inclusion in paid products requires separate written permission from the maintainers.}$
 
-Branding, trademarks, media, documentation, screenshots, promotional materials, and other non-code assets are not covered by the software license and remain subject to separate restrictions. See [COPYRIGHT.md](./COPYRIGHT.md) for full details.
+$\color{#ff0000}\textsf{Branding, trademarks, media, documentation, screenshots, promotional materials, and other non-code assets are not covered by the software license}$ and remain subject to separate restrictions. See [COPYRIGHT.md](./COPYRIGHT.md) for full details.
 
 ## Disclosure
 
@@ -838,23 +591,23 @@ English is not our native language. Thank you for your understanding!
 
 ## Credits
 
-- [@aitji](https://github.com/aitji) scripting & design
-- [@pickerth-12](https://github.com/pickerth-12) design, json & molang
+- [$\color{#ff0000}\textsf{@aitji}$](https://github.com/aitji) scripting & design
+- [$\color{#add8e6}\textsf{@pickerth-12}$](https://github.com/pickerth-12) design, json & molang
 
-QoF™ / Quality of Features™ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
+$\color{#fff000}\textsf{@QoF™ / Quality of Features™}$ Copyright © 2026 [$\color{#ff0000}\textsf{@aitji}$](https://github.com/aitji) & [$\color{#add8e6}\textsf{@pickerth-12}$](https://github.com/pickerth-12)
 
 Software licensed under the [QoF Noncommercial License 1.0](./LICENSE).  
 Branding, media, and other protected materials are reserved under [COPYRIGHT.md](./COPYRIGHT.md).
 
 ```
   README INFO
-Version: v1.5.3
-Last updated: 12 July 2026
+Version: v1.5.0
+Last updated: 23 Oct 2026
 Has README Update: False
 
   PACK INFO
 Last Release: v1.5.0
-Last Pre-Release: v1.5.1
+Last Pre-Release: v1.5.3
 Last Minecraft Version: 26.33
 Used Dependencies: ^2.9.0-beta.1.26.33-stable
 ```
