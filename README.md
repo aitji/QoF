@@ -588,10 +588,10 @@ English is not our native language. Thank you for your understanding!
 
 ## Credits
 
-- [$\color{#ff0000}\textsf{@aitji}$](https://github.com/aitji) scripting & design
-- [$\color{#add8e6}\textsf{@pickerth-12}$](https://github.com/pickerth-12) design, json & molang
+- [@aitji](https://github.com/aitji) scripting & design
+- [@pickerth-12](https://github.com/pickerth-12) design, json & molang
 
-$\color{#fff000}\textsf{@QoF™ / Quality of Features™}$ Copyright © 2026 [$\color{#ff0000}\textsf{@aitji}$](https://github.com/aitji) & [$\color{#add8e6}\textsf{@pickerth-12}$](https://github.com/pickerth-12)
+$\color{#fff000}\textsf{@QoF™ / Quality of Features™}$ Copyright © 2026 [@aitji](https://github.com/aitji) & [@pickerth-12](https://github.com/pickerth-12)
 
 Software licensed under the [QoF Noncommercial License 1.0](./LICENSE).  
 Branding, media, and other protected materials are reserved under [COPYRIGHT.md](./COPYRIGHT.md).
