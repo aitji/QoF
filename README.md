@@ -6,11 +6,8 @@
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@stats/data/version.svg" height="30px" alt="QoF's Version">
 </picture>
 
-<h1>
 
-$${\color{#fff000}\textsf{Q}}\textsf{uality }{\color{#fff000}\textsf{o}}\textsf{f }{\color{#fff000}\textsf{F}}\textsf{eature}$$
-
-</h1>
+<h1>${\color{#fff000}\textsf{Q}}\textsf{uality }{\color{#fff000}\textsf{o}}\textsf{f }{\color{#fff000}\textsf{F}}\textsf{eature}$</h1>
 
 [Releases](https://github.com/aitji/QoF/releases/latest) | [Curseforge](https://www.curseforge.com/minecraft-bedrock/addons/quality-of-feature) & [MCPEDL](https://mcpedl.com/quality-of-feature) | [Behavior Code](https://github.com/aitji/QoF/tree/behavior_packs) | [Resource Code](https://github.com/aitji/QoF/tree/resource_packs) | [WiKi](https://qof.aitji.xyz) | [LICENSE](./LICENSE) & [COPYRIGHT](./COPYRIGHT.md)
 
