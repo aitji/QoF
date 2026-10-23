@@ -576,11 +576,11 @@ If you enjoyed this project, be sure to check out our other project:
 
 ## License
 
-This project's software components, including $\color{#ff0000}\textsf{source code, scripts, behavior definitions, configuration files, and compiled addon files}$ (`.mcaddon` / `.mcpack`), are licensed under the [QoF Noncommercial License 1.0](./LICENSE).
+This project's software components, including source code, scripts, behavior definitions, configuration files, and compiled addon files (`.mcaddon` / `.mcpack`), are licensed under the [QoF Noncommercial License 1.0](./LICENSE).
 
-The software may be used, modified, and redistributed for free noncommercial purposes with proper attribution. $\color{#ff0000}\textsf{Commercial use, monetized distribution, or inclusion in paid products requires separate written permission from the maintainers.}$
+The software may be used, modified, and redistributed for free noncommercial purposes with proper attribution. Commercial use, monetized distribution, or inclusion in paid products requires separate written permission from the maintainers.
 
-$\color{#ff0000}\textsf{Branding, trademarks, media, documentation, screenshots, promotional materials, and other non-code assets are not covered by the software license}$ and remain subject to separate restrictions. See [COPYRIGHT.md](./COPYRIGHT.md) for full details.
+Branding, trademarks, media, documentation, screenshots, promotional materials, and other non-code assets are not covered by the software license and remain subject to separate restrictions. See [COPYRIGHT.md](./COPYRIGHT.md) for full details.
 
 ## Disclosure
 
