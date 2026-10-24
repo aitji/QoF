@@ -2,7 +2,6 @@ import { system, world } from "@minecraft/server"
 import { RUNTIME } from "./_store"
 import * as lib from "./lib"
 import * as debug from "./core/debug"
-import * as heartbeat from "./core/heartbeat"
 import * as cache from "./core/cache"
 
 // light
@@ -73,9 +72,6 @@ world.afterEvents.playerPlaceBlock.subscribe(data => {
 
     if (RUNTIME.DEBUG) debug.debug_playerPlaceBlock(data)
 })
-world.beforeEvents.playerPlaceBlock.subscribe(data => {
-    if (RUNTIME.LIGHT.ENABLED) light.light_playerPlaceBlock_before(data)
-})
 world.beforeEvents.playerBreakBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerBreakBlock(data)
     if (RUNTIME.HARVEST.ENABLED) harvest.harvest_playerBreakBlock(data)
@@ -121,4 +117,3 @@ world.afterEvents.pistonActivate.subscribe(data => {
 // core routes
 world.beforeEvents.entityItemPickup.subscribe(data => { lib.helper.helper_entityItemPickup(data) }, { entityFilter: { type: "minecraft:player" } })
 system.beforeEvents.startup.subscribe(event => { debug.debug_startup(event) })
-system.afterEvents.scriptEventReceive.subscribe((event) => heartbeat.heartbeat_scriptEventReceive((event)), { namespaces: ["aitji-lib"] })

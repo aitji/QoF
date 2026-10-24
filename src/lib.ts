@@ -1,7 +1,7 @@
 import {
-    Block, Dimension, Entity,
+    Block, BlockPermutation, Dimension, Entity,
     EntityComponentTypes, EquipmentSlot, GameMode,
-    ItemComponentTypes, ItemStack, Player,
+    ItemComponentTypes, ItemStack, LiquidType, Player,
     PlayerPermissionLevel, system, Vector3,
     world
 } from "@minecraft/server"
@@ -22,17 +22,20 @@ type EquSlot = 'Mainhand' | 'Offhand' | 'Head' | 'Body' | 'Legs' | 'Feet'
 const { DEBUG } = E
 export const QOF_INFORMATION = {
     version: {
-        qof: '1.5.1',
-        minecraft: '1.26.33'
+        qof: '1.6.0'
     },
     license: 'QoF Noncommercial License 1.0',
     dependencies: {
-        '@minecraft/server': '^2.9.0-beta.1.26.33-stable',
+        '@minecraft/server': '^2.9.0',
         'typescript': '^6.0.2',
     },
     authors: ['aitji', 'pickerth-12'],
     url: 'https://github.com/aitji/QoF'
 }
+
+export const isSolid = (block?: Block): boolean => !!block && !block.isAir && !block.isLiquid && !block.isWaterlogged &&
+    block.isLiquidBlocking(LiquidType.Water) &&
+    !block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)
 
 export const clamp = (n: number, min: number = 0, max: number = 8) => Math.max(min, Math.min(max, Math.ceil(n)))
 export const checkRandom = (arr: number | number[]) => {

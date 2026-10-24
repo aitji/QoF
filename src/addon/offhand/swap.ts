@@ -1,13 +1,17 @@
 import {
-    EquipmentSlot, ItemComponentTypes, ItemStack,
+    EquipmentSlot, ItemComponentTypes, ItemLockMode, ItemStack,
     PlatformType, Player, PlayerLeaveAfterEvent,
     PlayerSpawnAfterEvent, system, world
 } from "@minecraft/server"
-import { getEqu, RUNTIME } from "../../lib"
+import { getEqu, playSound, RUNTIME, sumLoc } from "../../lib"
 import * as cache from "../../core/cache"
 
 const {
-    OFFHAND: { DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE, DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM }
+    OFFHAND: {
+        DOUBLE_SNEAK_WINDOW_MOBILE, DOUBLE_SNEAK_WINDOW_CONSOLE,
+        DOUBLE_SNEAK_WINDOW_DEFAULT, DISALLOWED_ITEM,
+        SOUND_FAIL, FAIL_PARTICLE, PARTICLE_OFFSET
+    }
 } = RUNTIME
 
 type SneakState = { lastSneakTick: number, wasSneaking: boolean }
@@ -56,13 +60,10 @@ function hasUnsafeProperties(item: ItemStack) {
     if (!item) return false
     if (item.nameTag) return true
     if (item.getLore().length > 0) return true
+    if (item?.lockMode !== ItemLockMode.none) return true
 
     const enchants = item.getComponent(ItemComponentTypes.Enchantable)
     if (enchants && enchants.getEnchantments().length > 0) return true
-
-    // nvm i found the way!
-    // const durability = item.getComponent(ItemComponentTypes.Durability)
-    // if ((durability?.damage ?? 0) > 0) return true
 
     // edge case
     const isDisallow = DISALLOWED_ITEM.has(item?.typeId ?? '')
@@ -76,14 +77,16 @@ function swapItem(player: Player) {
     const mainhand = equippable.getEquipment(EquipmentSlot.Mainhand)
     const offhand = equippable.getEquipment(EquipmentSlot.Offhand)
 
-    if (mainhand && hasUnsafeProperties(mainhand))
-        return player.sendMessage("§7Couldn't transfer item with nametag/enchantment/nbt")
+    if (mainhand && hasUnsafeProperties(mainhand)) {
+        const { location: loc, dimension: dim } = player
+        dim.spawnParticle(FAIL_PARTICLE, sumLoc(loc, PARTICLE_OFFSET))
+        playSound(dim, loc, SOUND_FAIL)
+        return
+    }
 
     const durability = mainhand?.getComponent(ItemComponentTypes.Durability)
-
     equippable.setEquipment(EquipmentSlot.Mainhand, offhand ?? undefined)
 
-    if (mainhand) {
-        player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${mainhand.typeId} ${mainhand.amount} ${durability ? durability.damage : 0}`)
-    } else equippable.setEquipment(EquipmentSlot.Offhand, undefined)
+    if (mainhand) player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${mainhand.typeId} ${mainhand.amount} ${durability ? durability.damage : 0}`)
+    else equippable.setEquipment(EquipmentSlot.Offhand, undefined)
 }

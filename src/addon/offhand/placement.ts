@@ -1,5 +1,5 @@
 import { Block, BlockPermutation, Dimension, Direction, system, world } from "@minecraft/server"
-import { RUNTIME } from "../../lib"
+import { isSolid, RUNTIME } from "../../lib"
 
 const {
     OFFHAND: { LIGHT }
@@ -112,7 +112,7 @@ const SUPPORT_RULES = new Map<string, SupportFn>()
         const hasMoss = (b: Block) => b.typeId === 'minecraft:moss_block'
         const hasSand = (b: Block) => b.hasTag('sand')
         const hasClayOrMoss = (b: Block) => b.typeId === 'minecraft:clay' || hasMoss(b)
-        const hasKelp = (b: Block) => b.isSolid || b.typeId === 'minecraft:kelp'
+        const hasKelp = (b: Block) => isSolid(b)|| b.typeId === 'minecraft:kelp'
 
         add([ // saplings + ground-cover flowers/grass
             'minecraft:oak_sapling', 'minecraft:spruce_sapling', 'minecraft:birch_sapling',

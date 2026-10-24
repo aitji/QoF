@@ -3,7 +3,7 @@ import { SETTINGS } from "./_config"
 
 function buildRuntime() {
     const S = SETTINGS
-    let ps = {} as Record<string, boolean | number | string>
+    let ps = {} as Record<string, string[] | boolean | number | string>
     try { ps = world.getPackSettings() }
     catch (e) { if (S.DEBUG) world.sendMessage(`§cpack setting unable to load, using fallback: ${e}`) }
 
@@ -196,6 +196,9 @@ function buildRuntime() {
             DOUBLE_SNEAK_WINDOW_DEFAULT: g("qof:OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT", OH.DOUBLE_SNEAK_WINDOW_DEFAULT),
 
             // static
+            FAIL_PARTICLE: OH.FAIL_PARTICLE,
+            SOUND_FAIL: OH.SOUND_FAIL,
+            PARTICLE_OFFSET: OH.PARTICLE_OFFSET,
             FACE_TO_TORCH_DIR: OH.FACE_TO_TORCH_DIR,
             FACE_TO_NEIGHBOUR: OH.FACE_TO_NEIGHBOUR,
             ALLOW_REPLACE: OH.ALLOW_REPLACE,

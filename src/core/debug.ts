@@ -45,22 +45,22 @@ system.run(() => {
 
     message = [
         `§eQ§fuality §eo§ff §eF§feature §r§7v${version.qof}`,
-        ``,
-        `§fMinecraft: §e${version.minecraft}`,
+        '',
         `§fLicense: §e${license}`,
         `§fAuthors: §e${authors.join(', ')}`,
         `§fDebug: §e${RUNTIME.DEBUG}`,
         `§fURL: §g${url}`,
-        ``,
+        '',
         `§fFeatures §7(§e${features.filter(([_, v]) => v.ENABLED).length}§7/§e${features.length}§7):`,
         ...FL,
-        ``,
+        '',
         `§fDependencies:`,
         ...Object.entries(dependencies).map(([pkg, ver]) => ` §7- ${pkg} §e${ver}`)
     ]
     // ---
 
     if (DEBUG) {
+        /* @stable not support watchdog killer
         const host = world.getPlayers().find(e => e.id === "-4294967295")
         system.beforeEvents.watchdogTerminate.subscribe((d) => {
             if (host && host.clientSystemInfo.memoryTier === MemoryTier.High) d.cancel = true
@@ -68,7 +68,7 @@ system.run(() => {
             const msg = `§c[o7]... §7${d.terminateReason}`
             console.warn(msg)
             world.sendMessage(msg)
-        })
+        })*/
 
         world.sendMessage('§7qof loaded')
         world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n§8 ')}`)
@@ -126,9 +126,11 @@ export const debug_startup = (event: StartupEvent) => {
 
     if (!DEBUG) return
 
+    /*@stable not support enum
     reg.registerEnum(`${PREFIX}dyp_action`, ['list', 'list-value', 'bulk'])
     reg.registerEnum(`${PREFIX}log`, ['world', 'console'])
     reg.registerEnum(`${PREFIX}components`, ['item', 'block'])
+    */
 
     type dypActionType = "list" | "list-value" | "bulk"
     type logType = "world" | "console"
@@ -139,8 +141,8 @@ export const debug_startup = (event: StartupEvent) => {
         name: `${PREFIX}dyp`,
         description: `dynamic property action tools`,
         optionalParameters: [
-            { name: 'dyp_action', type: CustomCommandParamType.Enum, enumName: `${PREFIX}dyp_action` },
-            { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
+            { name: 'dyp_action', type: CustomCommandParamType.String },
+            { name: 'log', type: CustomCommandParamType.String }
         ],
         permissionLevel: CommandPermissionLevel.GameDirectors,
         cheatsRequired: true
@@ -184,7 +186,7 @@ export const debug_startup = (event: StartupEvent) => {
         description: `get cache from player/world`,
         optionalParameters: [
             { name: 'player', type: CustomCommandParamType.PlayerSelector },
-            { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
+            { name: 'log', type: CustomCommandParamType.String }
         ],
         permissionLevel: CommandPermissionLevel.GameDirectors,
         cheatsRequired: true
@@ -228,8 +230,8 @@ export const debug_startup = (event: StartupEvent) => {
         name: `${PREFIX}components`,
         description: `dump the block/item components list`,
         optionalParameters: [
-            { name: 'type', type: CustomCommandParamType.Enum, enumName: `${PREFIX}components` },
-            { name: 'log', type: CustomCommandParamType.Enum, enumName: `${PREFIX}log` }
+            { name: 'type', type: CustomCommandParamType.String },
+            { name: 'log', type: CustomCommandParamType.String }
         ],
         permissionLevel: CommandPermissionLevel.GameDirectors,
         cheatsRequired: true
