@@ -14,7 +14,7 @@
 </div>
 
 > [!NOTE]
-> A Minecraft Bedrock addon that adds small ${\color{#fff000}\textsf{vanilla-friendly}}$ features. Each module is configurable through the in-game pack settings panel. ${\color{#fff000}\textsf{Requires \textbf{BetaAPIs} enabled under Experiments.}}$
+> A Minecraft Bedrock addon that adds small ${\color{#fff000}\textsf{vanilla-friendly}}$ features. Each module is configurable through the in-game pack settings panel.
 
 <details open>
   <summary><strong><b>Table of Contents</b></strong></summary>
@@ -62,6 +62,10 @@
 <details open>
   <summary><strong>QoF's Releases</strong></summary>
 
+- QoF **Unleashed** [v1.6.0](https://github.com/aitji/QoF/releases/tag/v1.6.0)
+  - `Pre-Releases` Qof [v1.5.3](https://github.com/aitji/QoF/releases/tag/v1.5.3)
+  - `Pre-Releases` Qof [v1.5.2](https://github.com/aitji/QoF/releases/tag/v1.5.2)
+  - `Pre-Releases` Qof [v1.5.1](https://github.com/aitji/QoF/releases/tag/v1.5.1)
 - QoF **Well Equipped** [v1.5.0](https://github.com/aitji/QoF/releases/tag/v1.5.0)
   - `Pre-Releases` Qof [v1.4.1](https://github.com/aitji/QoF/releases/tag/v1.4.1)
 - QoF **Seamless** [v1.4.0](https://github.com/aitji/QoF/releases/tag/v1.4.0)
@@ -91,13 +95,9 @@ Download the `QoF` addon from one of these sources:
 2. Open the file, Minecraft will automatically import the addon.
 3. Open or create a world.
 4. Go to **Behavior Packs** and activate **QoF**.
-5. In **Experiments**, enable **Beta APIs**.
-6. Configure settings in the pack settings panel inside the world settings.
+5. Configure settings in the pack settings panel inside the world settings.
 
 > Still having trouble? try shooting it here: [/w/Installation](https://qof.aitji.xyz/w/Installation)
-
-> [!IMPORTANT]
-> **Beta APIs must be enabled**, otherwise the pack will not function.
 
 ## Modules
 
@@ -598,13 +598,12 @@ Branding, media, and other protected materials are reserved under [COPYRIGHT.md]
 
 ```
   README INFO
-Version: v1.5.0
-Last updated: 23 Oct 2026
-Has README Update: False
+Version: v1.6.0
+Last updated: 24 Oct 2026
+Has README Update: True
 
   PACK INFO
-Last Release: v1.5.0
+Last Release: v1.6.0
 Last Pre-Release: v1.5.3
-Last Minecraft Version: 26.33
-Used Dependencies: ^2.9.0-beta.1.26.33-stable
+Used Dependencies: ^2.10.0
 ```
