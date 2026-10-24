@@ -45,7 +45,7 @@
     },
     {
       "type": "toggle",
-      "text": "§7tool durability use by Auto Harvest and sign-unwaxing ",
+      "text": "§7tool durability use by §fAuto Harvest§7 and §fsign-unwaxing ",
       "name": "qof:CONSUME_DURABILITY",
       "default": true
     },

@@ -45,16 +45,15 @@ system.run(() => {
 
     message = [
         `§eQ§fuality §eo§ff §eF§feature §r§7v${version.qof}`,
-        ``,
-        `§fMinecraft: §e${version.minecraft}`,
+        '',
         `§fLicense: §e${license}`,
         `§fAuthors: §e${authors.join(', ')}`,
         `§fDebug: §e${RUNTIME.DEBUG}`,
         `§fURL: §g${url}`,
-        ``,
+        '',
         `§fFeatures §7(§e${features.filter(([_, v]) => v.ENABLED).length}§7/§e${features.length}§7):`,
         ...FL,
-        ``,
+        '',
         `§fDependencies:`,
         ...Object.entries(dependencies).map(([pkg, ver]) => ` §7- ${pkg} §e${ver}`)
     ]
