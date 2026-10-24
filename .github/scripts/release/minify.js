@@ -6,7 +6,7 @@ const IS_RP = process.argv.includes('--rp')
 const ROOT = IS_RP ? '_rp' : '.'
 
 const MINIFY_JSON = Object.freeze(new Set(['.json', '.jsonc']))
-const MINIFY_JS = Object.freeze(new Set(['.js', '.ts']))
+const MINIFY_JS = Object.freeze(new Set(['.js']))
 
 const SKIP = Object.freeze(new Set([
     'node_modules',
@@ -14,6 +14,7 @@ const SKIP = Object.freeze(new Set([
     '.github',
 ]))
 
+const CONCURRENCY = 4
 const walk = dir => {
     const entries = fs.readdirSync(dir, { withFileTypes: true })
     const files = []
@@ -44,7 +45,7 @@ const minifyJSFile = async file => {
         const result = await minifyJS(src, {
             compress: {
                 passes: 2,
-                drop_console: true, // kept console.log
+                drop_console: true,
                 unsafe: true
             },
             mangle: { toplevel: true, keep_fnames: true },
@@ -53,17 +54,29 @@ const minifyJSFile = async file => {
         const saved = src.length - result.code.length
         fs.writeFileSync(file, result.code)
         console.log(`[JS]   ${file}  (saved ${saved} bytes)`)
-    } catch (err) { console.error(`[JS]   ERROR ${file}: ${err.message}`) }
+    } catch (err) {
+        console.error(`[JS]   ERROR ${file}: ${err.message}`)
+    }
+}
+
+const pool = async (tasks, limit) => {
+    const results = []
+    let i = 0
+    const workers = Array.from({ length: Math.min(limit, tasks.length) }, async () => {
+        while (i < tasks.length) {
+            const task = tasks[i++]
+            results.push(await task())
+        }
+    })
+    await Promise.all(workers)
+    return results
 }
 
 (async () => {
     console.log(`\nMinifying pack at: ${path.resolve(ROOT)}\n`)
-
     const files = walk(ROOT)
-
     let jsonCount = 0
-    let jsCount = 0
-
+    const jsTasks = []
     for (const file of files) {
         const ext = path.extname(file).toLowerCase()
 
@@ -73,12 +86,9 @@ const minifyJSFile = async file => {
             continue
         }
 
-        if (MINIFY_JS.has(ext)) {
-            await minifyJSFile(file)
-            jsCount++
-            continue
-        }
+        if (MINIFY_JS.has(ext)) jsTasks.push(() => minifyJSFile(file))
     }
 
-    console.log(`\nDone, minified ${jsonCount} JSON file(s) and ${jsCount} JS file(s).`)
+    await pool(jsTasks, CONCURRENCY)
+    console.log(`\nDone, minified ${jsonCount} JSON file(s) and ${jsTasks.length} JS file(s).`)
 })()

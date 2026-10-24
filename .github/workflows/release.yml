@@ -129,6 +129,8 @@ jobs:
       - name: Minify JSON & JS (behavior_packs)
         if: steps.resolve.outputs.changed == 'true'
         working-directory: _bp
+        env:
+          NODE_OPTIONS: "--max-old-space-size=512"
         run: node ../.github/scripts/release/minify.js
 
       - name: Zip behavior_packs mcpack
@@ -150,7 +152,7 @@ jobs:
 
       - name: Checkout resource_packs branch
         if: steps.resolve.outputs.changed == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: resource_packs
           path: _rp
@@ -167,6 +169,8 @@ jobs:
 
       - name: Minify JSON & JS (resource_packs)
         if: steps.resolve.outputs.changed == 'true'
+        env:
+          NODE_OPTIONS: "--max-old-space-size=512"
         run: node .github/scripts/release/minify.js --rp
 
       - name: Zip resource_packs mcpack
