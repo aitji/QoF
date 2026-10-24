@@ -459,6 +459,13 @@ export const SETTINGS = Object.freeze({
         DOUBLE_SNEAK_WINDOW_MOBILE: 20,
         DOUBLE_SNEAK_WINDOW_CONSOLE: 16,
         DOUBLE_SNEAK_WINDOW_DEFAULT: 12,
+        FAIL_PARTICLE: "minecraft:villager_angry",
+        SOUND_FAIL: Object.freeze({
+            ID: "note.bd",
+            VOLUME: 1,
+            PITCH: [0.8, 1.0]
+        }),
+        PARTICLE_OFFSET: Object.freeze({ x: 0, y: 2, z: 0 }),
         FACE_TO_TORCH_DIR: Object.freeze({
             Up: 'top',
             Down: 'top',
