@@ -73,9 +73,6 @@ world.afterEvents.playerPlaceBlock.subscribe(data => {
 
     if (RUNTIME.DEBUG) debug.debug_playerPlaceBlock(data)
 })
-world.beforeEvents.playerPlaceBlock.subscribe(data => {
-    if (RUNTIME.LIGHT.ENABLED) light.light_playerPlaceBlock_before(data)
-})
 world.beforeEvents.playerBreakBlock.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_playerBreakBlock(data)
     if (RUNTIME.HARVEST.ENABLED) harvest.harvest_playerBreakBlock(data)

@@ -3,7 +3,7 @@ import { SETTINGS } from "./_config"
 
 function buildRuntime() {
     const S = SETTINGS
-    let ps = {} as Record<string, boolean | number | string>
+    let ps = {} as Record<string, string[] | boolean | number | string>
     try { ps = world.getPackSettings() }
     catch (e) { if (S.DEBUG) world.sendMessage(`§cpack setting unable to load, using fallback: ${e}`) }
 
