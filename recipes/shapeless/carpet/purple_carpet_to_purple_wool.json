@@ -1,0 +1,31 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:purple_carpet_to_purple_wool"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:purple_carpet"
+            },
+            {
+                "item": "minecraft:purple_carpet"
+            },
+            {
+                "item": "minecraft:purple_carpet"
+            }
+        ],
+        "result": {
+            "item": "minecraft:purple_wool",
+            "count": 2
+        },
+        "unlock": [
+            {
+                "item": "minecraft:purple_carpet"
+            }
+        ]
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:yellow_carpet_to_yellow_wool"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:yellow_carpet"
+            },
+            {
+                "item": "minecraft:yellow_carpet"
+            },
+            {
+                "item": "minecraft:yellow_carpet"
+            }
+        ],
+        "result": {
+            "item": "minecraft:yellow_wool",
+            "count": 2
+        },
+        "unlock": [
+            {
+                "item": "minecraft:yellow_carpet"
+            }
+        ]
+    }
+}

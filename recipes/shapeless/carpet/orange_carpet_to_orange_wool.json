@@ -1,0 +1,31 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:orange_carpet_to_orange_wool"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:orange_carpet"
+            },
+            {
+                "item": "minecraft:orange_carpet"
+            },
+            {
+                "item": "minecraft:orange_carpet"
+            }
+        ],
+        "result": {
+            "item": "minecraft:orange_wool",
+            "count": 2
+        },
+        "unlock": [
+            {
+                "item": "minecraft:orange_carpet"
+            }
+        ]
+    }
+}

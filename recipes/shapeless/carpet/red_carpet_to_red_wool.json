@@ -1,0 +1,31 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:red_carpet_to_red_wool"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:red_carpet"
+            },
+            {
+                "item": "minecraft:red_carpet"
+            },
+            {
+                "item": "minecraft:red_carpet"
+            }
+        ],
+        "result": {
+            "item": "minecraft:red_wool",
+            "count": 2
+        },
+        "unlock": [
+            {
+                "item": "minecraft:red_carpet"
+            }
+        ]
+    }
+}

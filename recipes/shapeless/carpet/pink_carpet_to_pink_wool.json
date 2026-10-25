@@ -1,0 +1,31 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:pink_carpet_to_pink_wool"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:pink_carpet"
+            },
+            {
+                "item": "minecraft:pink_carpet"
+            },
+            {
+                "item": "minecraft:pink_carpet"
+            }
+        ],
+        "result": {
+            "item": "minecraft:pink_wool",
+            "count": 2
+        },
+        "unlock": [
+            {
+                "item": "minecraft:pink_carpet"
+            }
+        ]
+    }
+}

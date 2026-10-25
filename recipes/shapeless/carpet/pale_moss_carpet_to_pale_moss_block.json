@@ -1,0 +1,31 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:pale_moss_carpet_to_pale_moss_block"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:pale_moss_carpet"
+            },
+            {
+                "item": "minecraft:pale_moss_carpet"
+            },
+            {
+                "item": "minecraft:pale_moss_carpet"
+            }
+        ],
+        "result": {
+            "item": "minecraft:pale_moss_block",
+            "count": 2
+        },
+        "unlock": [
+            {
+                "item": "minecraft:pale_moss_carpet"
+            }
+        ]
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:gray_carpet_to_gray_wool"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:gray_carpet"
+            },
+            {
+                "item": "minecraft:gray_carpet"
+            },
+            {
+                "item": "minecraft:gray_carpet"
+            }
+        ],
+        "result": {
+            "item": "minecraft:gray_wool",
+            "count": 2
+        },
+        "unlock": [
+            {
+                "item": "minecraft:gray_carpet"
+            }
+        ]
+    }
+}
