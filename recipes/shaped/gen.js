@@ -9,7 +9,7 @@ const ROOT = __dirname
 const SLABS = { // comment = mojang alr have it
     // slab: block
     'smooth_stone':                 'smooth_stone',
-    'stone':                        'stone',
+    'normal_stone':                 'stone',
     'cobblestone':                  'cobblestone',
     'mossy_cobblestone':            'mossy_cobblestone',
     // 'stone_brick':               'stone_bricks',
@@ -69,6 +69,7 @@ const SLABS = { // comment = mojang alr have it
     // 'bamboo':                    'bamboo_planks',
     'crimson':                      'crimson_planks',
     'warped':                       'warped_planks',
+    'poplar':                       'poplar_planks',
 }
 
 const dir = path.join(ROOT, 'slabs')

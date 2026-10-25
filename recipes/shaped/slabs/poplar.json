@@ -1,0 +1,29 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:poplar_slab_to_full_block"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x",
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:poplar_slab"
+            }
+        },
+        "result": {
+            "item": "minecraft:poplar_planks",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:poplar_planks"
+            }
+        ]
+    }
+}
