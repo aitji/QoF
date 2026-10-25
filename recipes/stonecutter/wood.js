@@ -5,6 +5,8 @@ import { fileURLToPath } from "url"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const ROOT = __dirname
+const _ = path.join(ROOT, 'wood')
+fs.mkdirSync(_, { recursive: true })
 
 const WOOD_TYPE = [
     "acacia", "birch", "cherry", "crimson", "dark_oak",
@@ -108,8 +110,7 @@ const BLOCK_CONV_PRIORITY = {
 }
 
 for (const wood of WOOD_TYPE) {
-
-    const dir = path.join(ROOT, wood)
+    const dir = path.join(_, wood)
     fs.mkdirSync(dir, { recursive: true })
 
     const log = SP_WOOD[wood]?.log ?? `${wood}_log`

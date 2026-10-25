@@ -1,0 +1,15 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:stonecutter_green_stained_glass_to_green_stained_glass_pane"
+        },
+        "tags": ["stonecutter"],
+        "ingredients": [{ "item": "minecraft:green_stained_glass" }],
+        "result": {
+            "item": "minecraft:green_stained_glass_pane",
+            "count": 16
+        },
+        "unlock": [{ "item": "minecraft:green_stained_glass" }]
+    }
+}

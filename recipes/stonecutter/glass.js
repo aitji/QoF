@@ -4,18 +4,14 @@ import { fileURLToPath } from "url"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = __dirname
+const _ = path.join(ROOT, 'glass')
+fs.mkdirSync(_, { recursive: true })
 
 const colour = [
     "white", "light_gray", "gray", "black", "brown",
     "red", "orange", "yellow", "lime", "green", "cyan",
     "light_blue", "blue", "pink", "purple", "magenta"
 ]
-
-const types = {
-    wool_slab: 2,
-    wool_stairs: 1,
-    cushion: 1,
-}
 
 const recipe = (input, output, count) => `{
     "format_version": "1.20.10",
@@ -34,16 +30,11 @@ const recipe = (input, output, count) => `{
 }`
 
 for (const colourName of colour) {
-    const dir = path.join(ROOT, colourName)
-    fs.mkdirSync(dir, { recursive: true })
+    const input = `${colourName}_stained_glass`
+    const output = `${colourName}_stained_glass_pane`
 
-    for (const [type, count] of Object.entries(types)) {
-        const input = `${colourName}_wool`
-        const output = `${colourName}_${type}`
-
-        fs.writeFileSync(
-            path.join(dir, `${type}.json`),
-            recipe(input, output, count)
-        )
-    }
+    fs.writeFileSync(
+        path.join(_, `${colourName}.json`),
+        recipe(input, output, 16)
+    )
 }

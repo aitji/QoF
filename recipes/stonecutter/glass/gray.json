@@ -1,0 +1,15 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:stonecutter_gray_stained_glass_to_gray_stained_glass_pane"
+        },
+        "tags": ["stonecutter"],
+        "ingredients": [{ "item": "minecraft:gray_stained_glass" }],
+        "result": {
+            "item": "minecraft:gray_stained_glass_pane",
+            "count": 16
+        },
+        "unlock": [{ "item": "minecraft:gray_stained_glass" }]
+    }
+}
