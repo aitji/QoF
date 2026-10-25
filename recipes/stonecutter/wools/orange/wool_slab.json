@@ -1,0 +1,15 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:stonecutter_orange_wool_to_orange_wool_slab"
+        },
+        "tags": ["stonecutter"],
+        "ingredients": [{ "item": "minecraft:orange_wool" }],
+        "result": {
+            "item": "minecraft:orange_wool_slab",
+            "count": 2
+        },
+        "unlock": [{ "item": "minecraft:orange_wool" }]
+    }
+}

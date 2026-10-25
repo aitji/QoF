@@ -1,0 +1,15 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:stonecutter_magenta_wool_to_magenta_cushion"
+        },
+        "tags": ["stonecutter"],
+        "ingredients": [{ "item": "minecraft:magenta_wool" }],
+        "result": {
+            "item": "minecraft:magenta_cushion",
+            "count": 1
+        },
+        "unlock": [{ "item": "minecraft:magenta_wool" }]
+    }
+}

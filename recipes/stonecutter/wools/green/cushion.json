@@ -1,0 +1,15 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:stonecutter_green_wool_to_green_cushion"
+        },
+        "tags": ["stonecutter"],
+        "ingredients": [{ "item": "minecraft:green_wool" }],
+        "result": {
+            "item": "minecraft:green_cushion",
+            "count": 1
+        },
+        "unlock": [{ "item": "minecraft:green_wool" }]
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:stonecutter_purple_wool_to_purple_cushion"
+        },
+        "tags": ["stonecutter"],
+        "ingredients": [{ "item": "minecraft:purple_wool" }],
+        "result": {
+            "item": "minecraft:purple_cushion",
+            "count": 1
+        },
+        "unlock": [{ "item": "minecraft:purple_wool" }]
+    }
+}
