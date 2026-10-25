@@ -8,7 +8,8 @@ const ROOT = __dirname
 
 const WOOD_TYPE = [
     "acacia", "birch", "cherry", "crimson", "dark_oak",
-    "jungle", "mangrove", "oak", "pale_oak", "spruce", "warped"
+    "jungle", "mangrove", "oak", "pale_oak", "spruce",
+    "warped", "poplar"
 ]
 
 const ITEM_ORDER = {

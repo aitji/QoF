@@ -1,0 +1,11 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": { "identifier": "minecraft:stonecutter_poplar_planks_to_poplar_button" },
+        "tags": ["stonecutter"],
+        "priority": 8,
+        "ingredients": [{ "item": "minecraft:poplar_planks" }],
+        "result": { "item": "minecraft:poplar_button", "count": 1 },
+        "unlock": [{ "item": "minecraft:poplar_planks" }]
+    }
+}
