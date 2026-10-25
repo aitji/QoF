@@ -45,6 +45,26 @@ type DyeableEntry = {
 }
 
 const DYEABLE: DyeableEntry[] = [
+    { // wool_slab -> *_wool_slab
+        match: id => id.includes('wool_slab'),
+        dyed: (_id, dye) => `minecraft:${dye}_wool_slab`,
+        clean: _ => 'minecraft:white_wool_slab',
+    },
+    { // wool_stairs -> *_wool_stairs
+        match: id => id.includes('wool_stairs'),
+        dyed: (_id, dye) => `minecraft:${dye}_wool_stairs`,
+        clean: _ => 'minecraft:white_wool_stairs',
+    },
+    { // concrete_slab -> *_concrete_slab
+        match: id => id.includes('concrete_slab'),
+        dyed: (_id, dye) => `minecraft:${dye}_concrete_slab`,
+        clean: _ => 'minecraft:white_concrete_slab',
+    },
+    { // concrete_stairs -> *_concrete_stairs
+        match: id => id.includes('concrete_stairs'),
+        dyed: (_id, dye) => `minecraft:${dye}_concrete_stairs`,
+        clean: _ => 'minecraft:white_concrete_stairs',
+    },
     { // carpet -> *_carpet
         match: id => id.includes('carpet'),
         dyed: (_id, dye) => `minecraft:${dye}_carpet`,
@@ -69,6 +89,16 @@ const DYEABLE: DyeableEntry[] = [
         match: id => id.includes('hardened_clay') || id.includes('terracotta'),
         dyed: (id, dye) => `minecraft:${dye}${id.includes('_glazed') ? '_glazed' : ''}_terracotta`,
         clean: _id => _id.includes("_glazed") ? 'white_glazed_terracotta' : 'hardened_clay',
+    },
+    { // *_cushion - *_cushion
+        match: id => id.endsWith("_cushion"),
+        dyed: (_, dye) => `minecraft:${dye}_cushion`,
+        clean: id => 'minecraft:white_cushion'
+    },
+    { // candle -> *_candle
+        match: id => id.includes('candle'),
+        dyed: (_id, dye) => `minecraft:${dye}_candle`,
+        clean: _ => 'minecraft:candle',
     },
 
     // (shulkers, banners, bundles) have nbt cannot safe replace
