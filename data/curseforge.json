@@ -1,13 +1,13 @@
 {
-  "fetchedAt": "2026-10-24T03:25:29.458Z",
+  "fetchedAt": "2026-10-25T03:21:10.780Z",
   "screenshots": [
     {
-      "id": 1606432,
+      "id": 2099214,
       "modId": 1500007,
       "title": "MCPEDL.png",
-      "description": "MCPEDL.png",
-      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/1606/432/310/172/mcpedl-png.png",
-      "url": "https://media.forgecdn.net/attachments/1606/432/mcpedl-png.png"
+      "description": "",
+      "thumbnailUrl": "https://media.forgecdn.net/attachments/thumbnails/2099/214/310/172/mcpedl-png.png",
+      "url": "https://media.forgecdn.net/attachments/2099/214/mcpedl-png.png"
     },
     {
       "id": 1606511,
@@ -278,11 +278,23 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 27570,
-  "favoriteCount": 76,
+  "downloadCount": 28021,
+  "favoriteCount": 82,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
+    {
+      "id": 4994,
+      "gameId": 78022,
+      "name": "Realistic",
+      "slug": "realistic",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
+      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
+      "dateModified": "2024-02-11T14:06:11.48Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4987
+    },
     {
       "id": 8830,
       "gameId": 78022,
@@ -330,18 +342,6 @@
       "isClass": false,
       "classId": 4984,
       "parentCategoryId": 4984
-    },
-    {
-      "id": 4994,
-      "gameId": 78022,
-      "name": "Realistic",
-      "slug": "realistic",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
-      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
-      "dateModified": "2024-02-11T14:06:11.48Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4987
     }
   ],
   "classId": 4984,
@@ -365,67 +365,8 @@
     "thumbnailUrl": "https://media.forgecdn.net/avatars/thumbnails/1741/123/256/256/639108428299642827.png",
     "url": "https://media.forgecdn.net/avatars/1741/123/639108428299642827.png"
   },
-  "mainFileId": 8567615,
+  "mainFileId": 9309317,
   "latestFiles": [
-    {
-      "id": 8194416,
-      "gameId": 78022,
-      "modId": 1500007,
-      "isAvailable": true,
-      "displayName": "QoF-1.5.1 (Pre-release)",
-      "fileName": "QoF-1.5.1.mcaddon",
-      "releaseType": 2,
-      "fileStatus": 4,
-      "hashes": [
-        {
-          "value": "0b91222be64efbca3bcd965dba2d917c8744da8a",
-          "algo": 1
-        },
-        {
-          "value": "a6a1bb078f8e82f878c91210aa564c6a",
-          "algo": 2
-        }
-      ],
-      "fileDate": "2026-06-04T05:55:36.367Z",
-      "fileLength": 216517,
-      "downloadCount": 2176,
-      "fileSizeOnDisk": 425349,
-      "downloadUrl": "https://edge.forgecdn.net/files/8194/416/QoF-1.5.1.mcaddon",
-      "gameVersions": [
-        "26.12",
-        "26.13"
-      ],
-      "sortableGameVersions": [
-        {
-          "gameVersionName": "26.12",
-          "gameVersionPadded": "0000000026.0000000012",
-          "gameVersion": "26.12",
-          "gameVersionReleaseDate": "2026-05-13T00:00:00Z",
-          "gameVersionTypeId": 73249
-        },
-        {
-          "gameVersionName": "26.13",
-          "gameVersionPadded": "0000000026.0000000013",
-          "gameVersion": "26.13",
-          "gameVersionReleaseDate": "2026-05-13T00:00:00Z",
-          "gameVersionTypeId": 73249
-        }
-      ],
-      "dependencies": [],
-      "alternateFileId": 0,
-      "isServerPack": false,
-      "fileFingerprint": 1190438963,
-      "modules": [
-        {
-          "name": "QoF_v1.5.1_behavior_packs.mcpack",
-          "fingerprint": 1733033381
-        },
-        {
-          "name": "QoF_v1.5.1_resource_packs.mcpack",
-          "fingerprint": 2196345385
-        }
-      ]
-    },
     {
       "id": 8567615,
       "gameId": 78022,
@@ -433,7 +374,7 @@
       "isAvailable": true,
       "displayName": "QoF-1.5.3 (Pre-Release)",
       "fileName": "QoF-1.5.3.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "fileStatus": 4,
       "hashes": [
         {
@@ -447,7 +388,7 @@
       ],
       "fileDate": "2026-08-03T06:55:45.27Z",
       "fileLength": 228041,
-      "downloadCount": 394,
+      "downloadCount": 1446,
       "fileSizeOnDisk": 437051,
       "downloadUrl": "https://edge.forgecdn.net/files/8567/615/QoF-1.5.3.mcaddon",
       "gameVersions": [
@@ -505,49 +446,112 @@
           "fingerprint": 3024173870
         }
       ]
+    },
+    {
+      "id": 9309317,
+      "gameId": 78022,
+      "modId": 1500007,
+      "isAvailable": true,
+      "displayName": "QoF 1.6.0 /Unleashed",
+      "fileName": "QoF-1.6.0.mcaddon",
+      "releaseType": 1,
+      "fileStatus": 4,
+      "hashes": [
+        {
+          "value": "36967bde10934cab262f97d8babf2332f4f8a781",
+          "algo": 1
+        },
+        {
+          "value": "549ad02ce9ef629930f1b5a7996c7bf2",
+          "algo": 2
+        }
+      ],
+      "fileDate": "2026-10-24T13:13:37.28Z",
+      "fileLength": 226532,
+      "downloadCount": 56,
+      "fileSizeOnDisk": 435411,
+      "downloadUrl": "https://edge.forgecdn.net/files/9309/317/QoF-1.6.0.mcaddon",
+      "gameVersions": [
+        "26.50"
+      ],
+      "sortableGameVersions": [
+        {
+          "gameVersionName": "26.50",
+          "gameVersionPadded": "0000000026.0000000050",
+          "gameVersion": "26.50",
+          "gameVersionReleaseDate": "2026-09-16T00:00:00Z",
+          "gameVersionTypeId": 73249
+        }
+      ],
+      "dependencies": [
+        {
+          "modId": 1598520,
+          "relationType": 2
+        }
+      ],
+      "alternateFileId": 0,
+      "isServerPack": false,
+      "fileFingerprint": 4241897734,
+      "modules": [
+        {
+          "name": "QoF_v1.6.0_behavior_packs.mcpack",
+          "fingerprint": 232859887
+        },
+        {
+          "name": "QoF_v1.6.0_resource_packs.mcpack",
+          "fingerprint": 3171336940
+        }
+      ]
     }
   ],
   "latestFilesIndexes": [
     {
-      "gameVersion": "26.12",
-      "fileId": 8567615,
-      "filename": "QoF-1.5.3.mcaddon",
+      "gameVersion": "26.50",
+      "fileId": 9309317,
+      "filename": "QoF-1.6.0.mcaddon",
       "releaseType": 1,
       "gameVersionTypeId": 73249
     },
     {
-      "gameVersion": "26.13",
+      "gameVersion": "26.12",
       "fileId": 8567615,
       "filename": "QoF-1.5.3.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "gameVersionTypeId": 73249
     },
     {
       "gameVersion": "26.20",
       "fileId": 8567615,
       "filename": "QoF-1.5.3.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
+      "gameVersionTypeId": 73249
+    },
+    {
+      "gameVersion": "26.13",
+      "fileId": 8567615,
+      "filename": "QoF-1.5.3.mcaddon",
+      "releaseType": 2,
       "gameVersionTypeId": 73249
     },
     {
       "gameVersion": "26.30",
       "fileId": 8567615,
       "filename": "QoF-1.5.3.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "gameVersionTypeId": 73249
     },
     {
       "gameVersion": "26.12",
-      "fileId": 8194416,
-      "filename": "QoF-1.5.1.mcaddon",
-      "releaseType": 2,
+      "fileId": 7948295,
+      "filename": "QoF-1.5.0.mcaddon",
+      "releaseType": 1,
       "gameVersionTypeId": 73249
     },
     {
       "gameVersion": "26.13",
-      "fileId": 8194416,
-      "filename": "QoF-1.5.1.mcaddon",
-      "releaseType": 2,
+      "fileId": 7948295,
+      "filename": "QoF-1.5.0.mcaddon",
+      "releaseType": 1,
       "gameVersionTypeId": 73249
     },
     {
@@ -595,10 +599,10 @@
   ],
   "latestEarlyAccessFilesIndexes": [],
   "dateCreated": "2026-03-31T13:03:36.853Z",
-  "dateModified": "2026-08-03T07:03:51.68Z",
-  "dateReleased": "2026-08-03T06:55:45.27Z",
+  "dateModified": "2026-10-24T13:19:54.653Z",
+  "dateReleased": "2026-10-24T13:13:37.28Z",
   "allowModDistribution": true,
-  "gamePopularityRank": 4855,
+  "gamePopularityRank": 5201,
   "isAvailable": true,
   "hasCommentsEnabled": true,
   "licenseType": "Custom License",
