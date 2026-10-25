@@ -34,6 +34,7 @@ const MATERIAL_ORDER = {
 const BASE_COUNT = {
     slab: Math.ceil(1.5),
     stick: Math.ceil(2),
+    ladder: Math.ceil(0.5),
     sign: Math.ceil(0.5),
     door: Math.ceil(0.5),
     pressure_plate: Math.ceil(0.5),
@@ -162,12 +163,16 @@ for (const wood of WOOD_TYPE) {
     for (const input of inputs) {
         const material = getMaterial(input, woodEntry)
         const multiplier = PLANK_MULTIPLIER[material]
-        const count = Math.ceil(BASE_COUNT.stick * multiplier)
         const priority = 4
-        const filename = input === planks ? "stick.json" : `${input}_to_stick.json`
+
         fs.writeFileSync(
-            path.join(dir, filename),
-            recipe(input, "stick", priority, count)
+            path.join(dir, input === planks ? "stick.json" : `${input}_to_stick.json`),
+            recipe(input, "stick", priority, Math.ceil(BASE_COUNT.stick * multiplier))
+        )
+
+        fs.writeFileSync(
+            path.join(dir, input === planks ? "ladder.json" : `${input}_to_ladder.json`),
+            recipe(input, "ladder", priority, Math.ceil(BASE_COUNT.ladder * multiplier))
         )
     }
 }
