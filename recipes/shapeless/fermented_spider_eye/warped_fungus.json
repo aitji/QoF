@@ -1,0 +1,30 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shapeless": {
+        "description": {
+            "identifier": "minecraft:warped_fungus_fermented_spider_eye"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "ingredients": [
+            {
+                "item": "minecraft:spider_eye"
+            },
+            {
+                "item": "minecraft:warped_fungus"
+            },
+            {
+                "item": "minecraft:sugar"
+            }
+        ],
+        "unlock": [
+            {
+                "item": "minecraft:spider_eye"
+            }
+        ],
+        "result": {
+            "item": "minecraft:fermented_spider_eye"
+        }
+    }
+}

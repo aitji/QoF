@@ -1,0 +1,28 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:clay_ball"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:clay"
+            }
+        },
+        "result": {
+            "item": "minecraft:clay_ball",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:clay"
+            }
+        ]
+    }
+}

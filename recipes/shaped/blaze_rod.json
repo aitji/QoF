@@ -1,0 +1,29 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:blaze_rod"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "x",
+            "x"
+        ],
+        "key": {
+            "x": {
+                "item": "minecraft:blaze_powder"
+            }
+        },
+        "result": {
+            "item": "minecraft:blaze_rod",
+            "count": 1
+        },
+        "unlock": [
+            {
+                "item": "minecraft:blaze_powder"
+            }
+        ]
+    }
+}
