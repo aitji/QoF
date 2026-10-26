@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:birch_planks"
+                "item": "minecraft:birch_planks_slab"
             }
         ]
     }

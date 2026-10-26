@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:warped_planks"
+                "item": "minecraft:warped_planks_slab"
             }
         ]
     }

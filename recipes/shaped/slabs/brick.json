@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:brick_block"
+                "item": "minecraft:brick_block_slab"
             }
         ]
     }

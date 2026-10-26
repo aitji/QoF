@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:poplar_planks"
+                "item": "minecraft:poplar_planks_slab"
             }
         ]
     }

@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:cobblestone"
+                "item": "minecraft:cobblestone_slab"
             }
         ]
     }

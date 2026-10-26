@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:polished_granite"
+                "item": "minecraft:polished_granite_slab"
             }
         ]
     }

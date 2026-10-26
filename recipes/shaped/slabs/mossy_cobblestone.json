@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:mossy_cobblestone"
+                "item": "minecraft:mossy_cobblestone_slab"
             }
         ]
     }

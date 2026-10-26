@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:smooth_quartz"
+                "item": "minecraft:smooth_quartz_slab"
             }
         ]
     }

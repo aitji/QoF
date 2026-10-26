@@ -8,45 +8,45 @@ const ROOT = __dirname
 
 const SLABS = { // comment = mojang alr have it
     // slab: block
-    'smooth_stone':                 'smooth_stone',
-    'normal_stone':                 'stone',
-    'cobblestone':                  'cobblestone',
-    'mossy_cobblestone':            'mossy_cobblestone',
+    'smooth_stone': 'smooth_stone',
+    'normal_stone': 'stone',
+    'cobblestone': 'cobblestone',
+    'mossy_cobblestone': 'mossy_cobblestone',
     // 'stone_brick':               'stone_bricks',
-    'mossy_stone_brick':            'mossy_stone_bricks',
+    'mossy_stone_brick': 'mossy_stone_bricks',
     // 'sandstone':                 'sandstone',
-    'cut_sandstone':                'cut_sandstone',
-    'smooth_sandstone':             'smooth_sandstone',
+    'cut_sandstone': 'cut_sandstone',
+    'smooth_sandstone': 'smooth_sandstone',
     // 'red_sandstone':             'red_sandstone',
-    'cut_red_sandstone':            'cut_red_sandstone',
-    'smooth_red_sandstone':         'smooth_red_sandstone',
-    'granite':                      'granite',
-    'polished_granite':             'polished_granite',
-    'diorite':                      'diorite',
-    'polished_diorite':             'polished_diorite',
-    'andesite':                     'andesite',
-    'polished_andesite':            'polished_andesite',
-    'brick':                        'brick_block',
+    'cut_red_sandstone': 'cut_red_sandstone',
+    'smooth_red_sandstone': 'smooth_red_sandstone',
+    'granite': 'granite',
+    'polished_granite': 'polished_granite',
+    'diorite': 'diorite',
+    'polished_diorite': 'polished_diorite',
+    'andesite': 'andesite',
+    'polished_andesite': 'polished_andesite',
+    'brick': 'brick_block',
     // 'nether_brick':              'nether_brick',
-    'red_nether_brick':             'red_nether_brick',
-    'end_stone_brick':              'end_bricks',
+    'red_nether_brick': 'red_nether_brick',
+    'end_stone_brick': 'end_bricks',
     // 'quartz':                    'quartz_block',
-    'smooth_quartz':                'smooth_quartz',
+    'smooth_quartz': 'smooth_quartz',
     // 'purpur':                    'purpur_block',
-    'prismarine':                   'prismarine',
-    'dark_prismarine':              'dark_prismarine',
-    'prismarine_brick':             'prismarine_bricks',
-    'blackstone':                   'blackstone',
+    'prismarine': 'prismarine',
+    'dark_prismarine': 'dark_prismarine',
+    'prismarine_brick': 'prismarine_bricks',
+    'blackstone': 'blackstone',
     // 'polished_blackstone':       'polished_blackstone',
-    'polished_blackstone_brick':    'polished_blackstone_bricks',
+    'polished_blackstone_brick': 'polished_blackstone_bricks',
     // 'cobbled_deepslate':         'cobbled_deepslate',
-    'polished_deepslate':           'polished_deepslate',
-    'deepslate_tile':               'deepslate_tiles',
-    'deepslate_brick':              'deepslate_bricks',
+    'polished_deepslate': 'polished_deepslate',
+    'deepslate_tile': 'deepslate_tiles',
+    'deepslate_brick': 'deepslate_bricks',
     // 'tuff':                      'tuff',
     // 'tuff_brick':                'tuff_bricks',
-    'polished_tuff':                'polished_tuff',
-    'mud_brick':                    'mud_bricks',
+    'polished_tuff': 'polished_tuff',
+    'mud_brick': 'mud_bricks',
     // 'cut_copper':                'cut_copper',
     // 'exposed_cut_copper':        'exposed_cut_copper',
     // 'weathered_cut_copper':      'weathered_cut_copper',
@@ -55,21 +55,26 @@ const SLABS = { // comment = mojang alr have it
     // 'waxed_exposed_cut_copper':  'waxed_exposed_cut_copper',
     // 'waxed_weathered_cut_copper':'waxed_weathered_cut_copper',
     // 'waxed_oxidized_cut_copper': 'waxed_oxidized_cut_copper',
-    'bamboo_mosaic':                'bamboo_mosaic',
+    'bamboo_mosaic': 'bamboo_mosaic',
 
-    'oak':                          'oak_planks',
-    'spruce':                       'spruce_planks',
-    'birch':                        'birch_planks',
-    'jungle':                       'jungle_planks',
-    'acacia':                       'acacia_planks',
-    'dark_oak':                     'dark_oak_planks',
-    'mangrove':                     'mangrove_planks',
-    'cherry':                       'cherry_planks',
-    'pale_oak':                     'pale_oak_planks',
+    'oak': 'oak_planks',
+    'spruce': 'spruce_planks',
+    'birch': 'birch_planks',
+    'jungle': 'jungle_planks',
+    'acacia': 'acacia_planks',
+    'dark_oak': 'dark_oak_planks',
+    'mangrove': 'mangrove_planks',
+    'cherry': 'cherry_planks',
+    'pale_oak': 'pale_oak_planks',
     // 'bamboo':                    'bamboo_planks',
-    'crimson':                      'crimson_planks',
-    'warped':                       'warped_planks',
-    'poplar':                       'poplar_planks',
+    'crimson': 'crimson_planks',
+    'warped': 'warped_planks',
+
+    'poplar': 'poplar_planks',
+    'polished_cinnabar': 'polished_cinnabar',
+    'cinnabar_brick': 'cinnabar_bricks',
+    'polished_sulfur': 'polished_sulfur',
+    'sulfur_brick': 'sulfur_bricks',
 }
 
 const dir = path.join(ROOT, 'slabs')
@@ -86,8 +91,34 @@ for (const [slab, result] of Object.entries(SLABS)) {
                 "pattern": ["x", "x"],
                 "key": { "x": { "item": `minecraft:${slab}_slab` } },
                 "result": { "item": `minecraft:${result}`, "count": 1 },
-                "unlock": [{ "item": `minecraft:${result}` }]
+                "unlock": [{ "item": `minecraft:${result}_slab` }]
             }
         }, null, 4)
     )
+}
+
+// slab
+const colour = [
+    "white", "light_gray", "gray", "black", "brown",
+    "red", "orange", "yellow", "lime", "green", "cyan",
+    "light_blue", "blue", "pink", "purple", "magenta"
+]
+const variant = ['_wool', '_concrete']
+for (const v of variant) {
+    for (const c of colour) {
+        fs.writeFileSync(
+            path.join(dir, `${c}${v}_slab.json`),
+            JSON.stringify({
+                "format_version": "1.20.10",
+                "minecraft:recipe_shaped": {
+                    "description": { "identifier": `minecraft:${c}${v}_slab_to_full_block` },
+                    "tags": ["crafting_table"],
+                    "pattern": ["x", "x"],
+                    "key": { "x": { "item": `minecraft:${c}${v}_slab` } },
+                    "result": { "item": `minecraft:${c}${v}`, "count": 1 },
+                    "unlock": [{ "item": `minecraft:${c}${v}_slab` }]
+                }
+            }, null, 4)
+        )
+    }
 }

@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:diorite"
+                "item": "minecraft:diorite_slab"
             }
         ]
     }

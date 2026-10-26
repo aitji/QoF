@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:blackstone"
+                "item": "minecraft:blackstone_slab"
             }
         ]
     }

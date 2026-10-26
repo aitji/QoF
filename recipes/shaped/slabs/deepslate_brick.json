@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:deepslate_bricks"
+                "item": "minecraft:deepslate_bricks_slab"
             }
         ]
     }

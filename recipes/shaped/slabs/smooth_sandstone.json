@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:smooth_sandstone"
+                "item": "minecraft:smooth_sandstone_slab"
             }
         ]
     }

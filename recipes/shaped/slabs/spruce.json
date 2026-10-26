@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:spruce_planks"
+                "item": "minecraft:spruce_planks_slab"
             }
         ]
     }
