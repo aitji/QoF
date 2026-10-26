@@ -1,7 +1,7 @@
 {
     "format_version": "1.20.10",
     "minecraft:recipe_shapeless": {
-        "description": {"identifier": "qof:glowstone"},
+        "description": {"identifier": "minecraft:dust_glowstone"},
         "tags": ["crafting_table"],
         "ingredients": [
             {"item": "minecraft:glowstone"}
