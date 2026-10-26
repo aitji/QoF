@@ -20,9 +20,9 @@
 			},
 			"minecraft:emitter_shape_point": {
 				"offset": [
-					"Math.random(-.5,1)",
-					"Math.random(-.5,1)",
-					"Math.random(-.5,1)"
+					"Math.random(-0.7,0.7)",
+					"Math.random(-0.7,0.7)",
+					"Math.random(-0.7,0.7)"
 				]
 			},
 			"minecraft:particle_lifetime_expression": {
