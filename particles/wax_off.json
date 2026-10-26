@@ -12,7 +12,6 @@
 			"minecraft:emitter_initialization": {
 				"creation_expression": "variable.size = Math.random(0.1, 0.2);"
 			},
-			"minecraft:particle_initial_speed": -0.05,
 			"minecraft:emitter_rate_instant": {
 				"num_particles": 1
 			},
@@ -28,14 +27,6 @@
 			},
 			"minecraft:particle_lifetime_expression": {
 				"max_lifetime": "((v.particle_random_1 * 30) + 10) / 20"
-			},
-			"minecraft:particle_motion_dynamic": {
-				"linear_acceleration": [
-					0,
-					0,
-					0
-				],
-				"linear_drag_coefficient": 0.96
 			},
 			"minecraft:particle_appearance_billboard": {
 				"size": [
@@ -55,6 +46,14 @@
 						8
 					]
 				}
+			},
+			"minecraft:particle_appearance_tinting": {
+				"color": [
+					"math.clamp(variable.color.r * 1.2 * math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
+					"math.clamp(variable.color.g * 1.2 * math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
+					"math.clamp(variable.color.b * 1.2 * math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
+					1.0
+				]
 			}
 		}
 	}
