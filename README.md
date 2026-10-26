@@ -274,11 +274,11 @@ Concrete powder items will automatically convert to concrete when they enter wat
 
 ### Cauldron+
 
+Cauldrons in Bedrock Edition now have expanded functionality with $\color{#fff000}\textsf{QoF (Quality of Feature)}$
+
 <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/cauldron.gif" alt="First-person view: The player walks into their bedroom and stops at a cauldron. They wash blue stained glass into regular glass, add red dye to the cauldron, and dye the glass red. They then switch to yellow dye, turning the cauldron's red water orange, before using it to dye more glass and a cushion." width="1080">
 
 > **alt-messaage** First-person view: The player walks into their bedroom and stops at a cauldron. They wash blue stained glass into regular glass, add red dye to the cauldron, and dye the glass red. They then switch to yellow dye, turning the cauldron's red water orange, before using it to dye more glass and a cushion.
-
-Cauldrons in Bedrock Edition now have expanded functionality with $\color{#fff000}\textsf{QoF (Quality of Feature)}$
 
 | Item                  | Dye                    | Clean                   |
 | --------------------- | ---------------------- | ----------------------- |
@@ -430,11 +430,12 @@ Allows players to double-sneak to swap items between their mainhand and offhand.
 
 ### Unwaxed Sign
 
-> [!NOTE]
-> Sorry we didn't have a GIFs to show (yet)
-
 Signs can now be $\color{#fff000}\textsf{unwaxed using an axe}$.
 Durability is consumed by default, but this can be configured in the in-game settings panel.
+
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/unwaxed.gif" alt="First-person view: A red-haired player (aitji) stands on the left, trying to wax a hanging sign labeled 'Bed room & Office.' Meanwhile, another first-person player (picker) tries to unwax the same sign. The GIF loops seamlessly." width="1080">
+
+> **alt-messaage** First-person view: A red-haired player (aitji) stands on the left, trying to wax a hanging sign labeled 'Bed room & Office.' Meanwhile, another first-person player (picker) tries to unwax the same sign. The GIF loops seamlessly.
 
 ### Carrying Container
 
