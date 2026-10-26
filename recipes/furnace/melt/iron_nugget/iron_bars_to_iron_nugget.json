@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:iron_bars_to_iron_nugget"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:iron_bars",
+        "output": "minecraft:iron_nugget",
+        "unlock": [
+            {
+                "item": "minecraft:iron_bars"
+            }
+        ]
+    }
+}
