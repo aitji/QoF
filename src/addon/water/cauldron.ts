@@ -40,8 +40,9 @@ function getNearestDye(r: number, g: number, b: number) {
 
 type DyeableEntry = {
     match: (id: string) => boolean
-    dyed: (id: string, dye: string) => string
+    dyed: (id: string, dye: string) => string | undefined
     clean: (id: string) => string
+    allowClean?: boolean
 }
 
 const DYEABLE: DyeableEntry[] = [
@@ -100,6 +101,12 @@ const DYEABLE: DyeableEntry[] = [
         dyed: (_id, dye) => `minecraft:${dye}_candle`,
         clean: _ => 'minecraft:candle',
     },
+    { // arrow -> arrow
+        match: id => id === 'minecraft:arrow',
+        dyed: (_id, dye) => undefined,
+        clean: _ => 'minecraft:arrow',
+        allowClean: true
+    },
 
     // (shulkers, banners, bundles) have nbt cannot safe replace
 ]
@@ -118,18 +125,21 @@ function applyDye(
     const amount = itemStack.amount
     const entry = DYEABLE.find(e => e.match(id))
     if (!entry) return
+    const cls = entry.clean(id)
+    const resultId = isWater ? cls : entry.dyed(id, nearDye)
 
-    const resultId = isWater ? entry.clean(id) : entry.dyed(id, nearDye)
-    if (resultId === id) return reduceWaterState(block, fluid)
+    if (!resultId) return
+    const allowClean = entry?.allowClean
+    if (cls === id && !allowClean) return // wash the wash
+    if (resultId === id && !allowClean) return reduceWaterState(block, fluid)
 
     const used = clamp(amount, 1, 16)
     const remain = amount - used
-
     const giveItem = new ItemStack(resultId, used)
     const remainItem = remain > 0 ? new ItemStack(id, remain) : undefined
 
-    addItem(player, giveItem)
     setEqu(player, remainItem)
+    addItem(player, giveItem)
 
     reduceWaterState(block, fluid)
 }
