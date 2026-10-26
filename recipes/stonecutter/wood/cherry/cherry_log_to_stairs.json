@@ -3,7 +3,7 @@
     "minecraft:recipe_shapeless": {
         "description": { "identifier": "minecraft:stonecutter_cherry_log_to_cherry_stairs" },
         "tags": ["stonecutter"],
-        "priority": 0.1,
+        "priority": 0,
         "ingredients": [{ "item": "minecraft:cherry_log" }],
         "result": { "item": "minecraft:cherry_stairs", "count": 8 },
         "unlock": [{ "item": "minecraft:cherry_log" }]

@@ -1,5 +1,6 @@
 {
     "name": "qof",
+    "type": "module",
     "author": {
         "name": "aitji, pickerth-12",
         "email": "aitji@duck.com",

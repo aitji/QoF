@@ -3,7 +3,7 @@
     "minecraft:recipe_shapeless": {
         "description": { "identifier": "minecraft:stonecutter_dark_oak_planks_to_dark_oak_stairs" },
         "tags": ["stonecutter"],
-        "priority": 0.1,
+        "priority": 0,
         "ingredients": [{ "item": "minecraft:dark_oak_planks" }],
         "result": { "item": "minecraft:dark_oak_stairs", "count": 2 },
         "unlock": [{ "item": "minecraft:dark_oak_planks" }]

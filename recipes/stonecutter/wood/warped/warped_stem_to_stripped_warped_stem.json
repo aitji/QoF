@@ -3,7 +3,7 @@
     "minecraft:recipe_shapeless": {
         "description": { "identifier": "minecraft:stonecutter_warped_stem_to_stripped_warped_stem" },
         "tags": ["stonecutter"],
-        "priority": -3,
+        "priority": 2,
         "ingredients": [{ "item": "minecraft:warped_stem" }],
         "result": { "item": "minecraft:stripped_warped_stem", "count": 1 },
         "unlock": [{ "item": "minecraft:warped_stem" }]

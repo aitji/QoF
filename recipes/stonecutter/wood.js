@@ -15,7 +15,7 @@ const WOOD_TYPE = [
 ]
 
 const ITEM_ORDER = {
-    stairs: 0.1,
+    stairs: 0,
     slab: 1,
     fence: 2,
     fence_gate: 3,
@@ -103,10 +103,10 @@ const recipe = (input, output, priority, count) => `{
 }`
 
 const BLOCK_CONV_PRIORITY = {
-    log: { planks: -4, stripped_log: -3, wood: -2, stripped_wood: -1 },
-    wood: { planks: -3, stripped_wood: -2, stripped_log: -1 },
-    stripped_log: { planks: -2, stripped_wood: -1 },
-    stripped_wood: { planks: -2, stripped_log: -1 },
+    log: { planks: 1, stripped_log: 2, wood: 3, stripped_wood: 4 },
+    wood: { planks: 1, stripped_wood: 2, stripped_log: 3 },
+    stripped_log: { planks: 1, stripped_wood: 2 },
+    stripped_wood: { planks: 1, stripped_log: 2 },
 }
 
 for (const wood of WOOD_TYPE) {

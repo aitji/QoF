@@ -3,7 +3,7 @@
     "minecraft:recipe_shapeless": {
         "description": { "identifier": "minecraft:stonecutter_stripped_warped_hyphae_to_warped_stairs" },
         "tags": ["stonecutter"],
-        "priority": 0.1,
+        "priority": 0,
         "ingredients": [{ "item": "minecraft:stripped_warped_hyphae" }],
         "result": { "item": "minecraft:warped_stairs", "count": 8 },
         "unlock": [{ "item": "minecraft:stripped_warped_hyphae" }]

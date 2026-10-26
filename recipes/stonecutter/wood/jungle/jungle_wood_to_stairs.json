@@ -3,7 +3,7 @@
     "minecraft:recipe_shapeless": {
         "description": { "identifier": "minecraft:stonecutter_jungle_wood_to_jungle_stairs" },
         "tags": ["stonecutter"],
-        "priority": 0.1,
+        "priority": 0,
         "ingredients": [{ "item": "minecraft:jungle_wood" }],
         "result": { "item": "minecraft:jungle_stairs", "count": 8 },
         "unlock": [{ "item": "minecraft:jungle_wood" }]

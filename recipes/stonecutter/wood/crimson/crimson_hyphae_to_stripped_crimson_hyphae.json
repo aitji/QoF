@@ -3,7 +3,7 @@
     "minecraft:recipe_shapeless": {
         "description": { "identifier": "minecraft:stonecutter_crimson_hyphae_to_stripped_crimson_hyphae" },
         "tags": ["stonecutter"],
-        "priority": -2,
+        "priority": 2,
         "ingredients": [{ "item": "minecraft:crimson_hyphae" }],
         "result": { "item": "minecraft:stripped_crimson_hyphae", "count": 1 },
         "unlock": [{ "item": "minecraft:crimson_hyphae" }]
