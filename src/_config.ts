@@ -352,6 +352,8 @@ export const SETTINGS = Object.freeze({
             'minecraft:resin_clump': 0.65,
             'minecraft:sugar': 0.50,
             'minecraft:lit_pumpkin': 0.65,
+            'minecraft:paper': 0.65,
+            'minecraft:book': 0.85,
 
             // lysosome inactived
             'minecraft:rotten_flesh': 0.65,
@@ -385,7 +387,14 @@ export const SETTINGS = Object.freeze({
             'minecraft:white_wool': 0.85,
             'minecraft:yellow_wool': 0.85,
 
+            'minecraft:slime': 0.85,
+            'minecraft:magma': 0.85,
+
             // passive mob loot
+            'minecraft:egg': 0.3,
+            'minecraft:brown_egg': 0.3,
+            'minecraft:blue_egg': 0.3,
+            'minecraft:turtle_egg': 0.3,
             'minecraft:chicken': 0.5,
             'minecraft:porkchop': 0.5,
             'minecraft:beef': 0.5,
@@ -398,6 +407,11 @@ export const SETTINGS = Object.freeze({
             'minecraft:rabbit_foot': 0.5,
             'minecraft:frog_spawn': 0.5,
             'minecraft:leather': 0.65,
+            'minecraft:leather_horse_armor': 0.65,
+            'minecraft:leather_helmet': 0.65,
+            'minecraft:leather_chestplate': 0.65,
+            'minecraft:leather_leggings': 0.65,
+            'minecraft:leather_boots': 0.65,
             'minecraft:phantom_membrane': 0.65,
             'minecraft:cod': 0.5,
             'minecraft:salmon': 0.5,
