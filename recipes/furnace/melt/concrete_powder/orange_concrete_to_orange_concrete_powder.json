@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:orange_concrete_to_orange_concrete_powder"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:orange_concrete",
+        "output": "minecraft:orange_concrete_powder",
+        "unlock": [
+            {
+                "item": "minecraft:orange_concrete"
+            }
+        ]
+    }
+}

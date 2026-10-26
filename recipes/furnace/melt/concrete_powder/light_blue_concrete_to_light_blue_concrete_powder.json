@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:light_blue_concrete_to_light_blue_concrete_powder"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:light_blue_concrete",
+        "output": "minecraft:light_blue_concrete_powder",
+        "unlock": [
+            {
+                "item": "minecraft:light_blue_concrete"
+            }
+        ]
+    }
+}

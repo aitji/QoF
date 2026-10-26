@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:white_concrete_to_white_concrete_powder"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:white_concrete",
+        "output": "minecraft:white_concrete_powder",
+        "unlock": [
+            {
+                "item": "minecraft:white_concrete"
+            }
+        ]
+    }
+}

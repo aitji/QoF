@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:purple_concrete_to_purple_concrete_powder"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:purple_concrete",
+        "output": "minecraft:purple_concrete_powder",
+        "unlock": [
+            {
+                "item": "minecraft:purple_concrete"
+            }
+        ]
+    }
+}

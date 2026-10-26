@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:lime_concrete_to_lime_concrete_powder"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:lime_concrete",
+        "output": "minecraft:lime_concrete_powder",
+        "unlock": [
+            {
+                "item": "minecraft:lime_concrete"
+            }
+        ]
+    }
+}

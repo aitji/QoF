@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:black_concrete_to_black_concrete_powder"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:black_concrete",
+        "output": "minecraft:black_concrete_powder",
+        "unlock": [
+            {
+                "item": "minecraft:black_concrete"
+            }
+        ]
+    }
+}

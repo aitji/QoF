@@ -1,0 +1,19 @@
+{
+    "format_version": "1.20.10",
+    "minecraft:recipe_furnace": {
+        "description": {
+            "identifier": "minecraft:yellow_concrete_to_yellow_concrete_powder"
+        },
+        "tags": [
+            "blast_furnace",
+            "furnace"
+        ],
+        "input": "minecraft:yellow_concrete",
+        "output": "minecraft:yellow_concrete_powder",
+        "unlock": [
+            {
+                "item": "minecraft:yellow_concrete"
+            }
+        ]
+    }
+}
