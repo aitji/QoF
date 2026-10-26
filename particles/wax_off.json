@@ -47,11 +47,20 @@
 					]
 				}
 			},
+			"minecraft:particle_initial_speed": -0.05,
+			"minecraft:particle_motion_dynamic": {
+				"linear_acceleration": [
+					0,
+					0,
+					0
+				],
+				"linear_drag_coefficient": 0.96
+			},
 			"minecraft:particle_appearance_tinting": {
 				"color": [
-					"math.clamp(math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
-					"math.clamp(math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
-					"math.clamp(math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
+					"math.clamp(1 * 1.2 * math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
+					"math.clamp(0.90196 * 1.2 * math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
+					"math.clamp(1 * 1.2 * math.clamp((variable.particle_age + 0.5) / variable.particle_lifetime, 0, 1), 0, 1)",
 					1.0
 				]
 			}
