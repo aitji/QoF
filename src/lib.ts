@@ -33,6 +33,7 @@ export const QOF_INFORMATION = {
     url: 'https://github.com/aitji/QoF'
 }
 
+export const loop = (c: number, func: (i: number) => void) => { for (let i = 0; i < c; i++) func(i) }
 export const isSolid = (block?: Block): boolean => !!block && !block.isAir && !block.isLiquid && !block.isWaterlogged &&
     block.isLiquidBlocking(LiquidType.Water) &&
     !block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)

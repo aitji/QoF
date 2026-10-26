@@ -1,8 +1,8 @@
 import { BlockComponentTypes, EquipmentSlot, PlayerInteractWithBlockBeforeEvent, system } from "@minecraft/server"
-import { applyItemDamage, checkPerm, dumpMeThatComp, getEqu, playSound, RUNTIME, setEqu } from "../lib"
-import * as cache from "../core/cache"
+import { applyItemDamage, checkPerm, getEqu, loop, playSound, RUNTIME, setEqu } from "../lib"
+
 const {
-    DEBUG, BLOCK_INTERACTION_DELAY,
+    BLOCK_INTERACTION_DELAY,
     WAXED_OF: { DURABILITY }
 } = RUNTIME
 
@@ -47,7 +47,7 @@ export const waxedOff_playerInteractWithBlock = (data: PlayerInteractWithBlockBe
 
             sign.setWaxed(false)
             playSound(dim, center, { ID: "copper.wax.off", VOLUME: 1.0, PITCH: [0.8, 1.2] })
-            // dim.spawnParticle("minecraft:wind_explosion_emitter", center)
+            loop(30, () => dim.spawnParticle("qof:wax_off", center))
         })
     }
 }
