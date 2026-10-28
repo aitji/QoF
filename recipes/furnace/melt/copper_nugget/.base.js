@@ -29,7 +29,7 @@ for (const b of base) {
     fs.mkdirSync(dir, { recursive: true })
 
     for (const v of variant) {
-        const inp = `${v}${b}`
+        const inp = `${v}copper_${b}`
         const out = `copper_nugget`
         fs.writeFileSync(
             path.join(dir, `${inp}_to_${out}.json`),
