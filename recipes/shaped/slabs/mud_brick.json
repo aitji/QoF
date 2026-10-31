@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:mud_bricks_slab"
+                "item": "minecraft:mud_brick_slab"
             }
         ]
     }

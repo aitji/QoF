@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:stone_slab"
+                "item": "minecraft:normal_stone_slab"
             }
         ]
     }

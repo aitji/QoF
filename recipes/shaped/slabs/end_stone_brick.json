@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:end_bricks_slab"
+                "item": "minecraft:end_stone_brick_slab"
             }
         ]
     }

@@ -91,7 +91,7 @@ for (const [slab, result] of Object.entries(SLABS)) {
                 "pattern": ["x", "x"],
                 "key": { "x": { "item": `minecraft:${slab}_slab` } },
                 "result": { "item": `minecraft:${result}`, "count": 1 },
-                "unlock": [{ "item": `minecraft:${result}_slab` }]
+                "unlock": [{ "item": `minecraft:${slab}_slab` }]
             }
         }, null, 4)
     )

@@ -22,7 +22,7 @@
         },
         "unlock": [
             {
-                "item": "minecraft:deepslate_tiles_slab"
+                "item": "minecraft:deepslate_tile_slab"
             }
         ]
     }
