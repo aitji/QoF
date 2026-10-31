@@ -24,12 +24,12 @@
   "subpacks": [
     {
       "folder_name": "bat-disabled",
-      "name": "§l§cQ§r§lo§cF§r §7by §c@aitji§r (script) & §9@pickerth-12§r (design). Tweak anything below to your liking!\n§cDon't forget to turn on BetaAPIs in Experiments.\n§7Changing a setting requires §l§4/reload§r§7 or §l§4relog§r§7 to take effect.\n\nDisable §6Bat Barter§7 players can no longer trade glow berries with bats",
+      "name": "§l§cQ§r§lo§cF§r §7by §c@aitji§r (script) & §9@pickerth-12§r (design). Tweak anything below to your liking!\n§7Changing a setting requires §l§4/reload§r§7 or §l§4relog§r§7 to take effect.\n\nDisable §6Bat Barter§7 players can no longer trade glow berries with bats",
       "memory_performance_tier": 0
     },
     {
       "folder_name": "bat-enabled",
-      "name": "§l§cQ§r§lo§cF§r §7by §c@aitji§r (script) & §9@pickerth-12§r (design). Tweak anything below to your liking!\n§cDon't forget to turn on BetaAPIs in Experiments.\n§7Changing a setting requires §l§4/reload§r§7 or §l§4relog§r§7 to take effect.\n\nEnable §6Bat Barter§7 players can trade glow berries with bats",
+      "name": "§l§cQ§r§lo§cF§r §7by §c@aitji§r (script) & §9@pickerth-12§r (design). Tweak anything below to your liking!\n§7Changing a setting requires §l§4/reload§r§7 or §l§4relog§r§7 to take effect.\n\nEnable §6Bat Barter§7 players can trade glow berries with bats",
       "memory_performance_tier": 0
     }
   ],
