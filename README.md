@@ -264,37 +264,48 @@ Damaged Anvil  ->  Chipped Anvil  ->  Anvil
 
 ### Hardens Concrete Powder
 
-Concrete powder items will automatically convert to concrete when they enter water. The conversion happens after a short delay that scales with the stack size*, and the resulting concrete.
+Concrete powder items automatically harden into concrete when they come into contact with water!
 
-<small>*non linearly</small>
+The conversion has a **stack-size-dependent delay**. Larger stacks take longer to harden, but the delay scales non-linearly, so doubling the stack size does not double the waiting time.
 
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/powder-result.gif" alt="Top-down view: player throws concrete powder into water pool, allay nearby, powder converts to concrete" width="1080">
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/powder-result.gif" alt="Top-down view: A player throws concrete powder into a water pool. After a short delay, the powder hardens into concrete, which the player then collects." width="1080">
 
 > **alt-message** Top-down view centered on a water pool with an allay floating nearby emitting soft light. The player walks in from the bottom-center and throws concrete powder into the pool. After a short delay the powder converts, and the player picks up the resulting concrete and walks off.
 
 ### Cauldron+
 
-Cauldrons in Bedrock Edition now have expanded functionality with $\color{#fff000}\textsf{QoF (Quality of Feature)}$
+Cauldrons in Bedrock Edition now have expanded functionality with $\color{#fff000}\textsf{QoF (Quality of Feature)}$.
 
-<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/cauldron.gif" alt="First-person view: The player walks into their bedroom and stops at a cauldron. They wash blue stained glass into regular glass, add red dye to the cauldron, and dye the glass red. They then switch to yellow dye, turning the cauldron's red water orange, before using it to dye more glass and a cushion." width="1080">
+Use a water-filled cauldron to **clean or recolor supported items**. Plain water cleans items back to their default color, while dyed water applies the closest matching dye color.
 
-> **alt-messaage** First-person view: The player walks into their bedroom and stops at a cauldron. They wash blue stained glass into regular glass, add red dye to the cauldron, and dye the glass red. They then switch to yellow dye, turning the cauldron's red water orange, before using it to dye more glass and a cushion.
+The cauldron's water color determines the dye. When enabled, nearby colors are matched to the closest available dye, allowing blended water colors to work too. Each operation consumes one cauldron water level.
 
-| Item                  | Dye                    | Clean                   |
-| --------------------- | ---------------------- | ----------------------- |
-| Carpet                | `#` Carpet             | White Carpet            |
-| Wool                  | `#` Wool               | White Wool              |
-| Concrete              | `#` Concrete           | White Concrete          |
-| Concrete Powder       | `#` Concrete Powder    | White Concrete Powder   |
-| Glass                 | `#` Stained Glass      | Glass                   |
-| Glass Pane            | `#` Stained Glass Pane | Glass Pane              |
-| Hardened Clay         | `#` Terracotta         | Hardened Clay           |
-| `#` Terracotta        | `#` Terracotta         | Hardened Clay           |
-| `#` Glazed Terracotta | `#` Glazed Terracotta  | White Glazed Terracotta |
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/cauldron.gif" alt="First-person view: A player washes blue stained glass in a cauldron, dyes glass red, mixes yellow dye into the red water to create orange, then uses the resulting water to dye more glass and a cushion." width="1080">
 
-> Note
-> `#` represents any color\
-> Shulkers, banners, and bundles are not supported due to NBT limitations
+> **Alt-message:** A first-person view: The player walks into their bedroom and stops at a cauldron. They wash blue stained glass into regular glass, add red dye to the cauldron, and dye the glass red. They then add yellow dye, turning the red water orange, before using the orange water to dye more glass and a cushion.
+
+**Supported items**
+
+| Item                   | Dye                        | Clean                        |
+| ---------------------- | -------------------------- | ---------------------------- |
+| Carpet                 | `#` Carpet                 | White Carpet                 |
+| Wool                   | `#` Wool                   | White Wool                   |
+| Wool Slab / Stairs     | `#` Wool Slab / Stairs     | White Wool Slab / Stairs     |
+| Concrete               | `#` Concrete               | White Concrete               |
+| Concrete Slab / Stairs | `#` Concrete Slab / Stairs | White Concrete Slab / Stairs |
+| Concrete Powder        | `#` Concrete Powder*       | White Concrete Powder*       |
+| Glass                  | `#` Stained Glass          | Glass                        |
+| Glass Pane             | `#` Stained Glass Pane     | Glass Pane                   |
+| Terracotta             | `#` Terracotta             | Hardened Clay                |
+| Glazed Terracotta      | `#` Glazed Terracotta      | White Glazed Terracotta      |
+| Cushion                | `#` Cushion                | White Cushion                |
+| Candle                 | `#` Candle                 | Candle                       |
+
+> **Notes**
+>
+> `#` represents any of the 16 supported dye colors\
+> \*Concrete powder will harden into concrete when dyed or cleaned.\
+> \*\*Shulkers, banners, and bundles are not supported due to their NBT data limitations.
 
 ### Composter+
 
@@ -601,7 +612,7 @@ Branding, media, and other protected materials are reserved under [COPYRIGHT.md]
 ```
   README INFO
 Version: v1.6.0
-Last updated: 24 Oct 2026
+Last updated: 6 Nov 2026
 Has README Update: True
 
   PACK INFO
