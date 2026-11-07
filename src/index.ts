@@ -18,6 +18,7 @@ import * as offhand from "./addon/offhand/core"
 import * as harvest from "./addon/harvest"
 import * as door from "./addon/door"
 import * as waxedOff from "./addon/waxedOff"
+import * as loots from "./addon/loot_tables/core"
 
 // tick
 system.run(() => {
@@ -56,8 +57,13 @@ system.run(() => {
 })
 
 world.afterEvents.entityDie.subscribe(data => {
-    if (RUNTIME.CARRIED_CHEST.ENABLED && !cache.getGameRule("keepInventory")) chest.chest_entityDie(data)
-}, { entityTypes: ['minecraft:player'] })
+    if (data.deadEntity.typeId === 'minecraft:player') {
+        if (RUNTIME.CARRIED_CHEST.ENABLED && !cache.getGameRule("keepInventory"))
+            chest.chest_entityDie(data)
+    } else {
+        loots.loots_entityDie(data)
+    }
+})
 
 world.afterEvents.entityRemove.subscribe(data => {
     if (RUNTIME.LIGHT.ENABLED) light.light_entityRemove(data)
@@ -115,5 +121,5 @@ world.afterEvents.pistonActivate.subscribe(data => {
 })
 
 // core routes
-world.beforeEvents.entityItemPickup.subscribe(data => { lib.helper.helper_entityItemPickup(data) }, { entityFilter: { type: "minecraft:player" } })
+world.beforeEvents.entityItemPickup.subscribe(data => { lib.helper.helper_entityItemPickup(data) })
 system.beforeEvents.startup.subscribe(event => { debug.debug_startup(event) })

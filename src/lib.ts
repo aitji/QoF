@@ -33,6 +33,8 @@ export const QOF_INFORMATION = {
     url: 'https://github.com/aitji/QoF'
 }
 
+export const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
+export const rand = (min: number, max: number) => Math.random() * (max - min) + min
 export const loop = (c: number, func: (i: number) => void) => { for (let i = 0; i < c; i++) func(i) }
 export const isSolid = (block?: Block): boolean => !!block && !block.isAir && !block.isLiquid && !block.isWaterlogged &&
     block.isLiquidBlocking(LiquidType.Water) &&
