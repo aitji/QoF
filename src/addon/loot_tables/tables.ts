@@ -84,14 +84,26 @@ export const LOOT_TABLES: LootTableMap = {
     "minecraft:piglin_brute": {
         pools: [{
             rolls: 1,
-            entries: [{
-                item: "minecraft:gilded_blackstone",
-                weight: 1,
-                functions: [
-                    { function: "set_count", count: { min: 0, max: 1 } },
-                    { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
-                ]
-            }]
+            entries: [
+                {
+                    item: "minecraft:gilded_blackstone",
+                    weight: 1,
+                    conditions: [{ condition: "on_fire", value: false }],
+                    functions: [
+                        { function: "set_count", count: { min: 0, max: 1 } },
+                        { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
+                    ]
+                },
+                {
+                    item: "minecraft:gold_ingot",
+                    weight: 1,
+                    conditions: [{ condition: "on_fire", value: true }],
+                    functions: [
+                        { function: "set_count", count: { min: 0, max: 1 } },
+                        { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
+                    ]
+                },
+            ]
         }]
     },
     "minecraft:sniffer": {

@@ -476,7 +476,7 @@ export const SETTINGS = Object.freeze({
         FAIL_PARTICLE: "minecraft:villager_angry",
         SOUND_FAIL: Object.freeze({
             ID: "note.bd",
-            VOLUME: 1,
+            VOLUME: 0.3,
             PITCH: [0.8, 1.0]
         }),
         PARTICLE_OFFSET: Object.freeze({ x: 0, y: 2, z: 0 }),
