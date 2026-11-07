@@ -21,6 +21,8 @@ export type LootFunction =
     | { function: "set_count"; count: Range }
     /** adds [random(count) * lootingLevel] stack size & limit caps */
     | { function: "looting_enchant"; count: Range; limit?: number }
+    /** 1=new, 0=broken */
+    | { function: "set_durability"; durability: Range }
 
 export type LootEntry =
     | {
@@ -28,7 +30,6 @@ export type LootEntry =
         item: ItemId
         /** default 1 */
         weight?: number
-        /** added to weight per looting level, can be negative (effective weight min 0) */
         quality?: number
         conditions?: LootCondition[]
         functions?: LootFunction[]
@@ -99,7 +100,7 @@ export const LOOT_TABLES: LootTableMap = {
                     {
                         item: "minecraft:moss_block",
                         functions: [
-                            { function: "set_count", count: { min: 0, max: 6 } }
+                            { function: "set_count", count: { min: 0, max: 3 } }
                         ],
                     },
                 ],
@@ -117,6 +118,17 @@ export const LOOT_TABLES: LootTableMap = {
             },
         ],
     },
+    "minecraft:vex": {
+        pools: [{
+            rolls: 1,
+            conditions: [{ condition: "random_chance", chance: 0.25 }],
+            entries: [{
+                item: "minecraft:iron_sword",
+                // kept 10%-60%
+                functions: [{ function: "set_durability", durability: { min: 0.1, max: 0.6 } }]
+            }]
+        }]
+    },
     "minecraft:silverfish": {
         pools: [
             {
@@ -128,5 +140,67 @@ export const LOOT_TABLES: LootTableMap = {
                 ]
             }
         ]
-    }
+    },
+    "minecraft:wolf": {
+        pools: [
+            {
+                rolls: 1,
+                entries: [
+                    {
+                        item: "minecraft:bone",
+                        weight: 1,
+                        conditions: [{ condition: "is_baby", value: false }],
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 2 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
+                        ]
+                    },
+                ]
+            }
+        ]
+    },
+    "minecraft:armadillo": {
+        pools: [
+            {
+                rolls: 1,
+                conditions: [{ condition: "is_baby", value: false }],
+                entries: [{
+                    item: "minecraft:spider_eye",
+                    weight: 1,
+                    functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                }]
+            },
+            {
+                rolls: 1,
+                conditions: [{ condition: "is_baby", value: false }],
+                entries: [
+                    {
+                        type: "empty",
+                        weight: 4,
+                        quality: -1
+                    },
+                    {
+                        item: "minecraft:armadillo_scute",
+                        weight: 1,
+                        quality: 1,
+                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:ocelot": {
+        pools: [
+            {
+                rolls: 1,
+                conditions: [{ condition: "is_baby", value: false }],
+                entries: [
+                    {
+                        item: "minecraft:string", weight: 1, quality: 1,
+                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                    }
+                ]
+            }
+        ]
+    },
 }

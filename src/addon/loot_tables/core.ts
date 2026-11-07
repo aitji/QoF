@@ -37,6 +37,7 @@ const DROP_VELOCITY = { // hard code
 // helper
 const passes = (conditions: LootCondition[] | undefined, ctx: LootContext) => !conditions || conditions.every((c) => check(c, ctx))
 const resRange = (r: Range) => (typeof r === "number" ? r : randInt(r.min, r.max))
+const resFloat = (r: Range) => (typeof r === "number" ? r : rand(r.min, r.max))
 const getLooting = (killer: Entity): number => {
     const hand = getEqu(killer)?.getEquipment(EquipmentSlot.Mainhand)
     const enchantable = hand?.getComponent("minecraft:enchantable")
@@ -91,8 +92,9 @@ const pickEntry = (entries: LootEntry[], ctx: LootContext): LootEntry | undefine
     return pass[pass.length - 1]
 }
 
-const applyFn = (functions: LootFunction[] | undefined, ctx: LootContext): number => {
+const applyFn = (functions: LootFunction[] | undefined, ctx: LootContext): { count: number; durability?: number } => {
     let count = 1
+    let durability: number | undefined
     for (const fn of functions ?? []) {
         switch (fn.function) {
             case "set_count":
@@ -102,14 +104,17 @@ const applyFn = (functions: LootFunction[] | undefined, ctx: LootContext): numbe
                 count += ctx.looting > 0 ? resRange(fn.count) * ctx.looting : 0
                 if (fn.limit !== undefined) count = Math.min(count, fn.limit)
                 break
+            case "set_durability":
+                durability = Math.min(1, Math.max(0, resFloat(fn.durability)))
+                break
             default: { const _e: never = fn }
         }
     }
-    return Math.max(0, Math.floor(count))
+    return { count: Math.max(0, Math.floor(count)), durability }
 }
 
-const rollTable = (table: LootTable, ctx: LootContext): [id: string, amount: number][] => {
-    const drops: [string, number][] = []
+const rollTable = (table: LootTable, ctx: LootContext): [id: string, amount: number, durability?: number][] => {
+    const drops: [string, number, number?][] = []
 
     for (const pool of table.pools) {
         if (!passes(pool.conditions, ctx)) continue
@@ -119,8 +124,8 @@ const rollTable = (table: LootTable, ctx: LootContext): [id: string, amount: num
             const entry = pickEntry(pool.entries, ctx)
             if (!entry || entry.type === "empty") continue
 
-            const amount = applyFn(entry.functions, ctx)
-            if (amount > 0) drops.push([entry.item, amount])
+            const { count, durability } = applyFn(entry.functions, ctx)
+            if (count > 0) drops.push([entry.item, count, durability])
         }
     }
     return drops
@@ -136,12 +141,15 @@ const dropVEL = (): Vector3 => {
     }
 }
 
-const spawnDrop = (dimension: Dimension, location: Vector3, id: string, amount: number, pickupDelay?: number) => {
+const spawnDrop = (dimension: Dimension, location: Vector3, id: string, amount: number, pickupDelay?: number, durability?: number) => {
     let remaining = amount
     while (remaining > 0) {
         const stack = new ItemStack(id, 1)
         stack.amount = Math.min(remaining, stack.maxAmount)
         remaining -= stack.amount
+
+        const dur = durability === undefined ? undefined : stack.getComponent("minecraft:durability")
+        if (dur) dur.damage = Math.min(dur.maxDurability - 1, Math.round(dur.maxDurability * (1 - durability!)))
 
         const drop = dimension.spawnItem(stack, location)
         drop.clearVelocity()
@@ -161,8 +169,8 @@ export const loots_entityDie = (data: EntityDieAfterEvent) => {
         const { dimension, location } = deadEntity
         const ctx = buildCtx(data)
 
-        for (const [id, amount] of rollTable(table, ctx)) {
-            try { spawnDrop(dimension, location, id, amount, table.pickupDelay) }
+        for (const [id, amount, durability] of rollTable(table, ctx)) {
+            try { spawnDrop(dimension, location, id, amount, table.pickupDelay, durability) }
             catch (e) { if (DEBUG) console.warn(`[loot] could not drop "${id}" x${amount} for ${deadEntity.typeId}: ${e}`) }
         }
     } catch (e) { if (DEBUG) console.warn(`[loot] ${deadEntity.typeId} died but loot failed: ${e}`) }
