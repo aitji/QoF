@@ -203,4 +203,157 @@ export const LOOT_TABLES: LootTableMap = {
             }
         ]
     },
+    "minecraft:axolotl": {
+        pools: [
+            {
+                rolls: 1,
+                conditions: [{ condition: "is_baby", value: false }],
+                entries: [
+                    {
+                        item: "minecraft:tropical_fish", weight: 1, quality: 1,
+                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:allay": {
+        pools: [
+            {
+                rolls: 1,
+                entries: [
+                    { type: "empty", weight: 1 },
+                    {
+                        item: "minecraft:amethyst_shard", weight: 1,
+                        functions: [{ function: "set_count", count: { min: 1, max: 2 } }]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:villager_v2": {
+        pools: [
+            {
+                rolls: 1,
+                conditions: [
+                    { condition: "is_baby", value: false }
+                ],
+                entries: [
+                    {
+                        item: "minecraft:emerald", weight: 1,
+                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                    }
+                ]
+            },
+            {
+                rolls: 1,
+                conditions: [
+                    { condition: "random_chance", chance: 0.25 },
+                    { condition: "is_baby", value: false }
+                ],
+                entries: [
+                    {
+                        item: "minecraft:leather_helmet", weight: 1,
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 0.4 } }]
+                    },
+                    {
+                        item: "minecraft:leather_chestplate", weight: 1,
+                        conditions: [{ condition: "random_chance", chance: 0.05 }],
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 0.4 } }]
+                    },
+                    {
+                        item: "minecraft:leather_leggings", weight: 1,
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 0.4 } }]
+                    },
+                    {
+                        item: "minecraft:leather_boots", weight: 1,
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 0.4 } }]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:wandering_trader": {
+        pools: [
+            {
+                rolls: 1,
+                entries: [
+                    {
+                        item: "minecraft:emerald", weight: 1,
+                        functions: [{ function: "set_count", count: { min: 0, max: 4 } }]
+                    }
+                ]
+            },
+            {
+                rolls: 1,
+                conditions: [{ condition: "random_chance", chance: 0.50 }],
+                entries: [
+                    {
+                        item: "minecraft:leather_helmet", weight: 1,
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 1 } }]
+                    },
+                    {
+                        item: "minecraft:leather_chestplate", weight: 1,
+                        conditions: [{ condition: "random_chance", chance: 0.05 }],
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 1 } }]
+                    },
+                    {
+                        item: "minecraft:leather_leggings", weight: 1,
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 1 } }]
+                    },
+                    {
+                        item: "minecraft:leather_boots", weight: 1,
+                        functions: [{ function: "set_durability", durability: { min: 0, max: 1 } }]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:happy_ghast": {
+        pools: [
+            {
+                rolls: 1,
+                entries: [
+                    {
+                        item: "minecraft:ghast_tear",
+                        functions: [{ function: "set_count", count: { min: 0, max: 1 } }]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:endermite": {
+        pools: [
+            {
+                rolls: 1,
+                entries: [
+                    {
+                        item: "minecraft:popped_chorus_fruit",
+                        functions: [{ function: "set_count", count: { min: 0, max: 1 } }]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:ender_dragon": {
+        pools: [
+            {
+                rolls: 1,
+                entries: [
+                    {
+                        item: "minecraft:dragon_head"
+                    }
+                ]
+            },
+            {
+                rolls: 1,
+                entries: [
+                    {
+                        item: "minecraft:phantom_membrane",
+                        functions: [{ function: "set_count", count: { min: 2, max: 4 } }]
+                    }
+                ]
+            }
+        ]
+    }
 }
