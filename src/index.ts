@@ -10,6 +10,7 @@ import * as light_patcher from "./addon/light/patcher"
 // water
 import * as concrete from "./addon/water/entity"
 import * as cauldron from "./addon/water/cauldron"
+import * as splash from "./addon/water/splash"
 
 import * as anvil from "./addon/anvil"
 import * as composter from "./addon/composter"
@@ -33,7 +34,11 @@ system.run(() => {
             light.light_processFrames(tick)
         }
 
-        if (WATER_CONCRETE.ENABLED) concrete.powder_pending()
+        if (WATER_CONCRETE.ENABLED) {
+            concrete.powder_pending()
+            splash.splash_pending(tick)
+        }
+
         if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending(tick)
 
         for (const player of players) {
@@ -91,6 +96,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.DOUBLE_DOOR.ENABLED) door.door_playerInteractWithBlock(data)
     if (RUNTIME.WAXED_OF.ENABLED) waxedOff.waxedOff_playerInteractWithBlock(data)
     if (RUNTIME.WATER_CAULDRON.ENABLED) cauldron.cauldron_playerInteractWithBlock(data)
+    if (RUNTIME.WATER_CONCRETE.ENABLED) splash.splash_playerInteractWithBlock(data)
 })
 world.beforeEvents.playerInteractWithEntity.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED && RUNTIME.OFFHAND.ALLOW_BLOCK_PLACEMENT) offhand.offhand_playerInteractWithEntity(data)
@@ -118,6 +124,12 @@ world.afterEvents.gameRuleChange.subscribe((data) =>
 )
 world.afterEvents.pistonActivate.subscribe(data => {
     if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER) composter.composter_pistonActivate(data)
+})
+world.afterEvents.projectileHitBlock.subscribe(data => {
+    splash.projectileHit(data.projectile, data.getBlockHit()?.block?.location, data.dimension)
+})
+world.afterEvents.projectileHitEntity.subscribe(data => {
+    splash.projectileHit(data.projectile, data.getEntityHit()?.entity?.location, data.dimension)
 })
 
 // core routes
