@@ -8,22 +8,25 @@ const PlayerDataShape = {
     gameMode: '' as GameMode,
     permissionLevel: 0 as PlayerPermissionLevel
 }
+
 const WorldDataShape = {
-    gamerule: { keepInventory: false as boolean | number }
+    gamerule: {
+        keepInventory: false as boolean | number,
+        doMobLoot: false as boolean | number
+    },
 }
 
-const TRACKED_GAME_RULES = ["keepInventory"] as const
 export const WORLD_CACHE_ID = "world"
-const trackedGameRuleSet = new Set<string>(TRACKED_GAME_RULES)
 
 export type PlayerData = typeof PlayerDataShape
-export type TrackedGameRule = (typeof TRACKED_GAME_RULES)[number]
 export type WorldData = typeof WorldDataShape
+export type TrackedGameRule = keyof WorldData['gamerule']
 export type CacheData = keyof PlayerData
 
 export const playerDataKeys = Object.keys(PlayerDataShape) as (keyof PlayerData)[]
 export const worldDataKeys = Object.keys(WorldDataShape) as (keyof WorldData)[]
-export const worldGameRuleKeys = Object.keys(WorldDataShape.gamerule) as (keyof WorldData['gamerule'])[]
+export const worldGameRuleKeys = Object.keys(WorldDataShape.gamerule) as TrackedGameRule[]
+const trackedGameRuleSet = new Set<string>(worldGameRuleKeys)
 
 // maps, "core/cache" is [ONLY] for caching globally
 export const playerData = new Map<string, PlayerData>()
@@ -42,6 +45,7 @@ const typeMap = {
 type TypeMap = typeof typeMap
 type CacheType = keyof TypeMap
 type CacheValue<T extends CacheType> = TypeMap[T] extends Map<any, infer V> ? V : never
+type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] }
 
 // internal
 system.run(() => {
@@ -57,17 +61,22 @@ system.run(() => {
 // external routes
 export const world_init_update = () => {
     const gamerule = {} as WorldData['gamerule']
+
     for (const rule of worldGameRuleKeys) {
         const val = (world.gameRules as any)[rule]
-        gamerule[rule] = (typeof val === 'boolean' || typeof val === 'number') ? (val as boolean | number) : false
+        gamerule[rule] = (typeof val === 'boolean' || typeof val === 'number') ? val : false
     }
 
     return update('world', WORLD_CACHE_ID, { gamerule })
 }
 
 export const gamerule_update = (data: GameRuleChangeAfterEvent) => {
-    if (!trackedGameRuleSet.has(data.rule)) return
-    return update('world', WORLD_CACHE_ID, { gamerule: { [data.rule as unknown as keyof WorldData['gamerule']]: data.value as any } })
+    const rule = data.rule as unknown as string
+    if (!trackedGameRuleSet.has(rule)) return
+
+    return update('world', WORLD_CACHE_ID, {
+        gamerule: { [rule]: data.value } as Partial<WorldData['gamerule']>
+    })
 }
 
 export const player_init_update = (player: Player) => {
@@ -97,15 +106,25 @@ export const player_track_start = (data: PlayerSpawnAfterEvent) => {
 export const player_track_stop = (data: PlayerLeaveAfterEvent) => {
     const { playerId } = data
     cachedPlayers = cachedPlayers.filter(p => p.id !== playerId)
+    playerData.delete(playerId)
 }
 
 // modules call
 export const update = <T extends CacheType>
-    (type: T, id: string, kv: Partial<CacheValue<T>>) => {
+    (type: T, id: string, kv: DeepPartial<CacheValue<T>>) => {
     const cache = typeMap[type] as Map<string, CacheValue<T>>
-
     const prev = cache.get(id)
-    const next = { ...(prev || {}), ...kv } as CacheValue<T>
+
+    const next = {
+        ...(prev || {}),
+        ...kv,
+        ...(type === 'world' ? {
+            gamerule: {
+                ...(prev as WorldData | undefined)?.gamerule,
+                ...(kv as DeepPartial<WorldData>).gamerule
+            }
+        } : {})
+    } as CacheValue<T>
 
     cache.set(id, next)
     return next

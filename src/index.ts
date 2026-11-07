@@ -63,10 +63,11 @@ system.run(() => {
 
 world.afterEvents.entityDie.subscribe(data => {
     if (data.deadEntity.typeId === 'minecraft:player') {
-        if (RUNTIME.CARRIED_CHEST.ENABLED && !cache.getGameRule("keepInventory"))
-            chest.chest_entityDie(data)
+        // die via carry
+        if (RUNTIME.CARRIED_CHEST.ENABLED && cache.getGameRule("keepInventory") === false) chest.chest_entityDie(data)
     } else {
-        loots.loots_entityDie(data)
+        // mob drop
+        if (cache.getGameRule("doMobLoot") === true) loots.loots_entityDie(data)
     }
 })
 
