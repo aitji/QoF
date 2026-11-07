@@ -7,7 +7,7 @@ export type Range = number | { min: number; max: number }
 export type LootCondition =
     | { condition: "killed_by_player" }
     | { condition: "killed_by_player_or_pets" }
-    /** flat chance, 0-1. */
+    /** flat chance, 0-1. looting does NOT affect this. */
     | { condition: "random_chance"; chance: number }
     /** [chance + looting_multiplier * lootingLevel], 0-1. */
     | { condition: "random_chance_with_looting"; chance: number; looting_multiplier: number }
@@ -19,7 +19,7 @@ export type LootCondition =
 export type LootFunction =
     /** set the stack size */
     | { function: "set_count"; count: Range }
-    /** adds [random(count) * lootingLevel] stack size & limit caps */
+    /** looting raises the max per level + random(min*level .. max*level) */
     | { function: "looting_enchant"; count: Range; limit?: number }
     /** 1=new, 0=broken */
     | { function: "set_durability"; durability: Range }
@@ -30,6 +30,7 @@ export type LootEntry =
         item: ItemId
         /** default 1 */
         weight?: number
+        /** [weight += quality * lootingLevel] */
         quality?: number
         conditions?: LootCondition[]
         functions?: LootFunction[]
@@ -45,6 +46,7 @@ export interface LootPool {
 
 export interface LootTable {
     pickupDelay?: number
+    immune?: boolean
     pools: LootPool[]
 }
 export type LootTableMap = { [K in EntityId]?: LootTable } & { [custom: `${string}:${string}`]: LootTable | undefined }
@@ -63,7 +65,7 @@ export const LOOT_TABLES: LootTableMap = {
                     conditions: [{ condition: "on_fire", value: false }],
                     functions: [
                         { function: "set_count", count: { min: 1, max: 2 } },
-                        { function: "looting_enchant", count: { min: 0, max: 2 }, limit: 3 }
+                        { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 5 }
                     ]
                 },
                 {
@@ -73,7 +75,7 @@ export const LOOT_TABLES: LootTableMap = {
                     conditions: [{ condition: "on_fire", value: true }],
                     functions: [
                         { function: "set_count", count: { min: 1, max: 2 } },
-                        { function: "looting_enchant", count: { min: 0, max: 2 }, limit: 3 }
+                        { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 5 }
                     ]
                 }
             ]
@@ -86,7 +88,8 @@ export const LOOT_TABLES: LootTableMap = {
                 item: "minecraft:gilded_blackstone",
                 weight: 1,
                 functions: [
-                    { function: "set_count", count: { min: 0, max: 1 }, }
+                    { function: "set_count", count: { min: 0, max: 1 } },
+                    { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
                 ]
             }]
         }]
@@ -100,7 +103,8 @@ export const LOOT_TABLES: LootTableMap = {
                     {
                         item: "minecraft:moss_block",
                         functions: [
-                            { function: "set_count", count: { min: 0, max: 3 } }
+                            { function: "set_count", count: { min: 0, max: 3 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 5 }
                         ],
                     },
                 ],
@@ -111,7 +115,8 @@ export const LOOT_TABLES: LootTableMap = {
                     {
                         item: "minecraft:moss_carpet",
                         functions: [
-                            { function: "set_count", count: { min: 0, max: 3 } }
+                            { function: "set_count", count: { min: 0, max: 3 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 5 }
                         ],
                     },
                 ],
@@ -121,7 +126,8 @@ export const LOOT_TABLES: LootTableMap = {
     "minecraft:vex": {
         pools: [{
             rolls: 1,
-            conditions: [{ condition: "random_chance", chance: 0.25 }],
+            // 25% base, +5% looting level
+            conditions: [{ condition: "random_chance_with_looting", chance: 0.25, looting_multiplier: 0.05 }],
             entries: [{
                 item: "minecraft:iron_sword",
                 // kept 10%-60%
@@ -135,8 +141,8 @@ export const LOOT_TABLES: LootTableMap = {
                 rolls: 1,
                 conditions: [{ condition: "killed_by_player_or_pets" }],
                 entries: [
-                    { type: "empty", weight: 4, quality: -1 },
-                    { item: "minecraft:string", weight: 1, quality: 1 }
+                    { type: "empty", weight: 3, quality: -0.5 },
+                    { item: "minecraft:string", weight: 1, quality: 0.5 }
                 ]
             }
         ]
@@ -167,23 +173,24 @@ export const LOOT_TABLES: LootTableMap = {
                 entries: [{
                     item: "minecraft:spider_eye",
                     weight: 1,
-                    functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                    functions: [
+                        { function: "set_count", count: { min: 0, max: 2 } },
+                        { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
+                    ]
                 }]
             },
             {
                 rolls: 1,
                 conditions: [{ condition: "is_baby", value: false }],
                 entries: [
-                    {
-                        type: "empty",
-                        weight: 4,
-                        quality: -1
-                    },
+                    { type: "empty", weight: 3, quality: -0.5 },
                     {
                         item: "minecraft:armadillo_scute",
                         weight: 1,
-                        quality: 1,
-                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                        quality: 0.5,
+                        functions: [
+                            { function: "set_count", count: { min: 1, max: 2 } }
+                        ]
                     }
                 ]
             }
@@ -196,8 +203,11 @@ export const LOOT_TABLES: LootTableMap = {
                 conditions: [{ condition: "is_baby", value: false }],
                 entries: [
                     {
-                        item: "minecraft:string", weight: 1, quality: 1,
-                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                        item: "minecraft:string",
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 2 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 4 }
+                        ]
                     }
                 ]
             }
@@ -210,8 +220,11 @@ export const LOOT_TABLES: LootTableMap = {
                 conditions: [{ condition: "is_baby", value: false }],
                 entries: [
                     {
-                        item: "minecraft:tropical_fish", weight: 1, quality: 1,
-                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                        item: "minecraft:tropical_fish",
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 2 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 4 }
+                        ]
                     }
                 ]
             }
@@ -222,10 +235,13 @@ export const LOOT_TABLES: LootTableMap = {
             {
                 rolls: 1,
                 entries: [
-                    { type: "empty", weight: 1 },
+                    { type: "empty", weight: 1, quality: -0.15 },
                     {
-                        item: "minecraft:amethyst_shard", weight: 1,
-                        functions: [{ function: "set_count", count: { min: 1, max: 2 } }]
+                        item: "minecraft:amethyst_shard", weight: 1, quality: 0.15,
+                        functions: [
+                            { function: "set_count", count: { min: 1, max: 2 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 4 }
+                        ]
                     }
                 ]
             }
@@ -241,14 +257,18 @@ export const LOOT_TABLES: LootTableMap = {
                 entries: [
                     {
                         item: "minecraft:emerald", weight: 1,
-                        functions: [{ function: "set_count", count: { min: 0, max: 2 } }]
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 2 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 4 }
+                        ]
                     }
                 ]
             },
             {
                 rolls: 1,
                 conditions: [
-                    { condition: "random_chance", chance: 0.25 },
+                    // 25% base, +5% looting level
+                    { condition: "random_chance_with_looting", chance: 0.25, looting_multiplier: 0.05 },
                     { condition: "is_baby", value: false }
                 ],
                 entries: [
@@ -273,6 +293,40 @@ export const LOOT_TABLES: LootTableMap = {
             }
         ]
     },
+    "minecraft:zombie_villager_v2": {
+        pools: [
+            {
+                rolls: 1,
+                conditions: [
+                    { condition: "is_baby", value: false }
+                ],
+                entries: [
+                    {
+                        item: "minecraft:emerald", weight: 1,
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 2 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 4 }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:camel": {
+        pools: [
+            {
+                rolls: 1,
+                conditions: [{ condition: "is_baby", value: false }],
+                entries: [{
+                    item: "minecraft:leather", weight: 1,
+                    functions: [
+                        { function: "set_count", count: { min: 0, max: 2 } },
+                        { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 5 }
+                    ]
+                }]
+            }
+        ]
+    },
     "minecraft:wandering_trader": {
         pools: [
             {
@@ -280,13 +334,17 @@ export const LOOT_TABLES: LootTableMap = {
                 entries: [
                     {
                         item: "minecraft:emerald", weight: 1,
-                        functions: [{ function: "set_count", count: { min: 0, max: 4 } }]
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 4 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 6 }
+                        ]
                     }
                 ]
             },
             {
                 rolls: 1,
-                conditions: [{ condition: "random_chance", chance: 0.50 }],
+                // 50% base, +10% looting level
+                conditions: [{ condition: "random_chance_with_looting", chance: 0.50, looting_multiplier: 0.10 }],
                 entries: [
                     {
                         item: "minecraft:leather_helmet", weight: 1,
@@ -316,7 +374,10 @@ export const LOOT_TABLES: LootTableMap = {
                 entries: [
                     {
                         item: "minecraft:ghast_tear",
-                        functions: [{ function: "set_count", count: { min: 0, max: 1 } }]
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 1 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
+                        ]
                     }
                 ]
             }
@@ -329,7 +390,10 @@ export const LOOT_TABLES: LootTableMap = {
                 entries: [
                     {
                         item: "minecraft:popped_chorus_fruit",
-                        functions: [{ function: "set_count", count: { min: 0, max: 1 } }]
+                        functions: [
+                            { function: "set_count", count: { min: 0, max: 1 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 3 }
+                        ]
                     }
                 ]
             }
@@ -350,7 +414,26 @@ export const LOOT_TABLES: LootTableMap = {
                 entries: [
                     {
                         item: "minecraft:phantom_membrane",
-                        functions: [{ function: "set_count", count: { min: 2, max: 4 } }]
+                        functions: [
+                            { function: "set_count", count: { min: 2, max: 4 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 8 }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "minecraft:warden": {
+        pools: [
+            {
+                rolls: 1,
+                entries: [
+                    {
+                        item: "minecraft:echo_shard",
+                        functions: [
+                            { function: "set_count", count: { min: 2, max: 4 } },
+                            { function: "looting_enchant", count: { min: 0, max: 1 }, limit: 8 }
+                        ]
                     }
                 ]
             }

@@ -1,3 +1,15 @@
+/**
+ * Why do we use scripts to control loot tables?
+ *    ...because entities that don't drop anything
+ * are declared with the path 'loot_tables/empty.json',
+ * which require maintainers to copy the whole entity
+ * files in order to add mob loot that doesn't support.
+ * Another downfall of that is every time Minecraft
+ * update these entities, QoF add-on needs to bump
+ * to another version to fix it.
+ *  -aitji & pickerth-12
+ */
+
 import {
     type Dimension,
     type Entity,
@@ -6,10 +18,9 @@ import {
     EntityComponentTypes,
     EquipmentSlot,
     ItemStack,
-    type Vector3,
-    world,
+    type Vector3
 } from "@minecraft/server"
-import { getEqu, pickupCooldown, rand, randInt, RUNTIME } from "../../lib"
+import { getEqu, pickupCooldown, rand, RUNTIME } from "../../lib"
 const { DEBUG } = RUNTIME
 import {
     LOOT_TABLES,
@@ -36,12 +47,20 @@ const DROP_VELOCITY = { // hard code
 
 // helper
 const passes = (conditions: LootCondition[] | undefined, ctx: LootContext) => !conditions || conditions.every((c) => check(c, ctx))
-const resRange = (r: Range) => (typeof r === "number" ? r : randInt(r.min, r.max))
+const randIntInc = (min: number, max: number) => {
+    const lo = Math.ceil(Math.min(min, max))
+    const hi = Math.floor(Math.max(min, max))
+    return lo + Math.floor(Math.random() * (hi - lo + 1))
+}
+const resRange = (r: Range) => (typeof r === "number" ? r : randIntInc(r.min, r.max))
 const resFloat = (r: Range) => (typeof r === "number" ? r : rand(r.min, r.max))
 const getLooting = (killer: Entity): number => {
     const hand = getEqu(killer)?.getEquipment(EquipmentSlot.Mainhand)
-    const enchantable = hand?.getComponent("minecraft:enchantable")
-    return enchantable?.getEnchantment('minecraft:looting')?.level ?? 0
+    const enchants = hand?.getComponent("minecraft:enchantable")?.getEnchantments() ?? []
+    for (const e of enchants)
+        if (e.type.id === "looting" || e.type.id === "minecraft:looting")
+            return e.level
+    return 0
 }
 
 const buildCtx = (data: EntityDieAfterEvent): LootContext => {
@@ -101,7 +120,10 @@ const applyFn = (functions: LootFunction[] | undefined, ctx: LootContext): { cou
                 count = resRange(fn.count)
                 break
             case "looting_enchant":
-                count += ctx.looting > 0 ? resRange(fn.count) * ctx.looting : 0
+                if (ctx.looting > 0) {
+                    const r = typeof fn.count === "number" ? { min: fn.count, max: fn.count } : fn.count
+                    count += randIntInc(r.min * ctx.looting, r.max * ctx.looting)
+                }
                 if (fn.limit !== undefined) count = Math.min(count, fn.limit)
                 break
             case "set_durability":
@@ -154,6 +176,7 @@ const spawnDrop = (dimension: Dimension, location: Vector3, id: string, amount: 
         const drop = dimension.spawnItem(stack, location)
         drop.clearVelocity()
         drop.applyImpulse(dropVEL())
+
         pickupCooldown(drop, pickupDelay)
     }
 }
