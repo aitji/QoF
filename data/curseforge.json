@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-07T04:47:02.231Z",
+  "fetchedAt": "2026-11-08T04:38:03.361Z",
   "screenshots": [
     {
       "id": 2099214,
@@ -278,11 +278,47 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 28780,
-  "favoriteCount": 88,
+  "downloadCount": 28824,
+  "favoriteCount": 90,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
+    {
+      "id": 4994,
+      "gameId": 78022,
+      "name": "Realistic",
+      "slug": "realistic",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
+      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
+      "dateModified": "2024-02-11T14:06:11.48Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4987
+    },
+    {
+      "id": 8830,
+      "gameId": 78022,
+      "name": "Vanilla+",
+      "slug": "vanilla",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/vanilla",
+      "iconUrl": "https://media.forgecdn.net/avatars/1376/175/638893017047987968.png",
+      "dateModified": "2025-07-28T12:15:04.8Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4984
+    },
+    {
+      "id": 8831,
+      "gameId": 78022,
+      "name": "Survival",
+      "slug": "survival",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/survival",
+      "iconUrl": "https://media.forgecdn.net/avatars/1376/176/638893018991979073.png",
+      "dateModified": "2025-07-28T12:18:19.203Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4984
+    },
     {
       "id": 8832,
       "gameId": 78022,
@@ -303,42 +339,6 @@
       "url": "https://www.curseforge.com/minecraft-bedrock/addons/multiplayer",
       "iconUrl": "https://media.forgecdn.net/avatars/1376/212/638893033575235347.png",
       "dateModified": "2025-07-28T12:42:37.523Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4984
-    },
-    {
-      "id": 8830,
-      "gameId": 78022,
-      "name": "Vanilla+",
-      "slug": "vanilla",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/vanilla",
-      "iconUrl": "https://media.forgecdn.net/avatars/1376/175/638893017047987968.png",
-      "dateModified": "2025-07-28T12:15:04.8Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4984
-    },
-    {
-      "id": 4994,
-      "gameId": 78022,
-      "name": "Realistic",
-      "slug": "realistic",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
-      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
-      "dateModified": "2024-02-11T14:06:11.48Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4987
-    },
-    {
-      "id": 8831,
-      "gameId": 78022,
-      "name": "Survival",
-      "slug": "survival",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/survival",
-      "iconUrl": "https://media.forgecdn.net/avatars/1376/176/638893018991979073.png",
-      "dateModified": "2025-07-28T12:18:19.203Z",
       "isClass": false,
       "classId": 4984,
       "parentCategoryId": 4984
@@ -468,11 +468,12 @@
       ],
       "fileDate": "2026-10-24T13:13:37.28Z",
       "fileLength": 226532,
-      "downloadCount": 78,
+      "downloadCount": 207,
       "fileSizeOnDisk": 435411,
       "downloadUrl": "https://edge.forgecdn.net/files/9309/317/QoF-1.6.0.mcaddon",
       "gameVersions": [
-        "26.50"
+        "26.50",
+        "26.60"
       ],
       "sortableGameVersions": [
         {
@@ -480,6 +481,13 @@
           "gameVersionPadded": "0000000026.0000000050",
           "gameVersion": "26.50",
           "gameVersionReleaseDate": "2026-09-16T00:00:00Z",
+          "gameVersionTypeId": 73249
+        },
+        {
+          "gameVersionName": "26.60",
+          "gameVersionPadded": "0000000026.0000000060",
+          "gameVersion": "26.60",
+          "gameVersionReleaseDate": "2026-10-30T00:00:00Z",
           "gameVersionTypeId": 73249
         }
       ],
@@ -507,6 +515,13 @@
   "latestFilesIndexes": [
     {
       "gameVersion": "26.50",
+      "fileId": 9309317,
+      "filename": "QoF-1.6.0.mcaddon",
+      "releaseType": 1,
+      "gameVersionTypeId": 73249
+    },
+    {
+      "gameVersion": "26.60",
       "fileId": 9309317,
       "filename": "QoF-1.6.0.mcaddon",
       "releaseType": 1,
@@ -599,10 +614,10 @@
   ],
   "latestEarlyAccessFilesIndexes": [],
   "dateCreated": "2026-03-31T13:03:36.853Z",
-  "dateModified": "2026-10-24T13:19:54.653Z",
+  "dateModified": "2026-11-07T14:40:44.97Z",
   "dateReleased": "2026-10-24T13:13:37.28Z",
   "allowModDistribution": true,
-  "gamePopularityRank": 4883,
+  "gamePopularityRank": 4816,
   "isAvailable": true,
   "hasCommentsEnabled": true,
   "licenseType": "Custom License",
