@@ -337,6 +337,10 @@ These are items added by QoF on top of the vanilla compost table. Vanilla items 
 | podzol                 | 30%                                   |
 | mycelium               | 30%                                   |
 | rooted_dirt            | 30%                                   |
+| egg                    | 30%                                   |
+| brown_egg              | 30%                                   |
+| blue_egg               | 30%                                   |
+| turtle_egg             | 30%                                   |
 |                        | <div align="center"><b>50%</b></div>  |
 | bamboo                 | 50%                                   |
 | dead_bush              | 50%                                   |
@@ -382,6 +386,12 @@ These are items added by QoF on top of the vanilla compost table. Vanilla items 
 | golden_carrot          | 65%                                   |
 | golden_dandelion       | 65%                                   |
 | glistering_melon_slice | 65%                                   |
+| paper                  | 65%                                   |
+| leather horse armor    | 65%                                   |
+| leather helmet         | 65%                                   |
+| leather chestplate     | 65%                                   |
+| leather leggings       | 65%                                   |
+| leather boots          | 65%                                   |
 |                        | <div align="center"><b>85%</b></div>  |
 | blaze_rod              | 85%                                   |
 | fermented_spider_eye   | 85%                                   |
@@ -407,6 +417,9 @@ These are items added by QoF on top of the vanilla compost table. Vanilla items 
 | suspicious_stew        | 85%                                   |
 | beetroot_soup          | 85%                                   |
 | golden_apple           | 85%                                   |
+| book                   | 85%                                   |
+| slime block            | 85%                                   |
+| magma block            | 85%                                   |
 |                        | <div align="center"><b>100%</b></div> |
 | enchanted_golden_apple | 100%                                  |
 | rabbit_stew            | 100%                                  |
@@ -512,54 +525,33 @@ Adds drops to $\color{#fff000}\textsf{previously mobs without loot}$, making the
   <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/mobloot.gif" alt="Mob Loot+ showcase banner" width="1080">
 </p>
 
-<details>
-  <summary><strong>Mob Loot Table</strong></summary>
+| Mob              | Additional Drops              |
+| ---------------- | ----------------------------- |
+| Goat             | Mutton                        |
+| Piglin Brute     | Gilded Blackstone             |
+| Sniffer          | Moss Block, Moss Carpet       |
+| Vex              | Iron Sword                    |
+| Silverfish       | String                        |
+| Wolf             | Bone                          |
+| Armadillo        | Spider Eye, Armadillo Scute   |
+| Ocelot           | String                        |
+| Axolotl          | Tropical Fish                 |
+| Allay            | Amethyst Shard                |
+| Villager         | Emerald, Leather Armor        |
+| Zombie Villager  | Emerald                       |
+| Camel            | Leather                       |
+| Wandering Trader | Emerald, Leather Armor        |
+| Happy Ghast      | Ghast Tear                    |
+| Endermite        | Popped Chorus Fruit           |
+| Ender Dragon     | Dragon Head, Phantom Membrane |
+| Warden           | Echo Shard                    |
 
-**1. Goat drops `Raw Mutton`**
-
-$$ P(\text{drop}) \in \langle 1,\ 2 + L \rangle, \quad L \in \langle 0,\ \text{Looting} \rangle $$
-
-<div align="center">
-
-| Looting Level | Min Drop | Max Drop |
-| ------------- | -------- | -------- |
-| None          | 1        | 2        |
-| I             | 1        | 3        |
-| II            | 1        | 4        |
-| III           | 1        | 5        |
-
-</div>
-
-> **Goat on Fire** will cook `Raw Mutton` into `Cooked Mutton`
-
-**2. Silverfish drops `String`**
-
-$$ P(\text{drop}) = \frac{1}{5} = 20\% $$
-
-<div align="center">
-
-| Outcome  | Weight | Chance |
-| -------- | ------ | ------ |
-| Nothing  | 4      | 80%    |
-| `String` | 1      | 20%    |
-
-</div>
-
-> Only drops when killed by a **player or pet**
-
-**3. Sniffer drops `Moss Block`**
-
-$$ \text{Drop} = 1 $$
-
-> Looting does not affect the drop quantity
-
-**4. Piglin Brute drops `Gilded Blackstone`**
-
-$$ P(\text{Drop}) \in \langle 0,\ 1 \rangle $$
-
-> Looting does not affect the drop quantity
-
-</details>
+> [!NOTE]
+> 
+> Some drops are exclusive to adult mobs\
+> Mobs killed while on fire may drop cooked or alternative items instead\
+> Looting enchantments can increase drop quantities\
+> Some mobs have a chance to drop nothing
 
 ### Recipe+
 
@@ -612,7 +604,7 @@ Branding, media, and other protected materials are reserved under [COPYRIGHT.md]
 ```
   README INFO
 Version: v1.6.0
-Last updated: 6 Nov 2026
+Last updated: 14 Nov 2026
 Has README Update: True
 
   PACK INFO
