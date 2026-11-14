@@ -35,6 +35,6 @@ for (const colourName of colour) {
 
     fs.writeFileSync(
         path.join(_, `${colourName}.json`),
-        recipe(input, output, 16)
+        recipe(input, output, 3)
     )
 }

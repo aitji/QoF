@@ -8,7 +8,7 @@
         "ingredients": [{ "item": "minecraft:red_stained_glass" }],
         "result": {
             "item": "minecraft:red_stained_glass_pane",
-            "count": 16
+            "count": 3
         },
         "unlock": [{ "item": "minecraft:red_stained_glass" }]
     }

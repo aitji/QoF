@@ -8,7 +8,7 @@
         "ingredients": [{ "item": "minecraft:pink_stained_glass" }],
         "result": {
             "item": "minecraft:pink_stained_glass_pane",
-            "count": 16
+            "count": 3
         },
         "unlock": [{ "item": "minecraft:pink_stained_glass" }]
     }
