@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-15T04:57:02.041Z",
+  "fetchedAt": "2026-11-16T04:54:15.266Z",
   "screenshots": [
     {
       "id": 2099214,
@@ -278,11 +278,23 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 29279,
-  "favoriteCount": 94,
+  "downloadCount": 29355,
+  "favoriteCount": 96,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
+    {
+      "id": 4994,
+      "gameId": 78022,
+      "name": "Realistic",
+      "slug": "realistic",
+      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
+      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
+      "dateModified": "2024-02-11T14:06:11.48Z",
+      "isClass": false,
+      "classId": 4984,
+      "parentCategoryId": 4987
+    },
     {
       "id": 8830,
       "gameId": 78022,
@@ -306,18 +318,6 @@
       "isClass": false,
       "classId": 4984,
       "parentCategoryId": 4984
-    },
-    {
-      "id": 4994,
-      "gameId": 78022,
-      "name": "Realistic",
-      "slug": "realistic",
-      "url": "https://www.curseforge.com/minecraft-bedrock/addons/texture-packs/realistic",
-      "iconUrl": "https://media.forgecdn.net/avatars/411/204/637629020069206170.png",
-      "dateModified": "2024-02-11T14:06:11.48Z",
-      "isClass": false,
-      "classId": 4984,
-      "parentCategoryId": 4987
     },
     {
       "id": 8832,
@@ -468,7 +468,7 @@
       ],
       "fileDate": "2026-11-14T15:11:01.777Z",
       "fileLength": 286534,
-      "downloadCount": 58,
+      "downloadCount": 81,
       "fileSizeOnDisk": 573428,
       "downloadUrl": "https://edge.forgecdn.net/files/9611/948/QoF-1.6.1.mcaddon",
       "gameVersions": [
@@ -614,10 +614,10 @@
   ],
   "latestEarlyAccessFilesIndexes": [],
   "dateCreated": "2026-03-31T13:03:36.853Z",
-  "dateModified": "2026-11-14T15:13:35.137Z",
+  "dateModified": "2026-11-15T05:41:50.897Z",
   "dateReleased": "2026-11-14T15:11:01.777Z",
   "allowModDistribution": true,
-  "gamePopularityRank": 4893,
+  "gamePopularityRank": 4721,
   "isAvailable": true,
   "hasCommentsEnabled": true,
   "licenseType": "Custom License",
