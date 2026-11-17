@@ -124,8 +124,12 @@ world.afterEvents.gameRuleChange.subscribe((data) =>
     cache.gamerule_update(data)
 )
 world.afterEvents.pistonActivate.subscribe(data => {
-    if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER) composter.composter_pistonActivate(data)
+    if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER)
+        composter.composter_pistonActivate(data)
 })
+world.afterEvents.entityHitBlock.subscribe(data => {
+    door.door_entityHitBlock(data)
+}, { entityTypes: ["minecraft:player"] })
 world.afterEvents.projectileHitBlock.subscribe(data => {
     splash.projectileHit(data.projectile, data.getBlockHit()?.block?.location, data.dimension)
 })

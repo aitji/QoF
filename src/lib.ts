@@ -187,10 +187,10 @@ export const setEqu = (entity: Player | Entity, itemStack: ItemStack | undefined
         return false
     }
 }
-export const playSound = (dimension: Dimension, location: Vector3, sounds: { ID: string, VOLUME: number | number[], PITCH: number | number[] }) => {
+export const playSound = (dimension: Dimension, location: Vector3, sounds: { ID: string, VOLUME?: number | number[], PITCH?: number | number[] }) => {
     const tryPlay = () => dimension.playSound(sounds.ID, location, {
-        volume: checkRandom(sounds.VOLUME),
-        pitch: checkRandom(sounds.PITCH)
+        volume: checkRandom(sounds.VOLUME ?? 1),
+        pitch: checkRandom(sounds.PITCH ?? 1)
     })
 
     try { tryPlay() }

@@ -35,8 +35,22 @@ this file is only for top priority todo, if something like refactor some code or
   - [won't changed] should powder concrete dye in cauldron turn into soild concrete?
   - [x] max 16 each time player click cauldron (behave like tripped arrow)
 - [x] if player have full inventory, container addItem will fail silently
+- [ ] sapling replant ; drop sapling auto plant on ground
+- [ ] farmland guard ; sneak / feather falling < stop farmland from trampled
+  - [ ] turtle egg too
+- [ ] double door ; support fence gates & trapdoor
+  - [ ] please change this i hate this modules name
+    - [ ] doorbell knocking
+    - [ ] shop bell, bell near door will ring when open
+    - [ ] config: allow to open iron by hand
+    - [ ] config: auto close door after abit
+- [ ] bone meal+ ; more bonemeal thing like cactus
 
 ## picker
+mostly assign by aitji *:wink:*
+
+- [ ] 2 seat horse
+- [ ] blackstone recipes
 - [x] update light level to new version
 - [x] add mob light emit
 - [x] [aitji/composter] and add composte list
