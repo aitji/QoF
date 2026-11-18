@@ -1,5 +1,5 @@
 import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player, GameMode, Direction } from "@minecraft/server"
-import { applyItemDamage, reduceItem, RUNTIME, helper, cache, getEqu, getInv, sumLoc, checkRandom } from "../lib"
+import { applyItemDamage, reduceItem, RUNTIME, helper, cache, getEqu, getInv, sumLoc, checkRandom, swing } from "../lib"
 const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY, COCOA_VALID_LOGS, COCOA_DIRECTIONS } } = RUNTIME
 
 export const resolveCocoaPermutation = (block: Block, originalDir: number) => {
@@ -25,6 +25,7 @@ const consumeOffhand = (player: Player, seed: string, equippable: EntityEquippab
     const newAmount = offhandItem.amount - 1
     if (newAmount <= 0) equippable.setEquipment(EquipmentSlot.Offhand, undefined)
     else player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${seed} ${newAmount}`)
+    swing(player, 'off')
     return true
 }
 
@@ -93,7 +94,6 @@ export const harvest_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
                         const currItem = container.getItem(slot)!
                         const newItem = reduceItem(currItem)
                         container.setItem(slot, newItem)
-                        apply()
                     } else {
                         const itemEntity = dimension.getEntities({ type: 'minecraft:item', maxDistance: 2, location })
 

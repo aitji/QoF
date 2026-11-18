@@ -1,6 +1,7 @@
 import { world, system, EquipmentSlot, BlockPermutation, GameMode, PlayerInteractWithBlockBeforeEvent, Block, ItemStack, LiquidType } from "@minecraft/server"
 import { applyItemDamage, getEqu, reduceItem, RUNTIME, setEqu, pickupCooldown, cache, playSound, checkPerm } from "../../lib"
 import { suppressLight } from "./core"
+import { swing } from "../../lib"
 const {
     DEBUG, BLOCKFACE_TO_DIR, BLOCK_INTERACTION_DELAY,
     LIGHT: {
@@ -88,7 +89,10 @@ export const light_playerInteractWithBlock = (data: PlayerInteractWithBlockBefor
                 }
 
                 // all logic
-                if (toolUsed && cache.getPlayer(player, "gameMode") !== GameMode.Creative) {
+                if (toolUsed) {
+                    swing(player, "main")
+                    if (cache.getPlayer(player, "gameMode") === GameMode.Creative) return
+
                     const { changed, item } = applyItemDamage(player, itemStack)
                     if (changed) {
                         const equ = getEqu(player)!
@@ -126,6 +130,8 @@ export const light_playerInteractWithBlock = (data: PlayerInteractWithBlockBefor
                 let scam = false as boolean
                 system.run(() => {
                     if (!above) return
+                    swing(player, "main")
+
                     try {
                         above.setType(asBlock)
                         _playSound()
@@ -166,6 +172,7 @@ export const light_playerInteractWithBlock = (data: PlayerInteractWithBlockBefor
                         // const { item, changed } = applyItemDamage(player, equ)
                         // if (changed) setEqu(player, item, "Mainhand", true)
                         playSound(dim, cache.center(), fireSound)
+                        swing(player, "main")
                         if (fireSound.REDUCE_ITEM) {
                             const equ = getEqu(player)!
                             const currItem = equ.getEquipment(EquipmentSlot.Mainhand)!

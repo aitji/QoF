@@ -1,11 +1,12 @@
 import { type Block, EquipmentSlot, GameMode, type Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
-import { getEqu, reduceItem, setEqu, sumLoc, swing } from "../lib"
+import { cache, checkPerm, getEqu, reduceItem, setEqu, sumLoc, swing } from "../lib"
 
 const delay: Record<string, number> = {}
 world.afterEvents.playerLeave.subscribe(({ playerId }) => { delete delay[playerId] })
 
 export const bonemeal_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { player, block, itemStack, isFirstEvent } = data
+    if (checkPerm(player) === false) return
 
     if (!isFirstEvent && (delay[player.id] ?? 0) > system.currentTick) return
     delay[player.id] = system.currentTick + 8
@@ -17,7 +18,7 @@ export const bonemeal_playerInteractWithBlock = (data: PlayerInteractWithBlockBe
 }
 
 const takeItem = (player: Player): void => {
-    if (player.getGameMode() === GameMode.Creative) return
+    if (cache.getPlayer(player, 'gamemode') === GameMode.Creative) return
     const slot = player.selectedSlotIndex
 
     system.run(() => {

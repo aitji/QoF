@@ -3,7 +3,7 @@ import {
     PlatformType, Player, PlayerLeaveAfterEvent,
     PlayerSpawnAfterEvent, system, world
 } from "@minecraft/server"
-import { getEqu, playSound, RUNTIME, sumLoc } from "../../lib"
+import { getEqu, playSound, RUNTIME, sumLoc, swing } from "../../lib"
 import * as cache from "../../core/cache"
 
 const {
@@ -83,6 +83,9 @@ function swapItem(player: Player) {
         playSound(dim, loc, SOUND_FAIL)
         return
     }
+
+    if (mainhand) swing(player, 'off')
+    if (offhand) swing(player, 'main')
 
     const durability = mainhand?.getComponent(ItemComponentTypes.Durability)
     equippable.setEquipment(EquipmentSlot.Mainhand, offhand ?? undefined)
