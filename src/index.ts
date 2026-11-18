@@ -17,13 +17,13 @@ import * as composter from "./addon/composter"
 import * as chest from "./addon/chest"
 import * as offhand from "./addon/offhand/core"
 import * as harvest from "./addon/harvest"
-import * as door from "./addon/door"
+import * as openable from "./addon/openable/core"
 import * as waxedOff from "./addon/waxedOff"
 import * as loots from "./addon/loot_tables/core"
 
 // tick
 system.run(() => {
-    const { LIGHT, WATER_CONCRETE, CARRIED_CHEST, COMPOSTER, DEBUG, DOUBLE_DOOR } = RUNTIME
+    const { LIGHT, WATER_CONCRETE, CARRIED_CHEST, COMPOSTER, DEBUG, OPENABLE } = RUNTIME
     system.runInterval(() => {
         const tick = system.currentTick
         const players = cache.getCachedPlayers()
@@ -43,8 +43,8 @@ system.run(() => {
             composter.composter_pending(tick)
         }
 
-        if (DOUBLE_DOOR.ENABLED) {
-            door.door_pending(tick)
+        if (OPENABLE.ENABLED) {
+            openable.openable_pending(tick)
         }
 
         for (const player of players) {
@@ -100,7 +100,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
     if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
     if (RUNTIME.OFFHAND.ENABLED && RUNTIME.OFFHAND.ALLOW_BLOCK_PLACEMENT) offhand.offhand_playerInteractWithBlock(data)
-    if (RUNTIME.DOUBLE_DOOR.ENABLED) door.door_playerInteractWithBlock(data)
+    if (RUNTIME.OPENABLE.ENABLED) openable.openable_playerInteractWithBlock(data)
     if (RUNTIME.WAXED_OF.ENABLED) waxedOff.waxedOff_playerInteractWithBlock(data)
     if (RUNTIME.WATER_CAULDRON.ENABLED) cauldron.cauldron_playerInteractWithBlock(data)
     if (RUNTIME.WATER_CONCRETE.ENABLED) splash.splash_playerInteractWithBlock(data)
@@ -134,7 +134,7 @@ world.afterEvents.pistonActivate.subscribe(data => {
         composter.composter_pistonActivate(data)
 })
 world.afterEvents.entityHitBlock.subscribe(data => {
-    door.door_entityHitBlock(data)
+    openable.openable_entityHitBlock(data)
 }, { entityTypes: ["minecraft:player"] })
 world.afterEvents.projectileHitBlock.subscribe(data => {
     splash.projectileHit(data.projectile, data.getBlockHit()?.block?.location, data.dimension)

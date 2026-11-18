@@ -19,7 +19,7 @@ function buildRuntime() {
     const CH = S.CARRIED_CHEST
     const OH = S.OFFHAND
     const CR = S.HARVEST
-    const DD = S.DOUBLE_DOOR
+    const DD = S.OPENABLE
     const WF = S.WAXED_OF
 
     // player helper
@@ -76,7 +76,12 @@ function buildRuntime() {
     }
     const cauldronMode = CAULDRON_MODE[g("qof:WATER_CAULDRON.MODE", "both")] ?? CAULDRON_MODE.both
 
-
+    const OPENABLE_MODE: Record<string, { ENABLED: boolean; IRON_BY_HAND: boolean }> = {
+        off: { ENABLED: false, IRON_BY_HAND: false },
+        on: { ENABLED: true, IRON_BY_HAND: false },
+        iron: { ENABLED: true, IRON_BY_HAND: true },
+    }
+    const openableMode = OPENABLE_MODE[g("qof:OPENABLE.MODE", DD.IRON_BY_HAND ? "iron" : "on")] ?? OPENABLE_MODE.on
 
     // configs
     return Object.freeze({
@@ -221,13 +226,15 @@ function buildRuntime() {
             COCOA_VALID_LOGS: CR.COCOA_VALID_LOGS,
             COCOA_DIRECTIONS: CR.COCOA_DIRECTIONS,
         }),
-        DOUBLE_DOOR: Object.freeze({
-            ENABLED: g("qof:DOUBLE_DOOR.ENABLED", DD.ENABLED),
-            SHOP_BELL: DD.SHOP_BELL,
+        OPENABLE: Object.freeze({
+            ENABLED: openableMode.ENABLED,
+            IRON_BY_HAND: openableMode.IRON_BY_HAND,
+            SHOP_BELL: g("qof:OPENABLE.SHOP_BELL", DD.SHOP_BELL),
+            AUTO_CLOSE: g("qof:OPENABLE.AUTO_CLOSE", DD.AUTO_CLOSE),
+            KNOCK: g("qof:OPENABLE.KNOCK", true),
 
+            // static
             DOOR: DD.DOOR, GATE: DD.GATE, TRAPDOOR: DD.TRAPDOOR,
-
-            IRON_BY_HAND: DD.IRON_BY_HAND, AUTO_CLOSE: DD.AUTO_CLOSE,
             AUTO_CLOSE_RADIUS: DD.AUTO_CLOSE_RADIUS, AUTO_CLOSE_DELAY: DD.AUTO_CLOSE_DELAY,
             MAX_LINKED: DD.MAX_LINKED
         }),

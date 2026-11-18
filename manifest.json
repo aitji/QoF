@@ -154,6 +154,38 @@
 
 
     {
+      "type": "dropdown",
+      "text": "§l§6Openable§r §7--------------------------------------------\n§7Open/close doors, fence gates and trapdoors together:",
+      "name": "qof:OPENABLE.MODE",
+      "options": [
+        {"name": "off", "text": "Off"},
+        {"name": "on", "text": "On"},
+        {"name": "iron", "text": "On & open iron doors by hand"}
+      ],
+      "default": "on"
+    },
+    {
+      "type": "toggle",
+      "text": "Auto-close §7doors and gates when no player is nearby",
+      "name": "qof:OPENABLE.AUTO_CLOSE",
+      "default": true
+    },
+    {
+      "type": "toggle",
+      "text": "Ring a nearby bell §7when opening a door §o(shop bell)",
+      "name": "qof:OPENABLE.SHOP_BELL",
+      "default": true
+    },
+    {
+      "type": "toggle",
+      "text": "Knock sound §7when hitting a door",
+      "name": "qof:OPENABLE.KNOCK",
+      "default": true
+    },
+
+
+
+    {
       "type": "label",
       "text": "§l§6Misc§r §7---------------------------------------------------"
     },
@@ -166,7 +198,7 @@
     {
       "type": "toggle",
       "text": "§7Open/close both sides of a double door together",
-      "name": "qof:DOUBLE_DOOR.ENABLED",
+      "name": "qof:OPENABLE.ENABLED",
       "default": true
     },
     {

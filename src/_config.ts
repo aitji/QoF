@@ -816,7 +816,7 @@ export const SETTINGS = Object.freeze({
             { x: 1, z: 0, dir: 3 },  // east
         ] as const
     }),
-    DOUBLE_DOOR: Object.freeze({
+    OPENABLE: Object.freeze({
         ENABLED: true,
         SHOP_BELL: true,
         DOOR: true, GATE: true, TRAPDOOR: true,
