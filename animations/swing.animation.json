@@ -1,0 +1,105 @@
+{
+    "format_version": "1.8.0",
+    "animations": {
+        "animation.qof.swing.main": {
+            "loop": false,
+            "animation_length": 0.3,
+            "bones": {
+                "body": {
+                    "rotation": [
+                        0.0,
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (0.0) : (math.sin(math.sqrt(variable.qof_t) * 360.0) * 11.46);",
+                        0.0
+                    ]
+                },
+                "rightarm": {
+                    "position": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.clamp(-15.5 * math.sin(variable.qof_p * 112.0), -7.0, 999.0) * math.sin(variable.qof_p * 112.0)) : (0.0);",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 200.0) * 7.5 - variable.qof_p * 15.0) : (0.0);",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_p * 120.0) * 1.75) : (0.0);"
+                    ],
+                    "rotation": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * -60.0) : (-(variable.qof_s * 1.2 + math.sin(variable.qof_t * 180.0)) * 30.0);",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * 40.0) : (-(variable.qof_s ? (-90.0 * variable.qof_s) + 30.0 : 0.0));",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * 20.0) : (0.0);"
+                    ]
+                },
+                "leftarm": {
+                    "rotation": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (0.0) : (-(variable.qof_s * 1.2 + math.sin(variable.qof_t * 180.0)) * 10.0);",
+                        0.0,
+                        0.0
+                    ]
+                }
+            }
+        },
+        "animation.qof.swing.off": {
+            "loop": false,
+            "animation_length": 0.3,
+            "bones": {
+                "body": {
+                    "rotation": [
+                        0.0,
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (0.0) : (-(math.sin(math.sqrt(variable.qof_t) * 360.0) * 11.46));",
+                        0.0
+                    ]
+                },
+                "leftarm": {
+                    "position": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (-(math.clamp(-15.5 * math.sin(variable.qof_p * 112.0), -7.0, 999.0) * math.sin(variable.qof_p * 112.0))) : (0.0);",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 200.0) * 7.5 - variable.qof_p * 15.0) : (0.0);",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_p * 120.0) * 1.75) : (0.0);"
+                    ],
+                    "rotation": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * -60.0) : (-(variable.qof_s * 1.2 + math.sin(variable.qof_t * 180.0)) * 30.0);",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (-(math.sin(variable.qof_q * 280.0) * 40.0)) : (variable.qof_s ? (-90.0 * variable.qof_s) + 30.0 : 0.0);",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (-(math.sin(variable.qof_q * 280.0) * 20.0)) : (0.0);"
+                    ]
+                },
+                "rightarm": {
+                    "rotation": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_s = math.sin((1.0 - math.pow(1.0 - variable.qof_t, 4.0)) * 180.0); variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (0.0) : (-(variable.qof_s * 1.2 + math.sin(variable.qof_t * 180.0)) * 10.0);",
+                        0.0,
+                        0.0
+                    ]
+                }
+            }
+        },
+        "animation.qof.swing.main.item": {
+            "loop": false,
+            "animation_length": 0.3,
+            "bones": {
+                "rightitem": {
+                    "position": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.clamp(-15.5 * math.sin(variable.qof_p * 112.0), -7.0, 999.0) * math.sin(variable.qof_p * 112.0) * variable.qof_ip) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? ((math.sin(variable.qof_q * 200.0) * 7.5 - variable.qof_p * 15.0) * variable.qof_ip) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_p * 120.0) * 1.75 * variable.qof_ip) : 0.0;"
+                    ],
+                    "rotation": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * -60.0 * variable.qof_ir) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * 40.0 * variable.qof_ir) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * 20.0 * variable.qof_ir) : 0.0;"
+                    ]
+                }
+            }
+        },
+        "animation.qof.swing.off.item": {
+            "loop": false,
+            "animation_length": 0.3,
+            "bones": {
+                "leftitem": {
+                    "position": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (-(math.clamp(-15.5 * math.sin(variable.qof_p * 112.0), -7.0, 999.0) * math.sin(variable.qof_p * 112.0) * variable.qof_ip)) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? ((math.sin(variable.qof_q * 200.0) * 7.5 - variable.qof_p * 15.0) * variable.qof_ip) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_p * 120.0) * 1.75 * variable.qof_ip) : 0.0;"
+                    ],
+                    "rotation": [
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (math.sin(variable.qof_q * 280.0) * -60.0 * variable.qof_ir) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (-(math.sin(variable.qof_q * 280.0) * 40.0 * variable.qof_ir)) : 0.0;",
+                        "variable.qof_t = math.clamp(query.anim_time / 0.3, 0.0, 1.0); variable.qof_ip = 1.0; variable.qof_ir = 1.0; variable.qof_f = math.sin((1.0 - variable.qof_t) * 180.0); variable.qof_p = variable.qof_f * variable.qof_t; variable.qof_q = variable.qof_f * (1.0 - variable.qof_t) * (1.0 - variable.qof_t); return variable.is_first_person ? (-(math.sin(variable.qof_q * 280.0) * 20.0 * variable.qof_ir)) : 0.0;"
+                    ]
+                }
+            }
+        }
+    }
+}
