@@ -24,7 +24,7 @@
 - [Installation](#installation)
 - [Modules](#modules)
   - [Dynamic Light](#dynamic-light)
-  - [Double Door](#double-door)
+  - [Openable](#openable)
   - [Anvil Repairing](#anvil-repairing)
   - [Hardens Concrete Powder](#hardens-concrete-powder)
   - [Cauldron+](#cauldron)
@@ -46,7 +46,7 @@
 ## Overview
 
 - [x] Dynamic lighting
-- [x] Open adjacent doors with a single interaction
+- [x] Open linked doors, fence gates and trapdoors with a single interaction
 - [x] Repair damaged anvils with iron ingot
 - [x] Hardens Concrete powder when touches water
 - [x] Composter, Cauldron accepts more items
@@ -235,13 +235,25 @@ Held and dropped items emit light based on their type. The light smoothly fades 
 </details>
 
 
-### Double Door
+### Openable
 
-<div align="center">
-  <img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/doubledoor.gif" alt="Double door opening both sides simultaneously" width="1080">
-</div>
+Interacting with a door, fence gate or trapdoor now opens or closes its $\color{#fff000}\textsf{connected neighbours}$ at the same time, so double doors and long rows of gates or trapdoors stay in sync without any extra input. Works with every wood, copper and nether variant.
 
-Interacting with one door automatically opens or closes the adjacent door at the same time. Works with all door types, keeping paired doors in sync without any extra input.
+<img src="https://cdn.jsdelivr.net/gh/aitji/QoF@sources/.github/img/showcase/doubledoor.gif" alt="Openable opening both sides simultaneously" width="1080">
+
+> **alt-message** The player interacts with one half of a double door, and both halves swing open together. Interacting again closes both at once.
+
+**How It Works:**
+
+<!-- make a GIFs for this later -->
+
+- **Doors** pair up with the neighbouring door that shares the same facing and has the opposite hinge.
+- **Fence gates and trapdoors** toggle together with every connected block in the same row and orientation, up to a linked limit.
+- **Iron doors and trapdoors** can optionally be opened by hand, just like wooden ones.
+- **Auto-close** shuts doors and gates by themselves after a short delay once no player is nearby.
+- **Shop bell** rings a nearby bell whenever a door is opened.
+- **Knocking** a door plays a sound that matches its material, and it gets louder when you hit it while falling or in the air.
+- Each type plays its own open and close sound, including copper, cherry, bamboo, crimson, warped and iron.
 
 <p>*script might take up to 2 ticks to update block permutation.</p>
 
@@ -604,7 +616,7 @@ Branding, media, and other protected materials are reserved under [COPYRIGHT.md]
 ```
   README INFO
 Version: v1.6.0
-Last updated: 14 Nov 2026
+Last updated: 18 Nov 2026
 Has README Update: True
 
   PACK INFO
