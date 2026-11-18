@@ -7,12 +7,14 @@ import {
 } from "@minecraft/server"
 // lazy import ---
 import { RUNTIME as E } from "./_store"
-import * as H from "./core/helper"
+import * as H from "./core/pickup"
 import * as C from "./core/cache"
+import * as S from "./core/swing"
 
 export const RUNTIME = E
 export const helper = H
 export const cache = C
+export const swing = S.swing
 export const pickupCooldown = H.pickupCooldown
 // ---
 
@@ -22,7 +24,7 @@ type EquSlot = 'Mainhand' | 'Offhand' | 'Head' | 'Body' | 'Legs' | 'Feet'
 const { DEBUG } = E
 export const QOF_INFORMATION = {
     version: {
-        qof: '1.6.0'
+        qof: '1.6.2'
     },
     license: 'QoF Noncommercial License 1.0',
     dependencies: {

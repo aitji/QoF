@@ -24,7 +24,7 @@ Thumbs.db
 .env.*
 * copy*
 *test*
-dev/
+dev/entity.json
 
 .vscode/
 .idea/

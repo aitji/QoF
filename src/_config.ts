@@ -832,4 +832,7 @@ export const SETTINGS = Object.freeze({
         FIND_NEAR_COLOR: true,
         HARDENED_POWDER: true
     }),
+    BONEMEAL: Object.freeze({
+        ENABLED: true
+    })
 })

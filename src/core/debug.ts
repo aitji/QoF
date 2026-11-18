@@ -1,5 +1,5 @@
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, DisplaySlotId, EquipmentSlot, ItemStack, MemoryTier, Player, PlayerPlaceBlockAfterEvent, ScoreboardObjective, StartupEvent, system, world } from "@minecraft/server"
-import { clamp, dumpMeThatComp, getEqu, getInv, QOF_INFORMATION, roundLoc, RUNTIME } from "../lib"
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, DisplaySlotId, EquipmentSlot, ItemStack, MemoryTier, Player, PlayerPlaceBlockAfterEvent, ScoreboardObjective, ScriptEventCommandMessageAfterEvent, StartupEvent, system, world } from "@minecraft/server"
+import { clamp, dumpMeThatComp, getEqu, getInv, QOF_INFORMATION, roundLoc, RUNTIME, swing } from "../lib"
 const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
 import * as cache from "./cache"
 
@@ -302,5 +302,16 @@ export const debug_playerPlaceBlock = (data: PlayerPlaceBlockAfterEvent) => {
         const perm = block.permutation
             .withState('qof:light_dampening' as any, damp)
         block.setPermutation(perm)
+    }
+}
+
+export const debug_scriptEventReceive = (data: ScriptEventCommandMessageAfterEvent) => {
+    const player = data.sourceEntity as Player
+    const { id, message } = data
+    if (!player) return
+
+    if (id === 'qof:swing') {
+        swing(player, message as 'main' | 'off' | 'both')
+        player.sendMessage(`§7${player.nameTag} ${message}`)
     }
 }

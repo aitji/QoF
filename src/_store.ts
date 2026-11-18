@@ -21,6 +21,7 @@ function buildRuntime() {
     const CR = S.HARVEST
     const DD = S.OPENABLE
     const WF = S.WAXED_OF
+    const BM = S.BONEMEAL
 
     // player helper
     const consumeDurability = g("qof:CONSUME_DURABILITY", true)
@@ -247,6 +248,9 @@ function buildRuntime() {
             FIND_NEAR_COLOR: cauldronMode.FIND_NEAR_COLOR,
             HARDENED_POWDER: cauldronMode.HARDENED_POWDER,
         }),
+        BONEMEAL: Object.freeze({
+            ENABLED: g("qof:BONEMEAL.ENABLED", BM.ENABLED)
+        })
     })
 }
 

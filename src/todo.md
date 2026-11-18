@@ -39,12 +39,12 @@ this file is only for top priority todo, if something like refactor some code or
 - [ ] farmland guard ; sneak / feather falling < stop farmland from trampled
   - [ ] turtle egg too
 - [x] double door ; support fence gates & trapdoor
-  - [ ] please change this i hate this modules name
+  - [x] please change this i hate this modules name
     - [x] door knocking
     - [x] shop bell, bell near door will ring when open
     - [x] config default=false: allow to open iron by hand
     - [x] config default=true: auto close door after close when player not near r=2 around door
-- [ ] bone meal+ ; more bonemeal thing like cactus
+- [x] bone meal+ ; more bonemeal thing like cactus
 
 ## picker
 mostly assign by aitji *:wink:*

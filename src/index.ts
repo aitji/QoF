@@ -3,6 +3,7 @@ import { RUNTIME } from "./_store"
 import * as lib from "./lib"
 import * as debug from "./core/debug"
 import * as cache from "./core/cache"
+import * as swing from "./core/swing"
 
 // light
 import * as light from "./addon/light/core"
@@ -20,6 +21,7 @@ import * as harvest from "./addon/harvest"
 import * as openable from "./addon/openable/core"
 import * as waxedOff from "./addon/waxedOff"
 import * as loots from "./addon/loot_tables/core"
+import * as bonemeal from "./addon/bonemeal"
 
 // tick
 system.run(() => {
@@ -104,6 +106,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe(data => {
     if (RUNTIME.WAXED_OF.ENABLED) waxedOff.waxedOff_playerInteractWithBlock(data)
     if (RUNTIME.WATER_CAULDRON.ENABLED) cauldron.cauldron_playerInteractWithBlock(data)
     if (RUNTIME.WATER_CONCRETE.ENABLED) splash.splash_playerInteractWithBlock(data)
+    if (RUNTIME.BONEMEAL.ENABLED) bonemeal.bonemeal_playerInteractWithBlock(data)
 })
 world.beforeEvents.playerInteractWithEntity.subscribe(data => {
     if (RUNTIME.OFFHAND.ENABLED && RUNTIME.OFFHAND.ALLOW_BLOCK_PLACEMENT) offhand.offhand_playerInteractWithEntity(data)
@@ -116,12 +119,17 @@ world.afterEvents.playerSpawn.subscribe(data => {
     cache.player_track_start(data)
 })
 world.afterEvents.playerLeave.subscribe(data => {
+    const { playerId } = data
     if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerLeave(data)
     cache.player_track_stop(data)
+    swing.swing_playerLeave(playerId)
 })
 world.afterEvents.playerSpawn.subscribe(data => {
     const { player, initialSpawn } = data
-    if (initialSpawn) cache.player_init_update(player)
+    if (initialSpawn) {
+        cache.player_init_update(player)
+        swing.swing_playerSpawn(player)
+    }
 })
 world.afterEvents.playerGameModeChange.subscribe(data => {
     cache.player_gamemode_update(data)
@@ -146,3 +154,4 @@ world.afterEvents.projectileHitEntity.subscribe(data => {
 // core routes
 world.beforeEvents.entityItemPickup.subscribe(data => { lib.helper.helper_entityItemPickup(data) })
 system.beforeEvents.startup.subscribe(event => { debug.debug_startup(event) })
+system.afterEvents.scriptEventReceive.subscribe(event => { debug.debug_scriptEventReceive(event) })
