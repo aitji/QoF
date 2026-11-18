@@ -64,10 +64,11 @@ export const openable_playerInteractWithBlock = (event: PlayerInteractWithBlockB
         delay[player.id] = now + 5
     }
 
+    if (player.isSneaking) return
     const kind = kindOf(block.typeId)
     if (!kind) return
     if (!on({ door: cfg.DOOR, gate: cfg.GATE, trapdoor: cfg.TRAPDOOR }[kind])) return
-    if (player.isSneaking && itemStack) return
+    // if (player.isSneaking && itemStack) return
     if (iron && !cfg.IRON_BY_HAND) return
 
     const base = kind === "door" ? doorLower(block) : block

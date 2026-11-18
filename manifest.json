@@ -168,7 +168,7 @@
       "type": "toggle",
       "text": "Auto-close §7doors and gates when no player is nearby",
       "name": "qof:OPENABLE.AUTO_CLOSE",
-      "default": true
+      "default": false
     },
     {
       "type": "toggle",
