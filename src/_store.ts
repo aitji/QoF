@@ -223,6 +223,13 @@ function buildRuntime() {
         }),
         DOUBLE_DOOR: Object.freeze({
             ENABLED: g("qof:DOUBLE_DOOR.ENABLED", DD.ENABLED),
+            SHOP_BELL: DD.SHOP_BELL,
+
+            DOOR: DD.DOOR, GATE: DD.GATE, TRAPDOOR: DD.TRAPDOOR,
+
+            IRON_BY_HAND: DD.IRON_BY_HAND, AUTO_CLOSE: DD.AUTO_CLOSE,
+            AUTO_CLOSE_RADIUS: DD.AUTO_CLOSE_RADIUS, AUTO_CLOSE_DELAY: DD.AUTO_CLOSE_DELAY,
+            MAX_LINKED: DD.MAX_LINKED
         }),
         WAXED_OF: Object.freeze({
             ENABLED: g("qof:WAXED_OF.ENABLED", WF.ENABLED),

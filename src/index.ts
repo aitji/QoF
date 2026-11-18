@@ -23,7 +23,7 @@ import * as loots from "./addon/loot_tables/core"
 
 // tick
 system.run(() => {
-    const { LIGHT, WATER_CONCRETE, CARRIED_CHEST, COMPOSTER, DEBUG } = RUNTIME
+    const { LIGHT, WATER_CONCRETE, CARRIED_CHEST, COMPOSTER, DEBUG, DOUBLE_DOOR } = RUNTIME
     system.runInterval(() => {
         const tick = system.currentTick
         const players = cache.getCachedPlayers()
@@ -39,7 +39,13 @@ system.run(() => {
             splash.splash_pending(tick)
         }
 
-        if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) composter.composter_pending(tick)
+        if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) {
+            composter.composter_pending(tick)
+        }
+
+        if (DOUBLE_DOOR.ENABLED) {
+            door.door_pending(tick)
+        }
 
         for (const player of players) {
             if (LIGHT.ENABLED) light.light_player(player, tick)

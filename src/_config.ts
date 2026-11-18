@@ -818,6 +818,10 @@ export const SETTINGS = Object.freeze({
     }),
     DOUBLE_DOOR: Object.freeze({
         ENABLED: true,
+        SHOP_BELL: true,
+        DOOR: true, GATE: true, TRAPDOOR: true,
+        IRON_BY_HAND: true, AUTO_CLOSE: false, AUTO_CLOSE_RADIUS: 1, AUTO_CLOSE_DELAY: 20,
+        MAX_LINKED: 16
     }),
     WAXED_OF: Object.freeze({
         ENABLED: true,

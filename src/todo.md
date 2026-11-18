@@ -38,12 +38,12 @@ this file is only for top priority todo, if something like refactor some code or
 - [ ] sapling replant ; drop sapling auto plant on ground
 - [ ] farmland guard ; sneak / feather falling < stop farmland from trampled
   - [ ] turtle egg too
-- [ ] double door ; support fence gates & trapdoor
+- [x] double door ; support fence gates & trapdoor
   - [ ] please change this i hate this modules name
-    - [ ] doorbell knocking
-    - [ ] shop bell, bell near door will ring when open
-    - [ ] config: allow to open iron by hand
-    - [ ] config: auto close door after abit
+    - [x] door knocking
+    - [x] shop bell, bell near door will ring when open
+    - [x] config default=false: allow to open iron by hand
+    - [x] config default=true: auto close door after close when player not near r=2 around door
 - [ ] bone meal+ ; more bonemeal thing like cactus
 
 ## picker
