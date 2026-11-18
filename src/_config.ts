@@ -343,7 +343,7 @@ export const SETTINGS = Object.freeze({
             // botany
             'minecraft:podzol': 0.3,
             'minecraft:mycelium': 0.3,
-            'minecraft:rooted_dirt': 0.3,
+            'minecraft:dirt_with_roots': 0.3,
             'minecraft:bamboo': 0.5,
             'minecraft:dead_bush': 0.5,
             'minecraft:honeycomb': 0.5,
@@ -395,6 +395,7 @@ export const SETTINGS = Object.freeze({
             'minecraft:brown_egg': 0.3,
             'minecraft:blue_egg': 0.3,
             'minecraft:turtle_egg': 0.3,
+            'minecraft:deadbush': 0.5,
             'minecraft:chicken': 0.5,
             'minecraft:porkchop': 0.5,
             'minecraft:beef': 0.5,

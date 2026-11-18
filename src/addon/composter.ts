@@ -1,5 +1,5 @@
 import { Block, BlockComponentTypes, BlockPermutation, Dimension, EntityComponentTypes, EquipmentSlot, GameMode, ItemComponentTypes, ItemStack, PistonActivateAfterEvent, PlayerInteractWithBlockBeforeEvent, PlayerPlaceBlockAfterEvent, system, Vector3, world } from "@minecraft/server"
-import { cache, checkPerm, checkRandom, clamp, getEqu, getInv, playSound, RUNTIME } from "../lib"
+import { cache, checkPerm, checkRandom, clamp, getEqu, getInv, playSound, RUNTIME, swing } from "../lib"
 const {
     DEBUG, SLICE_PREFIX,
     COMPOSTER: {
@@ -67,10 +67,15 @@ const maybeFinish = (block: Block, dim: Dimension, loc: Vector3) => {
         // ---
     }, DELAY_BEFORE_READY)
 }
+
+const delay: Record<string, number> = {}
 export const composter_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
-    const { player, block, itemStack } = data
+    const { player, block, itemStack, isFirstEvent } = data
     if (player.isSneaking || !itemStack || block.typeId !== BLOCK_TYPEID) return
     if (checkPerm(player) === false) return
+
+    if (!isFirstEvent && (delay[player.id] ?? 0) > system.currentTick) return
+    delay[player.id] = system.currentTick + 8
 
     const itemID = itemStack.typeId
     const chance = ITEMS[itemID]
@@ -86,12 +91,14 @@ export const composter_playerInteractWithBlock = (data: PlayerInteractWithBlockB
 
     const state = block.permutation.getState('composter_fill_level')!
     if (state >= 7) return
+    data.cancel = true
 
     system.run(() => {
         const success = Math.random() <= chance
         const loc = block.center()
 
         playSound(player.dimension, loc, SOUND_FILL_BONEMEAL)
+        swing(player, 'main')
         if (success) {
             playSound(player.dimension, loc, SOUND_FILL_SUCCESS)
             setLevel(block, state + 1)
