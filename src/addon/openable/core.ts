@@ -1,5 +1,5 @@
 import { Block, Dimension, EntityHitBlockAfterEvent, PlayerInteractWithBlockBeforeEvent, Vector3, system, world } from "@minecraft/server"
-import { checkPerm } from "../../lib"
+import { checkPerm, swing } from "../../lib"
 import { cfg, Kind, flag, isIron, kindOf, setOpen } from "./lib"
 import { doorLower, findLinked } from "./link"
 import { Played, playKnock, playLinkedSounds, playOnce, playToggleSound, ringBell } from "./sound"
@@ -90,6 +90,7 @@ export const openable_playerInteractWithBlock = (event: PlayerInteractWithBlockB
         if (iron) {
             setOpen([base], willOpen)
             playToggleSound(dimension, loc, typeId, kind, willOpen)
+            swing(player, 'main')
         }
 
         if (linked.length) {
