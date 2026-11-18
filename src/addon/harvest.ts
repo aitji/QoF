@@ -94,6 +94,7 @@ export const harvest_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
                         const currItem = container.getItem(slot)!
                         const newItem = reduceItem(currItem)
                         container.setItem(slot, newItem)
+                        apply()
                     } else {
                         const itemEntity = dimension.getEntities({ type: 'minecraft:item', maxDistance: 2, location })
 
