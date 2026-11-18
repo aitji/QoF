@@ -37,4 +37,9 @@ for (const colourName of colour) {
         path.join(_, `${colourName}.json`),
         recipe(input, output, 3)
     )
+
+    fs.writeFileSync(
+        path.join(_, `glass.json`),
+        recipe('glass', 'glass_pane', 3)
+    )
 }
