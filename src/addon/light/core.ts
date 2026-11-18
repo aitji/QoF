@@ -1,5 +1,5 @@
 import { world, system, EquipmentSlot, BlockPermutation, EntityComponentTypes, Player, Block, PlayerBreakBlockBeforeEvent, Entity, EntityRemoveAfterEvent, PlayerPlaceBlockAfterEvent } from "@minecraft/server"
-import { cursor, clamp, getEqu, playSound, roundLoc, roundRobin, RUNTIME, sumLoc } from "../../lib"
+import { cursor, clamp, cache, getEqu, playSound, roundLoc, roundRobin, RUNTIME, sumLoc } from "../../lib"
 
 const {
     DEBUG,
@@ -45,7 +45,7 @@ if (ENABLED) system.run(() => {
 
 const clamp15 = (n: number) => clamp(n, 0, 15)
 const lightPerm = (lv: number) => BASE_LIGHT.withState('qof:light_level' as any, clamp15(lv))
-const dimId = (b: Player | Entity | Block) => b.dimension.id.split(':')[1]
+const dimId = (b: Player | Entity | Block) => b.dimension.id
 const isLightable = (b: Block, liq: boolean) => b.isAir || (liq && b.isLiquid) || b.permutation.matches(LIGHT_BLOCK)
 const getItemLight = (id: string | undefined, en: Player | Entity, tick: number) => {
     if (!id) return 0
@@ -83,13 +83,17 @@ export const SUPP_BREAK = 8
 
 const frozenKeys = new Set<BlockKey>()
 const frozenDypKeys = new Map<BlockKey, string>()
-const bKey = (dim: string, x: number | string, y: number | string, z: number | string) => `${dim}:${x}:${y}:${z}`
+const SEP = '|'
+const LEGACY_NS = 'minecraft'
+const normDim = (d: string) => d.includes(':') ? d : `${LEGACY_NS}:${d}`
+const bKey = (dim: string, x: number | string, y: number | string, z: number | string) => `${dim}${SEP}${x}${SEP}${y}${SEP}${z}`
 const parseKey = (k: BlockKey) => {
-    const [dim, x, y, z] = k.split(':')
+    const [dim, x, y, z] = k.split(SEP)
     return { dim, x: +x, y: +y, z: +z }
 }
+const frameDypId = (k: BlockKey) => `frame${SEP}${k}`
 export const blockBKey = (b: Block) => bKey(dimId(b), b.location.x, b.location.y, b.location.z)
-const _frozenDypId = (k: BlockKey, e: LightEntry) => `frozen:${k}:${e.level}:${e.isWater}:${e.owner}`
+const _frozenDypId = (k: BlockKey, e: LightEntry) => `frozen${SEP}${k}${SEP}${e.level}${SEP}${e.isWater}${SEP}${e.owner}`
 function _mirrorFreeze(k: BlockKey, e: LightEntry) {
     try {
         const next = _frozenDypId(k, e)
@@ -124,29 +128,35 @@ export const suppressLight = (block: Block, checkLightBlock = true, cleanLight =
 
 function* _restoreFromDYP() {
     let n = 0
+    let migrated = 0
     for (const dy of world.getDynamicPropertyIds()) {
-        const p = dy.split(':')
+        const legacy = !dy.includes(SEP)
+        const sep = legacy ? ':' : SEP
+        const p = dy.split(sep)
+        const dimAt = (i: number) => legacy ? normDim(p[i]) : p[i]
+
         switch (p[0]) {
             case 'light': {
-                // light:dim:x:y:z:level:isWater:owner
-                const k = bKey(p[1], p[2], p[3], p[4])
+                // loaded into memory
+                const k = bKey(dimAt(1), p[2], p[3], p[4])
                 if (!lightMap.has(k))
-                    lightMap.set(k, { time: 0, level: +p[5], isWater: p[6] === 'true', owner: p[7] })
+                    lightMap.set(k, { time: 0, level: +p[5], isWater: p[6] === 'true', owner: p.slice(7).join(sep) })
                 world.setDynamicProperty(dy, undefined)
+                if (legacy) migrated++
                 break
             }
             case 'chuck_unload': // tech debt
             case 'chunk_unload': {
-                const k = bKey(p[2], p[3], p[4], p[5])
+                const k = bKey(dimAt(2), p[3], p[4], p[5])
                 if (!lightMap.has(k))
-                    lightMap.set(k, { time: 0, level: +p[6], isWater: p[7] === 'true', owner: p[8] })
+                    lightMap.set(k, { time: 0, level: +p[6], isWater: p[7] === 'true', owner: p.slice(8).join(sep) })
                 world.setDynamicProperty(dy, undefined)
+                if (legacy) migrated++
                 break
             }
             case 'frozen': {
-                // frozen:dim:x:y:z:level:isWater:owner
-                const k = bKey(p[1], p[2], p[3], p[4])
-                const owner = p[7]
+                const k = bKey(dimAt(1), p[2], p[3], p[4])
+                const owner = p.slice(7).join(sep)
                 if (!lightMap.has(k)) {
                     lightMap.set(k, { time: 0, level: +p[5], isWater: p[6] === 'true', owner })
                     if (owner !== 'Infinity') {
@@ -155,13 +165,23 @@ function* _restoreFromDYP() {
                     }
                 }
                 frozenKeys.add(k)
-                frozenDypKeys.set(k, dy)
+                if (legacy) {
+                    world.setDynamicProperty(dy, undefined)
+                    _mirrorFreeze(k, lightMap.get(k)!)
+                    migrated++
+                } else frozenDypKeys.set(k, dy)
                 break
             }
-            case 'frame':
-                // frame:dim:x:y:z
-                frameSet.add(bKey(p[1], p[2], p[3], p[4]))
+            case 'frame': {
+                const k = bKey(dimAt(1), p[2], p[3], p[4])
+                frameSet.add(k)
+                if (legacy) {
+                    world.setDynamicProperty(frameDypId(k), 1)
+                    world.setDynamicProperty(dy, undefined)
+                    migrated++
+                }
                 break
+            }
             case 'supp':
                 world.setDynamicProperty(dy, undefined)
                 break
@@ -169,6 +189,7 @@ function* _restoreFromDYP() {
         }
         if (++n % 200 === 0) yield
     }
+    if (DEBUG && migrated > 0) world.sendMessage(`§7light migration ${migrated} entries`)
 }
 
 function put_light(block: Block, level: number, owner: Player, force = false) {
@@ -279,7 +300,9 @@ export const light_pending = (tick: number) => {
 
         try {
             const { dim, x, y, z } = parseKey(k)
-            const block = world.getDimension(dim).getBlock({ x, y, z })
+            const dimension = cache.getCachedDimension(dim)
+            if (!dimension) { dead.push(k); continue }
+            const block = dimension.getBlock({ x, y, z })
             if (!block) {
                 frozenKeys.add(k)
                 if (!isFrozen) {
@@ -396,8 +419,10 @@ export const light_entityRemove = ({ removedEntityId }: EntityRemoveAfterEvent) 
         lightMap.delete(k)
         if (frozenKeys.delete(k)) _mirrorThaw(k)
         const { dim, x, y, z } = parseKey(k)
-        try { world.getDimension(dim).getBlock({ x, y, z })?.setPermutation(AIR) }
-        catch { world.getDimension(dim).runCommand(`setblock ${x} ${y} ${z} air`) }
+        const dimension = cache.getCachedDimension(dim)
+        if (!dimension) continue
+        try { dimension.getBlock({ x, y, z })?.setPermutation(AIR) }
+        catch { try { dimension.runCommand(`setblock ${x} ${y} ${z} air`) } catch { } }
     }
     entityLights.delete(id)
     _pendingKeys.length = 0
@@ -408,8 +433,8 @@ export const light_playerPlaceBlock = ({ block }: PlayerPlaceBlockAfterEvent) =>
     suppressedLocs.set(k, system.currentTick + SUPP_BREAK)
     if (!isFrame(block)) return
     frameSet.add(k)
-    world.setDynamicProperty(`frame:${k}`, 1)
-    if (DEBUG) world.sendMessage(`§8add frame:§7 ${k}`)
+    world.setDynamicProperty(frameDypId(k), 1)
+    if (DEBUG) world.sendMessage(`§7+ add frame: ${k}`)
 }
 
 export const light_processFrames = (_tick: number) => {
@@ -418,7 +443,9 @@ export const light_processFrames = (_tick: number) => {
     for (const k of frameSet) {
         try {
             const { dim, x, y, z } = parseKey(k)
-            const block = world.getDimension(dim).getBlock({ x, y, z })
+            const dimension = cache.getCachedDimension(dim)
+            if (!dimension) { dead.push(k); continue }
+            const block = dimension.getBlock({ x, y, z })
             if (!block || block.permutation.matches('minecraft:air')) { dead.push(k); continue }
 
             const item = block.getItemStack(1)
@@ -435,8 +462,8 @@ export const light_processFrames = (_tick: number) => {
     for (let i = 0; i < dead.length; i++) {
         const k = dead[i]
         frameSet.delete(k)
-        world.setDynamicProperty(`frame:${k}`, undefined)
-        if (DEBUG) world.sendMessage(`§8clear frame: §7${k}`)
+        world.setDynamicProperty(frameDypId(k), undefined)
+        if (DEBUG) world.sendMessage(`§7/ clear frame: ${k}`)
     }
 }
 
