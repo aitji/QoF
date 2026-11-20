@@ -1,10 +1,30 @@
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, DisplaySlotId, EquipmentSlot, ItemStack, MemoryTier, Player, PlayerPlaceBlockAfterEvent, ScoreboardObjective, ScriptEventCommandMessageAfterEvent, StartupEvent, system, world } from "@minecraft/server"
-import { clamp, dumpMeThatComp, getEqu, getInv, QOF_INFORMATION, roundLoc, RUNTIME, swing } from "../lib"
+import {
+    type Player, type PlayerPlaceBlockAfterEvent, type ScoreboardObjective,
+    type ScriptEventCommandMessageAfterEvent, type StartupEvent,
+
+    CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus,
+    DisplaySlotId, ItemStack, system, world
+} from "@minecraft/server"
+import { clamp, getInv, getHeld, RUNTIME, StateName, swing } from "../lib"
 const { DEBUG, DISABLED_COMMANDFEEDBACK } = RUNTIME
 import * as cache from "./cache"
 
+const QOF_INFORMATION = {
+    version: {
+        qof: '1.6.2'
+    },
+    license: 'QoF Noncommercial License 1.0',
+    dependencies: {
+        '@minecraft/server': '^2.10.0',
+        'typescript': '^6.0.2',
+    },
+    authors: ['aitji', 'pickerth-12'],
+    url: 'https://github.com/aitji/QoF'
+}
+
 // small helper
-let dyp: ScoreboardObjective | null = null, message: string[]
+let dyp: ScoreboardObjective | null = null
+let message: string[]
 const getDypObjective = () => {
     if (dyp) return dyp
     dyp = world.scoreboard.getObjective("dyp") || world.scoreboard.addObjective("dyp", "Dynamic Props")
@@ -30,18 +50,7 @@ system.run(() => {
     type FeatureModule = { ENABLED: boolean }
     const isFeatureModule = (v: unknown): v is FeatureModule => typeof v === 'object' && v !== null && 'ENABLED' in v
     const features = Object.entries(RUNTIME).filter(([_, v]) => isFeatureModule(v)) as [string, FeatureModule][]
-    const FL = features.map(([key, v]) => {
-        const enabled = v.ENABLED
-        const setting = RUNTIME[key as keyof typeof RUNTIME]
-        const isDefault = isFeatureModule(setting) && setting.ENABLED === enabled
-
-        if (enabled) return isDefault
-            ? ` §7- §f${key}: §eEnabled`
-            : ` §7- §f${key}: §o§eEnabled`
-        else return isDefault
-            ? ` §7- §f${key}: §gDisabled`
-            : ` §7- §f${key}: §o§gDisabled`
-    })
+    const FL = features.map(([key, { ENABLED }]) => ` §7- §f${key}: ${ENABLED ? '§eEnabled' : '§gDisabled'}`)
 
     message = [
         `§eQ§fuality §eo§ff §eF§feature §r§7v${version.qof}`,
@@ -70,8 +79,9 @@ system.run(() => {
             world.sendMessage(msg)
         })*/
 
-        world.sendMessage('§7qof loaded')
-        world.sendMessage(`§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n§8 ')}`)
+        const greet = `§7qof reloaded\n§8${world.getAllPlayers().map(e => ` ${e.name} = ${e.id} §7(${e.clientSystemInfo.platformType})`).join('\n§8 ')}`
+        world.sendMessage(greet)
+        // console.log(greet) // ok nvm i hate this
     }
 })
 
@@ -95,15 +105,8 @@ const PREFIX = 'qof:' // kept ":"
 const MB_1 = 1048576
 const to3 = (i: number) => i.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 const logAs = (msg: string, log: string) => {
-    switch (log) {
-        case "console":
-            console.log(msg)
-            break
-        case "world":
-        default:
-            world.sendMessage(msg)
-            break
-    }
+    if (log === "console") console.log(msg)
+    else world.sendMessage(msg)
 }
 
 export const debug_startup = (event: StartupEvent) => {
@@ -151,15 +154,11 @@ export const debug_startup = (event: StartupEvent) => {
         const ids = world.getDynamicPropertyIds()
         const len = ids.length
         const total = world.getDynamicPropertyTotalByteCount()
-
         let msg = `There is ${len} world dynamic property in the list:\n§7> usaged: ${to3(total)}/${to3(MB_1)} §8(${((total / MB_1) * 100).toFixed(2)}%%)§7\n\n`
 
         switch (dyp_action) {
-            case 'list-value': {
-                for (let i = 0; i < len; i++) {
-                    const id = ids[i]
-                    msg += `§8${i + 1} §7${id} §e${world.getDynamicProperty(id)}\n`
-                }
+            case 'list': {
+                ids.forEach((id, i) => msg += `§8${i + 1} §7${id}\n`)
                 break
             }
 
@@ -167,12 +166,9 @@ export const debug_startup = (event: StartupEvent) => {
                 world.clearDynamicProperties()
                 msg = '§7dynamic property has been removed'
                 break
-            case 'list':
+            case 'list-value':
             default:
-                for (let i = 0; i < len; i++) {
-                    const id = ids[i]
-                    msg += `§8${i + 1} §7${id}\n`
-                }
+                ids.forEach((id, i) => msg += `§8${i + 1} §7${id} §e${world.getDynamicProperty(id)}\n`)
                 break
         }
 
@@ -250,8 +246,7 @@ export const debug_startup = (event: StartupEvent) => {
                 break
             case 'item':
             default:
-                const equ = getEqu(player)!
-                const item = equ.getEquipment(EquipmentSlot.Mainhand)
+                const item = getHeld(player)
                 if (!item) return { status: CustomCommandStatus.Failure, message: 'cannot find item in mainhand' }
                 let v2 = item.getComponents()
                 msg = `There is ${v2.length} components type in this item\n§7TypeId: §e${item.typeId}\n§7NameTag: §e${item?.nameTag ?? '[null]'}\n\n`
@@ -285,23 +280,47 @@ export const debug_startup = (event: StartupEvent) => {
         })
         return { status: CustomCommandStatus.Success, message: 'yay' }
     })
+
+    // swing
+    reg.registerCommand({
+        name: `${PREFIX}swing`,
+        description: `swing player hand`,
+        mandatoryParameters: [
+            { name: 'player', type: CustomCommandParamType.PlayerSelector },
+        ],
+        optionalParameters: [
+            { name: 'swing', type: CustomCommandParamType.String }
+        ],
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
+    }, (_, players: Players, hand: 'main' | 'off' | 'both') => {
+        if (!players) return { status: CustomCommandStatus.Failure, message: 'no player?' }
+        if (!['main', 'off', 'both'].includes(hand)) return { status: CustomCommandStatus.Failure, message: 'incorrect hand type' }
+
+        system.run(() => {
+            for (const player of getPlayers(players)) {
+                if (!player) continue
+                swing(player, hand)
+                player.sendMessage(`§7${player.nameTag} /${hand}`)
+            }
+        })
+
+        return { status: CustomCommandStatus.Success, message: 'yay' }
+    })
 }
 
 export const debug_playerPlaceBlock = (data: PlayerPlaceBlockAfterEvent) => {
     const { player, block } = data
 
     if (block && block.typeId === 'qof:light_damp_dev') {
-        const equ = getEqu(player)!
-        const item = equ.getEquipment(EquipmentSlot.Mainhand)
+        const item = getHeld(player)
         if (!item) return
         const lore = item.getLore()[0]
         if (!lore) return
         const damp = clamp(parseInt(lore.slice("§r§7Light Dampening: ".length)), 0, 15)
         if (!damp) return
 
-        const perm = block.permutation
-            .withState('qof:light_dampening' as any, damp)
-        block.setPermutation(perm)
+        block.setPermutation(block.permutation.withState('qof:light_dampening' as StateName, damp))
     }
 }
 

@@ -1,839 +1,329 @@
-import { Block, Direction, Vector3 } from "@minecraft/server"
+// helpers
+const mc = (...names: string[]) => names.map(name => `minecraft:${name}`)
+export const COLORS = [
+    'white', 'light_gray', 'gray', 'black', 'brown', 'red', 'orange', 'yellow',
+    'lime', 'green', 'cyan', 'light_blue', 'blue', 'pink', 'purple', 'magenta'
+] as const
+const eachColor = (suffix: string) => COLORS.map(color => `${color}_${suffix}`)
+const COPPER_LANTERNS = ['', 'exposed_', 'weathered_', 'oxidized_'].flatMap(age => [`${age}copper_lantern`, `waxed_${age}copper_lantern`])
 
-type BlockDirFn =
-    | 'above'
-    | 'below'
-    | 'north'
-    | 'south'
-    | 'east'
-    | 'west'
+// types
+type Sound = { ID: string, VOLUME: number, PITCH: number | number[] }
+type LightInfo = { light: number, inLiquid?: boolean }
+type LightGroup = { always?: string[], dry?: string[], wet?: string[] }
 
+// table help
+const lightTable = (levels: Record<number, LightGroup>) => {
+    const table: Record<string, LightInfo> = {}
+    for (const [level, { always = [], dry = [], wet = [] }] of Object.entries(levels)) {
+        const light = Number(level)
+        for (const n of always) table[n] = { light }
+        for (const n of dry) table[n] = { light, inLiquid: false }
+        for (const n of wet) table[n] = { light, inLiquid: true }
+    }
+    return table
+}
+
+const chanceTable = (tiers: Record<number, string[]>) => {
+    const table: Record<string, number> = {}
+    for (const [chance, names] of Object.entries(tiers))
+        for (const id of mc(...names))
+            table[id] = Number(chance)
+    return table
+}
+
+// default cfg
 export const SETTINGS = Object.freeze({
     DEBUG: true, // auto set to false on released
     DISABLED_COMMANDFEEDBACK: false,
-    DISABLED_HEARTBEAT: false,
-    INTERVAL_DELAY: 1, // delay for each interval
-    BAT_ENABLED: true,
+    INTERVAL_DELAY: 1,
+    BLOCK_INTERACTION_DELAY: 4,
 
-    // share config
-    BLOCK_INTERACTION_DELAY: 4, // tick
-
-    // helper
-    SLICE_PREFIX: "minecraft:".length, // 10
-    BLOCKFACE_TO_DIR: Object.freeze({
-        Up: 'above',
-        Down: 'below',
-        North: 'north',
-        South: 'south',
-        East: 'east',
-        West: 'west',
-    }) as Readonly<Record<Direction, BlockDirFn>>,
-
-
-
-    LIGHT: Object.freeze({
-        ENABLED: true,
-        DECAY_LIGHT_TICK: 3, // before light when off time
-        REDUCE_LIGHT: 7, // lightLevel * REDUCE_LIGHT
+    LIGHT: {
+        DECAY_LIGHT_TICK: 2,
         LIGHT_REDUCE_LINEAR: 2,
-        LIGHT_RENDER_RADIUS: 32, // max distance light render around player
-        LIGHT_RENDER_PER_PLAYER: 12, // max light entity(item) render per player
-        LIGHT_FIRE_LEVEL: 10, // this will be reduce by REDUCE_LIGHT
-        FAIL_SOUND_INTERVAL: 30,
-        FAIL_PARTICLE: "minecraft:water_evaporation_bucket_emitter",
-        SOUND_FAIL: Object.freeze({
-            ID: "cauldron_drip.water.pointed_dripstone",
-            VOLUME: 1,
-            PITCH: [0.8, 1.0]
-        }),
-        PARTICLE_OFFSET: Object.freeze({ x: -.5, y: 0, z: -.5 }),
-
-        // vanilla bug patched ---
-        /** @type {Readonly<{[k: string]: Readonly<{asBlock: string; pot: string}>}>} */
-        SEEDTOBLOCK: Object.freeze({
-            'minecraft:wheat_seeds': Object.freeze({ asBlock: 'minecraft:wheat', pot: 'minecraft:farmland', sound: 'nature' }),
-            'minecraft:carrot': Object.freeze({ asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' }),
-            'minecraft:potato': Object.freeze({ asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' }),
-            'minecraft:beetroot_seeds': Object.freeze({ asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' }),
-            'minecraft:nether_wart': Object.freeze({ asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' }),
-        }) as Readonly<Record<string, { asBlock: string, pot: string, sound: 'nature' | 'nether' }>>,
-        FARMLAND_BLOCK: Object.freeze({
-            'minecraft:farmland': true,
-            'minecraft:soul_sand': true
-        } as Record<string, boolean>),
-        SOUND_SHOVEL_USE: Object.freeze({
-            ID: "use.grass",
-            VOLUME: 1.0,
-            PITCH: 0.8
-        }),
-        SOUND_HOE_USE: Object.freeze({
-            ID: "use.gravel",
-            VOLUME: 1.0,
-            PITCH: 0.8
-        }),
-        FIRE_ITEM: Object.freeze({
-            "minecraft:flint_and_steel": Object.freeze({
-                ID: "fire.ignite",
-                VOLUME: 1.0,
-                PITCH: [0.8, 1.2]
-            }),
-            "minecraft:fire_charge": Object.freeze({
-                ID: "mob.ghast.fireball",
-                VOLUME: 1.0,
-                PITCH: 1.0,
-                REDUCE_ITEM: true
-            }),
-        }) as Record<string, { ID: string, VOLUME: number, PITCH: number | number[], REDUCE_ITEM?: boolean }>,
-        // ---
-        LIGHT_WIKI: Object.freeze({
-            // light 15
-            "beacon": Object.freeze({ light: 15 }), "campfire": Object.freeze({ light: 15, inLiquid: false }),
-            "conduit": Object.freeze({ light: 15 }), "ochre_froglight": Object.freeze({ light: 15 }),
-            "pearlescent_froglight": Object.freeze({ light: 15 }), "verdant_froglight": Object.freeze({ light: 15 }),
-            "glowstone": Object.freeze({ light: 15 }), "lit_pumpkin": Object.freeze({ light: 15 }),
-            "lantern": Object.freeze({ light: 15, inLiquid: false }), "lava_bucket": Object.freeze({ light: 15, inLiquid: false }),
-            "sea_lantern": Object.freeze({ light: 15 }), "shroomlight": Object.freeze({ light: 15 }),
-            "copper_lantern": Object.freeze({ light: 15, inLiquid: false }), "waxed_copper_lantern": Object.freeze({ light: 15, inLiquid: false }),
-            "exposed_copper_lantern": Object.freeze({ light: 15, inLiquid: false }), "waxed_exposed_copper_lantern": Object.freeze({ light: 15, inLiquid: false }),
-            "weathered_copper_lantern": Object.freeze({ light: 15, inLiquid: false }), "waxed_weathered_copper_lantern": Object.freeze({ light: 15, inLiquid: false }),
-            "oxidized_copper_lantern": Object.freeze({ light: 15, inLiquid: false }), "waxed_oxidized_copper_lantern": Object.freeze({ light: 15, inLiquid: false }),
-
-            // light 14
-            "end_rod": Object.freeze({ light: 14 }), "glow_berries": Object.freeze({ light: 14 }),
-            "torch": Object.freeze({ light: 14, inLiquid: false }), "copper_torch": Object.freeze({ light: 14, inLiquid: false }),
-
-            // light 10
-            "crying_obsidian": Object.freeze({ light: 10 }), "soul_campfire": Object.freeze({ light: 10, inLiquid: false }),
-            "soul_lantern": Object.freeze({ light: 10, inLiquid: false }), "soul_torch": Object.freeze({ light: 10, inLiquid: false }),
-
-            // light 7
-            "enchanting_table": Object.freeze({ light: 7 }), "ender_chest": Object.freeze({ light: 7 }),
-            "glow_lichen": Object.freeze({ light: 7 }), "redstone_torch": Object.freeze({ light: 7, inLiquid: false }),
-
-            // light 6
-            "sculk_catalyst": Object.freeze({ light: 6 }), "sea_pickle": Object.freeze({ light: 6, inLiquid: true }),
-            "vault": Object.freeze({ light: 6 }),
-
-            // light 5
-            "amethyst_cluster": Object.freeze({ light: 5 }),
-
-            // light 4
-            "large_amethyst_bud": Object.freeze({ light: 4 }),
-            "trial_spawner": Object.freeze({ light: 4 }),
-
-            // light 3
-            "magma": Object.freeze({ light: 3 }),
-
-            // light 2
-            "medium_amethyst_bud": Object.freeze({ light: 2 }), "firefly_bush": Object.freeze({ light: 2 }),
-
-            // light 1
-            "brewing_stand": Object.freeze({ light: 1 }), "brown_mushroom": Object.freeze({ light: 1 }),
-            "calibrated_sculk_sensor": Object.freeze({ light: 1 }), "dragon_egg": Object.freeze({ light: 1 }),
-            "end_portal_frame": Object.freeze({ light: 1 }), "sculk_sensor": Object.freeze({ light: 1 }),
-            "small_amethyst_bud": Object.freeze({ light: 1 }),
-        }) as Readonly<Record<string, { light: number, inLiquid?: boolean }>>,
-        LIGHT_ENTITY: Object.freeze({
-            "minecraft:blaze": Object.freeze({ light: 12 }),
-            "minecraft:glow_squid": Object.freeze({ light: 10 }),
-            "minecraft:allay": Object.freeze({ light: 10 }),
-            "minecraft:vex": Object.freeze({ light: 10 }),
-            "minecraft:magma_cube": Object.freeze({ light: 9 }),
-            "minecraft:warden": Object.freeze({ light: 6 }),
-        }) as Readonly<Record<string, { light: number, inLiquid?: boolean }>>,
+        LIGHT_RENDER_RADIUS: 32,
+        LIGHT_RENDER_PER_PLAYER: 12,
+        LIGHT_FIRE_LEVEL: 10,
         LIGHT_PENDING_BATCH: 64,
         LIGHT_PLAYER_BATCH: 64,
-    }),
-    REPAIR_ANVIL: Object.freeze({
+        LIGHT_BLOCK: 'qof:light_block',
+
+        FAIL_SOUND_INTERVAL: 30,
+        FAIL_PARTICLE: 'minecraft:water_evaporation_bucket_emitter',
+        SOUND_FAIL: { ID: 'cauldron_drip.water.pointed_dripstone', VOLUME: 1, PITCH: [0.8, 1.0] } as Sound,
+        PARTICLE_OFFSET: { x: -.5, y: 0, z: -.5 },
+
+        // bug patched //
+        SEEDTOBLOCK: {
+            'minecraft:wheat_seeds': { asBlock: 'minecraft:wheat', pot: 'minecraft:farmland', sound: 'nature' },
+            'minecraft:carrot': { asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' },
+            'minecraft:potato': { asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' },
+            'minecraft:beetroot_seeds': { asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' },
+            'minecraft:nether_wart': { asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' },
+        } as Record<string, { asBlock: string, pot: string, sound: 'nature' | 'nether' }>,
+        SOUND_SHOVEL_USE: { ID: 'use.grass', VOLUME: 1.0, PITCH: 0.8 } as Sound,
+        SOUND_HOE_USE: { ID: 'use.gravel', VOLUME: 1.0, PITCH: 0.8 } as Sound,
+        FIRE_ITEM: {
+            'minecraft:flint_and_steel': { ID: 'fire.ignite', VOLUME: 1.0, PITCH: [0.8, 1.2] },
+            'minecraft:fire_charge': { ID: 'mob.ghast.fireball', VOLUME: 1.0, PITCH: 1.0, REDUCE_ITEM: true },
+        } as Record<string, Sound & { REDUCE_ITEM?: boolean }>,
+
+        LIGHT_WIKI: lightTable({
+            15: {
+                always: [
+                    'beacon', 'conduit', 'glowstone', 'lit_pumpkin', 'sea_lantern', 'shroomlight',
+                    'ochre_froglight', 'pearlescent_froglight', 'verdant_froglight',
+                ],
+                dry: ['campfire', 'lantern', 'lava_bucket', ...COPPER_LANTERNS],
+            },
+            14: { always: ['end_rod', 'glow_berries'], dry: ['torch', 'copper_torch'] },
+            10: { always: ['crying_obsidian'], dry: ['soul_campfire', 'soul_lantern', 'soul_torch'] },
+            7: { always: ['enchanting_table', 'ender_chest', 'glow_lichen'], dry: ['redstone_torch'] },
+            6: { always: ['sculk_catalyst', 'vault'], wet: ['sea_pickle'] },
+            5: { always: ['amethyst_cluster'] },
+            4: { always: ['large_amethyst_bud', 'trial_spawner'] },
+            3: { always: ['magma'] },
+            2: { always: ['medium_amethyst_bud', 'firefly_bush'] },
+            1: {
+                always: [
+                    'brewing_stand', 'brown_mushroom', 'calibrated_sculk_sensor', 'dragon_egg',
+                    'end_portal_frame', 'sculk_sensor', 'small_amethyst_bud',
+                ]
+            },
+        }),
+        LIGHT_ENTITY: {
+            'minecraft:blaze': { light: 12 },
+            'minecraft:glow_squid': { light: 10 },
+            'minecraft:allay': { light: 10 },
+            'minecraft:vex': { light: 10 },
+            'minecraft:magma_cube': { light: 9 },
+            'minecraft:warden': { light: 6 },
+        } as Record<string, LightInfo>,
+    },
+
+    REPAIR_ANVIL: {
         ENABLED: true,
         ITEM_TYPEID: 'minecraft:iron_ingot',
-        REPAIR_HELD_DELAY: 7, // delay when player held press to repair anvil (ticks)
-        REPAIRABLE_ANVIL: Object.freeze({
+        REPAIR_HELD_DELAY: 7,
+        REPAIRABLE_ANVIL: {
             'minecraft:damaged_anvil': 'minecraft:chipped_anvil',
             'minecraft:chipped_anvil': 'minecraft:anvil',
-            'minecraft:anvil': null
-        }) as Readonly<Record<string, string | null>>, // last index will be unFixable
-        REPAIR_SOUND: Object.freeze({
-            ID: 'smithing_table.use',
-            VOLUME: 1.0,
-            PITCH: 1.0
-        })
-    }),
-    WATER_CONCRETE: Object.freeze({
-        ENABLED: true,
-        ITEM_PREFIX: "minecraft:",
-        PROCESS_DELAY: 4, // how long before item vanish (tick)
-        KEEP_VELOCITY: true, // kept VELOCITY after touch water
+            'minecraft:anvil': null,
+        } as Record<string, string | null>,
+        REPAIR_SOUND: { ID: 'smithing_table.use', VOLUME: 1.0, PITCH: 1.0 } as Sound,
+    },
+
+    WATER_CONCRETE: {
         SLOW_BASE: 60,
         SLOW_MULTIPLIER: 10,
-        TYPEID_ENDSWITH: "_concrete_powder", // maybe don't touch this
-        DONE_PARTICLE: "minecraft:water_evaporation_bucket_emitter",
-        DONE_SOUND: Object.freeze({
-            ID: "mob.happy_ghast.harness_unequip",
-            PITCH: [1.6, 1.8],
-            VOLUME: 0.8
-        }),
-        MAX_PROCESS: 12,
-        BATCH_SIZE: 12 // max entity that will get process
-    }),
-    COMPOSTER: Object.freeze({
-        ENABLED: true,
-        WORK_WITH_HOPPER: true, // this might slow down the game when have too many...
-        HOPPER_INTERVAL_TICK: 8, // tick
-        HOPPER_TYPEID: "minecraft:hopper",
-        BLOCK_TYPEID: "minecraft:composter",
+        PROCESS_DELAY: 4,
+        KEEP_VELOCITY: true,
+        BATCH_SIZE: 12,
+        DONE_PARTICLE: 'minecraft:water_evaporation_bucket_emitter',
+        DONE_SOUND: { ID: 'mob.happy_ghast.harness_unequip', VOLUME: 0.8, PITCH: [1.6, 1.8] } as Sound,
+    },
+
+    COMPOSTER: {
+        HOPPER_INTERVAL_TICK: 8,
+        HOPPER_TYPEID: 'minecraft:hopper',
+        BLOCK_TYPEID: 'minecraft:composter',
         DELAY_BEFORE_READY: 17, // tick
-        DATA_LOSS_DYP: "qof.composter.timeout",
-        DATA_COMPOSTER_LOCATION: "qof:composterSet", // for hopper
-        PARTICLE_FILL_SUCCESS: "minecraft:crop_growth_emitter",
-        SOUND_FILL_SUCCESS: Object.freeze({
-            ID: "block.composter.fill_success",
-            VOLUME: 1.3,
-            PITCH: 1.0 // random from 0.2 to 0.9
+        DATA_LOSS_DYP: 'qof.composter.timeout',
+        DATA_COMPOSTER_LOCATION: 'qof:composterSet', // for hopper
+        PARTICLE_FILL_SUCCESS: 'minecraft:crop_growth_emitter',
+        SOUND_FILL_SUCCESS: { ID: 'block.composter.fill_success', VOLUME: 1.3, PITCH: 1.0 } as Sound,
+        SOUND_FILL_BONEMEAL: { ID: 'item.bone_meal.use', VOLUME: 2.0, PITCH: [0.9, 1.1] } as Sound,
+        SOUND_READY: { ID: 'block.composter.ready', VOLUME: 1.0, PITCH: 1.0 } as Sound,
+        SOUND_FILL: { ID: 'block.composter.fill', VOLUME: 1.3, PITCH: 0.8 } as Sound,
+
+        ITEMS: chanceTable({
+            0.3: [
+                'podzol', 'mycelium', 'dirt_with_roots',
+                'egg', 'brown_egg', 'blue_egg', 'turtle_egg',
+            ],
+            0.5: [
+                'bamboo', 'deadbush', 'honeycomb', 'sugar',
+                'string', 'blaze_powder', 'ghast_tear',
+                'chicken', 'porkchop', 'beef', 'mutton', 'rabbit', 'feather',
+                'ink_sac', 'glow_ink_sac', 'rabbit_hide', 'rabbit_foot', 'frog_spawn',
+                'cod', 'salmon', 'tropical_fish', 'pufferfish',
+            ],
+            0.65: [
+                'poisonous_potato', 'chorus_fruit', 'resin_clump', 'lit_pumpkin', 'paper',
+                'rotten_flesh', 'web', 'gunpowder', 'magma_cream', 'slime_ball', 'spider_eye',
+                'leather', 'phantom_membrane',
+                'leather_horse_armor', 'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+
+                // ooked
+                'cooked_chicken', 'cooked_porkchop', 'cooked_beef', 'cooked_mutton',
+                'cooked_rabbit', 'cooked_cod', 'cooked_salmon',
+                'golden_carrot', 'golden_dandelion', 'glistering_melon_slice',
+            ],
+            0.85: [
+                'book', 'fermented_spider_eye', 'dried_ghast', 'blaze_rod', 'slime', 'magma',
+                ...eachColor('wool'),
+
+                // ooked
+                'popped_chorus_fruit', 'mushroom_stew', 'suspicious_stew', 'beetroot_soup', 'golden_apple',
+            ],
+            1: [
+                'enchanted_golden_apple', 'rabbit_stew', 'nether_star'
+            ],
         }),
-        SOUND_FILL_BONEMEAL: Object.freeze({
-            ID: "item.bone_meal.use",
-            VOLUME: 2.0,
-            PITCH: [0.9, 1.1]
-        }),
-        SOUND_READY: Object.freeze({
-            ID: "block.composter.ready",
-            VOLUME: 1.0,
-            PITCH: 1.0
-        }),
-        SOUND_FILL: Object.freeze({
-            ID: "block.composter.fill",
-            VOLUME: 1.3,
-            PITCH: 0.8
-        }),
-        /*VANILA_COMPOSTE: Object.freeze(new Set([
-            // 30%
-            "minecraft:beetroot_seeds",
-            "minecraft:bush",
-            "minecraft:cactus_flower",
-            "minecraft:dried_kelp",
-            "minecraft:firefly_bush",
-            "minecraft:grass_block",
-            "minecraft:glow_berries",
-            "minecraft:hanging_roots",
-            "minecraft:kelp",
-            "minecraft:acacia_leaves",
-            "minecraft:azalea_leaves",
-            "minecraft:birch_leaves",
-            "minecraft:cherry_leaves",
-            "minecraft:dark_oak_leaves",
-            "minecraft:jungle_leaves",
-            "minecraft:mangrove_leaves",
-            "minecraft:oak_leaves",
-            "minecraft:spruce_leaves",
-            "minecraft:leaf_litter",
-            "minecraft:mangrove_propagule",
-            "minecraft:mangrove_roots",
-            "minecraft:melon_seeds",
-            "minecraft:moss_carpet",
-            "minecraft:pale_hanging_moss",
-            "minecraft:pale_moss_carpet",
-            "minecraft:pink_petals",
-            "minecraft:pitcher_pod",
-            "minecraft:pumpkin_seeds",
-            "minecraft:acacia_sapling",
-            "minecraft:birch_sapling",
-            "minecraft:cherry_sapling",
-            "minecraft:dark_oak_sapling",
-            "minecraft:jungle_sapling",
-            "minecraft:oak_sapling",
-            "minecraft:pale_oak_sapling",
-            "minecraft:spruce_sapling",
-            "minecraft:seagrass",
-            "minecraft:short_grass",
-            "minecraft:short_dry_grass",
-            "minecraft:small_dripleaf_block",
-            "minecraft:sweet_berries",
-            "minecraft:tall_dry_grass",
-            "minecraft:torchflower_seeds",
-            "minecraft:wheat_seeds",
-            "minecraft:wildflowers",
+    },
 
-            // 50%
-            "minecraft:cactus",
-            "minecraft:dried_kelp_block",
-            "minecraft:azalea_leaves_flowered",
-            "minecraft:glow_lichen",
-            "minecraft:melon_slice",
-            "minecraft:nether_sprouts",
-            "minecraft:sugar_cane",
-            "minecraft:tall_grass",
-            "minecraft:twisting_vines",
-            "minecraft:vines",
-            "minecraft:weeping_vines",
-
-            // 65%
-            "minecraft:apple",
-            "minecraft:azalea",
-            "minecraft:beetroot",
-            "minecraft:big_dripleaf",
-            "minecraft:carrot",
-            "minecraft:cocoa_beans",
-            "minecraft:fern",
-            "minecraft:allium",
-            "minecraft:azure_bluet",
-            "minecraft:blue_orchid",
-            "minecraft:cornflower",
-            "minecraft:dandelion",
-            "minecraft:closed_eyeblossom",
-            "minecraft:open_eyeblossom",
-            "minecraft:golden_dandelion",
-            "minecraft:lily_of_the_valley",
-            "minecraft:oxeye_daisy",
-            "minecraft:poppy",
-            "minecraft:orange_tulip",
-            "minecraft:pink_tulip",
-            "minecraft:red_tulip",
-            "minecraft:white_tulip",
-            "minecraft:wither_rose",
-            "minecraft:lilac",
-            "minecraft:peony",
-            "minecraft:rose_bush",
-            "minecraft:sunflower",
-            "minecraft:chorus_flower",
-            "minecraft:spore_blossom",
-            "minecraft:large_fern",
-            "minecraft:waterlily",
-            "minecraft:melon",
-            "minecraft:melon_block",
-            "minecraft:moss_block",
-            "minecraft:brown_mushroom",
-            "minecraft:red_mushroom",
-            "minecraft:mushroom_stem",
-            "minecraft:crimson_fungus",
-            "minecraft:warped_fungus",
-            "minecraft:nether_wart",
-            "minecraft:pale_moss_block",
-            "minecraft:potato",
-            "minecraft:pumpkin",
-            "minecraft:carved_pumpkin",
-            "minecraft:crimson_roots",
-            "minecraft:warped_roots",
-            "minecraft:sea_pickle",
-            "minecraft:shroomlight",
-            "minecraft:spore_blossom",
-            "minecraft:wheat",
-
-            // 85%
-            "minecraft:baked_potato",
-            "minecraft:bread",
-            "minecraft:cookie",
-            "minecraft:flowering_azalea",
-            "minecraft:hay_bale",
-            "minecraft:brown_mushroom_block",
-            "minecraft:red_mushroom_block",
-            "minecraft:nether_wart_block",
-            "minecraft:warped_wart_block",
-            "minecraft:pitcher_plant",
-            "minecraft:torchflower",
-
-            // 100%
-            "minecraft:cake",
-            "minecraft:pumpkin_pie",
-        ])),*/ // didn't use anymore
-        ITEMS: Object.freeze({
-            // chance is max 1 (0.3, 0.5, 0.65, 0.85, 1.0)
-            // smelt item +0.2(tier)
-
-            // botany
-            'minecraft:podzol': 0.3,
-            'minecraft:mycelium': 0.3,
-            'minecraft:dirt_with_roots': 0.3,
-            'minecraft:bamboo': 0.5,
-            'minecraft:dead_bush': 0.5,
-            'minecraft:honeycomb': 0.5,
-            'minecraft:poisonous_potato': 0.65, // same as potato
-            'minecraft:chorus_fruit': 0.65,
-            'minecraft:resin_clump': 0.65,
-            'minecraft:sugar': 0.50,
-            'minecraft:lit_pumpkin': 0.65,
-            'minecraft:paper': 0.65,
-            'minecraft:book': 0.85,
-
-            // lysosome inactived
-            'minecraft:rotten_flesh': 0.65,
-            'minecraft:string': 0.5,
-            'minecraft:web': 0.65,
-            'minecraft:gunpowder': 0.65,
-            'minecraft:blaze_powder': 0.5,
-            'minecraft:blaze_rod': 0.85,
-            'minecraft:magma_cream': 0.65,
-            'minecraft:slime_ball': 0.65,
-            'minecraft:ghast_tear': 0.5,
-            'minecraft:spider_eye': 0.65,
-            'minecraft:fermented_spider_eye': 0.85,
-            'minecraft:dried_ghast': 0.85,
-
-            // wool
-            'minecraft:black_wool': 0.85,
-            'minecraft:blue_wool': 0.85,
-            'minecraft:brown_wool': 0.85,
-            'minecraft:cyan_wool': 0.85,
-            'minecraft:gray_wool': 0.85,
-            'minecraft:green_wool': 0.85,
-            'minecraft:light_blue_wool': 0.85,
-            'minecraft:light_gray_wool': 0.85,
-            'minecraft:lime_wool': 0.85,
-            'minecraft:magenta_wool': 0.85,
-            'minecraft:orange_wool': 0.85,
-            'minecraft:pink_wool': 0.85,
-            'minecraft:red_wool': 0.85,
-            'minecraft:purple_wool': 0.85,
-            'minecraft:white_wool': 0.85,
-            'minecraft:yellow_wool': 0.85,
-
-            'minecraft:slime': 0.85,
-            'minecraft:magma': 0.85,
-
-            // passive mob loot
-            'minecraft:egg': 0.3,
-            'minecraft:brown_egg': 0.3,
-            'minecraft:blue_egg': 0.3,
-            'minecraft:turtle_egg': 0.3,
-            'minecraft:deadbush': 0.5,
-            'minecraft:chicken': 0.5,
-            'minecraft:porkchop': 0.5,
-            'minecraft:beef': 0.5,
-            'minecraft:mutton': 0.5,
-            'minecraft:rabbit': 0.5,
-            'minecraft:feather': 0.5,
-            'minecraft:ink_sac': 0.5,
-            'minecraft:glow_ink_sac': 0.5,
-            'minecraft:rabbit_hide': 0.5,
-            'minecraft:rabbit_foot': 0.5,
-            'minecraft:frog_spawn': 0.5,
-            'minecraft:leather': 0.65,
-            'minecraft:leather_horse_armor': 0.65,
-            'minecraft:leather_helmet': 0.65,
-            'minecraft:leather_chestplate': 0.65,
-            'minecraft:leather_leggings': 0.65,
-            'minecraft:leather_boots': 0.65,
-            'minecraft:phantom_membrane': 0.65,
-            'minecraft:cod': 0.5,
-            'minecraft:salmon': 0.5,
-            'minecraft:tropical_fish': 0.5,
-            'minecraft:pufferfish': 0.5,
-
-            // ooked (or cooked)
-            'minecraft:cooked_chicken': 0.65,
-            'minecraft:cooked_porkchop': 0.65,
-            'minecraft:cooked_beef': 0.65,
-            'minecraft:cooked_mutton': 0.65,
-            'minecraft:cooked_rabbit': 0.65,
-            'minecraft:cooked_cod': 0.65,
-            'minecraft:cooked_salmon': 0.65,
-
-            'minecraft:golden_carrot': 0.65,
-            'minecraft:golden_dandelion': 0.65,
-            'minecraft:glistering_melon_slice': 0.65,
-            'minecraft:popped_chorus_fruit': 0.85,
-            'minecraft:mushroom_stew': 0.85,
-            'minecraft:suspicious_stew': 0.85,
-            'minecraft:beetroot_soup': 0.85,
-            'minecraft:golden_apple': 0.85,
-            'minecraft:enchanted_golden_apple': 1,
-            'minecraft:rabbit_stew': 1,
-            'minecraft:nether_star': 1,
-        }) as Readonly<Record<string, 0.3 | 0.5 | 0.65 | 0.85 | 1.0>>
-    }),
-    CARRIED_CHEST: Object.freeze({
-        ENABLED: true,
-        CARRY_TAG: "carrying",
+    CARRIED_CHEST: {
+        CARRY_TAG: 'carrying',
         MAX_DISPLAY: 5,
-        APPLY_IMPULSE: Object.freeze({ // only apply via player in water *won't effect [creative] gamemode
+        APPLY_IMPULSE: { // in water
             ENABLED: true,
-            VECTOR: Object.freeze({ x: 0, y: -0.008, z: 0 }) // if posstive will make player swim up easier
-        }),
-        PLAYER_JUMP: Object.freeze({
-            NO_JUMP_HOLD_CHEST: false, // lock player from jumpping when holding chest
+            VECTOR: { x: 0, y: -0.008, z: 0 },
+        },
+        PLAYER_JUMP: {
             ALLOW_JUMP_IN_WATER: true,
             ALLOW_JUMP_IN_LAVA: true,
             ALLOW_JUMP_IN_SCAFFOLDING: true,
-            ALLOW_JUMP_IN_LADDER: true
-        }) as Readonly<Record<string, boolean>>,
-        ENTITY_TYPE: "qof:chest",
-        CHEST_ID: "minecraft:chest",
-        CONTAINER_NAMETAG: "§r§fCarried Container",
+            ALLOW_JUMP_IN_LADDER: true,
+        },
+        ENTITY_TYPE: 'qof:chest',
+        CHEST_ID: 'minecraft:chest',
+        CONTAINER_NAMETAG: '§r§fCarried Container',
         DOUBLE_CHEST_SIZE: 54, // don't edit
-        SLOWNESS_DURATION: .5 * 20, // player holding chest will apply slowness effect how long? (tick)
-        SLOWNESS_AMPLIFIER: 2, // level of slowness when player holding chest
-        SOUND_PICK_UP: Object.freeze({
-            ID: "armor.equip_leather",
-            VOLUME: 1.0,
-            PITCH: 0.8
-        })
-    }),
-    OFFHAND: Object.freeze({
-        ENABLED: true,
-        ALLOW_BLOCK_PLACEMENT: true,
+        SLOWNESS_DURATION: .5 * 20,
+        SLOWNESS_AMPLIFIER: 2,
+        SOUND_PICK_UP: { ID: 'armor.equip_leather', VOLUME: 1.0, PITCH: 0.8 } as Sound,
+    },
+
+    OFFHAND: {
         DOUBLE_SNEAK_WINDOW_MOBILE: 20,
         DOUBLE_SNEAK_WINDOW_CONSOLE: 16,
         DOUBLE_SNEAK_WINDOW_DEFAULT: 12,
-        FAIL_PARTICLE: "minecraft:villager_angry",
-        SOUND_FAIL: Object.freeze({
-            ID: "note.bd",
-            VOLUME: 0.3,
-            PITCH: [0.8, 1.0]
-        }),
-        PARTICLE_OFFSET: Object.freeze({ x: 0, y: 2, z: 0 }),
-        FACE_TO_TORCH_DIR: Object.freeze({
-            Up: 'top',
-            Down: 'top',
-            North: 'south',
-            South: 'north',
-            East: 'west',
-            West: 'east',
-        }) as Readonly<Record<string, string>>,
-        FACE_TO_NEIGHBOUR: Object.freeze({
-            Up: (b: Block) => b.above(),
-            Down: (b: Block) => b.below(),
-            North: (b: Block) => b.north(),
-            South: (b: Block) => b.south(),
-            East: (b: Block) => b.east(),
-            West: (b: Block) => b.west()
-        }) as Readonly<Record<'Up' | 'Down' | 'North' | 'South' | 'East' | 'West', (b: Block) => Block>>,
-        ALLOW_REPLACE: Object.freeze({
-            'minecraft:short_grass': true,
-            'minecraft:short_dry_grass': true,
-            'minecraft:bush': true,
-            'minecraft:deadbush': true,
-            'minecraft:fern': true,
-            'minecraft:nether_sprouts': true,
-            'minecraft:vine': true,
-            'minecraft:glow_lichen': true,
-            'minecraft:snow_layer': true,
-            'minecraft:crimson_roots': true,
-            'minecraft:warped_roots': true,
-            'minecraft:seagrass': true,
-            'minecraft:fire': true,
-            'minecraft:soul_fire': true,
-            'minecraft:sculk_vein': true,
-            'minecraft:leaf_litter': true,
-            'minecraft:wildflowers': true,
-            'minecraft:pink_petals': true,
+        FAIL_PARTICLE: 'minecraft:villager_angry',
+        SOUND_FAIL: { ID: 'note.bd', VOLUME: 0.3, PITCH: [0.8, 1.0] } as Sound,
+        PARTICLE_OFFSET: { x: 0, y: 2, z: 0 },
+        PLACE_SOUND: { ID: 'dig.wood', VOLUME: 1.0, PITCH: 0.8 } as Sound,
 
-            // 2 block tall need neig check
+        FACE_TO_TORCH_DIR: {
+            Up: 'top', Down: 'top',
+            North: 'south', South: 'north',
+            East: 'west', West: 'east',
+        } as Record<string, string>,
+
+        // false = 2 block tall /neig-check
+        ALLOW_REPLACE: {
+            ...Object.fromEntries(mc(
+                'short_grass', 'short_dry_grass', 'bush', 'deadbush', 'fern', 'nether_sprouts', 'vine',
+                'glow_lichen', 'snow_layer', 'crimson_roots', 'warped_roots', 'seagrass', 'fire', 'soul_fire',
+                'sculk_vein', 'leaf_litter', 'wildflowers', 'pink_petals',
+            ).map(id => [id, true])),
             'minecraft:tall_grass': false,
             'minecraft:large_fern': false,
-        }) as Readonly<Record<string, boolean>>,
-        NEED_SNEAK: Object.freeze({ // o(1) search
-            'minecraft:crafting_table': true,
-            'minecraft:crafter': true,
-            'minecraft:barrel': true,
-            'minecraft:furnace': true,
-            'minecraft:lit_furnace': true,
-            'minecraft:blast_furnace': true,
-            'minecraft:lit_blast_furnace': true,
-            'minecraft:smoker': true,
-            'minecraft:lit_smoker': true,
-            'minecraft:smithing_table': true,
-            'minecraft:noteblock': true,
-            'minecraft:jukebox': true,
-            // dev
-            'minecraft:command_block': true,
-            'minecraft:chain_command_block': true,
-            'minecraft:repeating_command_block': true,
-        }) as Readonly<Record<string, boolean>>,
-        TORCH_ID: Object.freeze({
-            "minecraft:torch": true,
-            "minecraft:redstone_torch": true,
-            "minecraft:copper_torch": true,
-            "minecraft:soul_torch": true
-        }) as Readonly<Record<string, boolean>>,
-        CAN_ALWAYS_USE: Object.freeze(new Set([
-            // misc, idk where to put it
-            "minecraft:wind_charge",
-            "minecraft:snowball",
-            "minecraft:ender_eye",
-            "minecraft:ender_pearl",
-            "minecraft:goat_horn",
-            "minecraft:firework_rocket",
-            "minecraft:armor_stand",
-            "minecraft:turtle_helmet",
-            "minecraft:sugar_cane",
-            "minecraft:empty_map",
-            "minecraft:banner",
-            "minecraft:name_tag",
+        } as Record<string, boolean>,
 
-            // stew
-            "minecraft:suspicious_stew",
-            "minecraft:mushroom_stew",
-            "minecraft:rabbit_stew",
-            "minecraft:beetroot_soup",
+        NEED_SNEAK: new Set(mc(
+            'crafting_table', 'crafter', 'barrel', 'smithing_table', 'noteblock', 'jukebox',
+            'furnace', 'lit_furnace', 'blast_furnace', 'lit_blast_furnace', 'smoker', 'lit_smoker',
+            'command_block', 'chain_command_block', 'repeating_command_block',
+        )),
 
-            // fish bucket
-            "minecraft:axolotl_bucket",
-            "minecraft:cod_bucket",
-            "minecraft:pufferfish_bucket",
-            "minecraft:salmon_bucket",
-            "minecraft:tadpole_bucket",
-            "minecraft:tropical_fish_bucket",
-            "minecraft:water_bucket",
-            "minecraft:lava_bucket",
-            "minecraft:powder_snow_bucket",
+        TORCH_ID: new Set(mc('torch', 'redstone_torch', 'copper_torch', 'soul_torch')),
 
-            // potions
-            "minecraft:potion",
-            "minecraft:lingering_potion",
-            "minecraft:splash_potion",
-            "minecraft:ominous_bottle",
-            "minecraft:experience_bottle",
-            "minecraft:honey_bottle",
-            "minecraft:glass_bottle",
-
-            // egg
-            "minecraft:egg",
-            "minecraft:brown_egg",
-            "minecraft:blue_egg",
-
-            // weapon
-            "minecraft:bow",
-            "minecraft:crossbow",
-            "minecraft:fishing_rod",
-            "minecraft:carrot_on_a_stick",
-            "minecraft:warped_fungus_on_a_stick",
-            "minecraft:shears",
-            "minecraft:flint_and_steel",
-
-            "minecraft:lead",
-            "minecraft:saddle",
-            "minecraft:leather_horse_armor",
-            "minecraft:copper_horse_armor",
-            "minecraft:golden_horse_armor",
-            "minecraft:iron_horse_armor",
-            "minecraft:diamond_horse_armor",
-            "minecraft:netherite_horse_armor",
-            "minecraft:wolf_armor",
-
-            "minecraft:wooden_spear",
-            "minecraft:stone_spear",
-            "minecraft:copper_spear",
-            "minecraft:golden_spear",
-            "minecraft:iron_spear",
-            "minecraft:diamond_spear",
-            "minecraft:netherite_spear",
-
-            // redstone
-            "minecraft:repeater",
-            "minecraft:comparator",
-            "minecraft:redstone",
-            "minecraft:redstone_torch",
-        ])) as Readonly<Set<string>>,
-        DISALLOWED_ITEM: Object.freeze(new Set([
-            // bundle
-            'minecraft:bundle',
-            'minecraft:black_bundle',
-            'minecraft:blue_bundle',
-            'minecraft:brown_bundle',
-            'minecraft:cyan_bundle',
-            'minecraft:gray_bundle',
-            'minecraft:green_bundle',
-            'minecraft:light_blue_bundle',
-            'minecraft:light_gray_bundle',
-            'minecraft:lime_bundle',
-            'minecraft:magenta_bundle',
-            'minecraft:orange_bundle',
-            'minecraft:pink_bundle',
-            'minecraft:red_bundle',
-            'minecraft:purple_bundle',
-            'minecraft:white_bundle',
-            'minecraft:yellow_bundle',
-
-            // shulker_box
-            'minecraft:undyed_shulker_box',
-            'minecraft:black_shulker_box',
-            'minecraft:blue_shulker_box',
-            'minecraft:brown_shulker_box',
-            'minecraft:cyan_shulker_box',
-            'minecraft:gray_shulker_box',
-            'minecraft:green_shulker_box',
-            'minecraft:light_blue_shulker_box',
-            'minecraft:light_gray_shulker_box',
-            'minecraft:lime_shulker_box',
-            'minecraft:magenta_shulker_box',
-            'minecraft:orange_shulker_box',
-            'minecraft:pink_shulker_box',
-            'minecraft:red_shulker_box',
-            'minecraft:purple_shulker_box',
-            'minecraft:white_shulker_box',
-            'minecraft:yellow_shulker_box',
-
-            // potions
-            'minecraft:potion',
-            'minecraft:lingering_potion',
-            'minecraft:splash_potion',
-            'minecraft:ominous_bottle',
-
-            // dyeable leathers
-            'minecraft:leather_horse_armor',
-            'minecraft:leather_helmet',
-            'minecraft:leather_chestplate',
-            'minecraft:leather_leggings',
-            'minecraft:leather_boots',
-            'minecraft:wolf_armor',
-
-            // fish in bucket (size&color)
-            "minecraft:axolotl_bucket",
-            "minecraft:cod_bucket",
-            "minecraft:pufferfish_bucket",
-            "minecraft:salmon_bucket",
-            "minecraft:tadpole_bucket",
-            "minecraft:tropical_fish_bucket",
-
-            // bee
-            "minecraft:bee_nest",
-            "minecraft:beehive",
-
-            // others
-            'minecraft:arrow', // tripped arrow, sadly this inculding the normal arrow too
-            'minecraft:banner',
-            'minecraft:bed',
-            'minecraft:goat_horn',
-            'minecraft:suspicious_stew',
-            'minecraft:bow',
-            'minecraft:crossbow', // will lost arrow if swap
-            // 'minecraft:enchanted_book', // alr have enchant
-            'minecraft:fishing_rod',
-            'minecraft:firework_rocket',
-            'minecraft:firework_star',
-            'minecraft:shield', // banner can be put on a shield
-            "minecraft:filled_map",
-            "minecraft:empty_map", // empty locator map will lost
-
-            // dev
-            "minecraft:command_block",
-            "minecraft:chain_command_block",
-            "minecraft:repeating_command_block",
-        ])) as Readonly<Set<string>>,
-        LIGHT: 'qof:light_block',
-        LIGHT_DEV: 'qof:light_block_dev',
-        PLACE_SOUND: Object.freeze({
-            ID: "dig.wood", // new version might be chnage to "place.wood"
-            VOLUME: 1.0,
-            PITCH: 0.8
-        }),
-        ITEMBUTBLOCK: Object.freeze({
-            "minecraft:water_bucket": true,
-            "minecraft:axolotl_bucket": true,
-            "minecraft:cod_bucket": true,
-            "minecraft:lava_bucket": true,
-            "minecraft:powder_snow_bucket": true,
-            "minecraft:pufferfish_bucket": true,
-            "minecraft:salmon_bucket": true,
-            "minecraft:tadpole_bucket": true,
-            "minecraft:tropical_fish_bucket": true,
-            "minecraft:bucket": true,
-
-            "minecraft:redstone": true,
-            "minecraft:redstone_torch": true,
-        }) as Readonly<Record<string, boolean>>,
-        FOOD_DATA: Object.freeze({
-            // fruit & vegetable
-            "minecraft:apple": Object.freeze({ nutrition: 4, saturation: 2.4, canAlwaysEat: true }),
-            "minecraft:beetroot": Object.freeze({ nutrition: 1, saturation: 1.2, canAlwaysEat: false }),
-            "minecraft:carrot": Object.freeze({ nutrition: 3, saturation: 3.6, canAlwaysEat: false }),
-            "minecraft:chorus_fruit": Object.freeze({ nutrition: 4, saturation: 2.4, canAlwaysEat: true }), // teleports player
-            "minecraft:glow_berries": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }),
-            "minecraft:golden_carrot": Object.freeze({ nutrition: 6, saturation: 14.4, canAlwaysEat: false }),
-            "minecraft:melon_slice": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }),
-            "minecraft:potato": Object.freeze({ nutrition: 1, saturation: 0.6, canAlwaysEat: false }),
-            "minecraft:poisonous_potato": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }), // 60% poison (5s)
-            "minecraft:pumpkin_pie": Object.freeze({ nutrition: 8, saturation: 4.8, canAlwaysEat: false }),
-            "minecraft:sweet_berries": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }),
-
-            // golden / enchanted
-            "minecraft:golden_apple": Object.freeze({ nutrition: 4, saturation: 9.6, canAlwaysEat: true }), // regen II (5s), absorption (2min)
-            "minecraft:enchanted_golden_apple": Object.freeze({ nutrition: 4, saturation: 9.6, canAlwaysEat: true }), // regen II (30s), absorption IV, resistance, fire resistance
-
-            // baked / cooked
-            "minecraft:baked_potato": Object.freeze({ nutrition: 5, saturation: 6.0, canAlwaysEat: false }),
-            "minecraft:cooked_beef": Object.freeze({ nutrition: 8, saturation: 12.8, canAlwaysEat: false }), // steak
-            "minecraft:cooked_chicken": Object.freeze({ nutrition: 6, saturation: 7.2, canAlwaysEat: false }),
-            "minecraft:cooked_cod": Object.freeze({ nutrition: 5, saturation: 6.0, canAlwaysEat: false }),
-            "minecraft:cooked_mutton": Object.freeze({ nutrition: 6, saturation: 9.6, canAlwaysEat: false }),
-            "minecraft:cooked_porkchop": Object.freeze({ nutrition: 8, saturation: 12.8, canAlwaysEat: false }),
-            "minecraft:cooked_rabbit": Object.freeze({ nutrition: 5, saturation: 6.0, canAlwaysEat: false }),
-            "minecraft:cooked_salmon": Object.freeze({ nutrition: 6, saturation: 9.6, canAlwaysEat: false }),
-
-            // raw meat
-            "minecraft:beef": Object.freeze({ nutrition: 3, saturation: 1.8, canAlwaysEat: false }), // raw beef
-            "minecraft:chicken": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }), // 30% hunger (30s)
-            "minecraft:cod": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }), // raw cod
-            "minecraft:mutton": Object.freeze({ nutrition: 2, saturation: 1.2, canAlwaysEat: false }),
-            "minecraft:porkchop": Object.freeze({ nutrition: 3, saturation: 1.8, canAlwaysEat: false }),
-            "minecraft:rabbit": Object.freeze({ nutrition: 3, saturation: 1.8, canAlwaysEat: false }),
-            "minecraft:salmon": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }), // raw salmon
-
-            // fish / seafood
-            "minecraft:pufferfish": Object.freeze({ nutrition: 1, saturation: 0.2, canAlwaysEat: false }), // hunger III, nausea, poison II
-            "minecraft:tropical_fish": Object.freeze({ nutrition: 1, saturation: 0.2, canAlwaysEat: false }),
-
-            // stews & soups
-            "minecraft:beetroot_soup": Object.freeze({ nutrition: 6, saturation: 7.2, canAlwaysEat: false }),
-            "minecraft:mushroom_stew": Object.freeze({ nutrition: 6, saturation: 7.2, canAlwaysEat: false }),
-            "minecraft:rabbit_stew": Object.freeze({ nutrition: 10, saturation: 12.0, canAlwaysEat: false }),
-            "minecraft:suspicious_stew": Object.freeze({ nutrition: 6, saturation: 7.2, canAlwaysEat: true }), // varies by flower
-
-            // sweat
-            "minecraft:bread": Object.freeze({ nutrition: 5, saturation: 6.0, canAlwaysEat: false }),
-            // "minecraft:cake": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }), // whole = 14 over 7 slices, it not eatable as item tho
-            "minecraft:cookie": Object.freeze({ nutrition: 2, saturation: 0.4, canAlwaysEat: false }),
-
+        CAN_ALWAYS_USE: new Set(mc(
             // misc
-            "minecraft:dried_kelp": Object.freeze({ nutrition: 1, saturation: 0.2, canAlwaysEat: false }),
-            "minecraft:honey_bottle": Object.freeze({ nutrition: 6, saturation: 1.2, canAlwaysEat: true }), // clears poison
-            "minecraft:rotten_flesh": Object.freeze({ nutrition: 4, saturation: 0.8, canAlwaysEat: false }), // 80% hunger (30s)
-            "minecraft:spider_eye": Object.freeze({ nutrition: 2, saturation: 3.2, canAlwaysEat: false }), // poison (5s)
-        }) as Readonly<Record<string, { nutrition: number, saturation: number, canAlwaysEat: boolean }>>
-    }),
-    HARVEST: Object.freeze({
-        ENABLED: true,
-        LOSS_SEED: true,
-        DURABILITY: true,
+            'wind_charge', 'snowball', 'ender_eye', 'ender_pearl', 'goat_horn', 'firework_rocket',
+            'armor_stand', 'turtle_helmet', 'sugar_cane', 'empty_map', 'banner', 'name_tag',
+            // stew
+            'suspicious_stew', 'mushroom_stew', 'rabbit_stew', 'beetroot_soup',
+            // buckets
+            'bucket', 'axolotl_bucket', 'cod_bucket', 'pufferfish_bucket', 'salmon_bucket',
+            'tadpole_bucket', 'tropical_fish_bucket', 'water_bucket', 'lava_bucket', 'powder_snow_bucket',
+            // potions & bottles
+            'potion', 'lingering_potion', 'splash_potion', 'ominous_bottle', 'experience_bottle',
+            'honey_bottle', 'glass_bottle',
+            // eggs
+            'egg', 'brown_egg', 'blue_egg',
+            // tools & weapons
+            'bow', 'crossbow', 'fishing_rod', 'carrot_on_a_stick',
+            'warped_fungus_on_a_stick', 'shears', 'flint_and_steel',
+            'wooden_spear', 'stone_spear', 'copper_spear', 'golden_spear',
+            'iron_spear', 'diamond_spear', 'netherite_spear',
+            // mounts
+            'lead', 'saddle', 'wolf_armor',
+            'leather_horse_armor', 'copper_horse_armor', 'golden_horse_armor',
+            'iron_horse_armor', 'diamond_horse_armor', 'netherite_horse_armor',
+            // redstone
+            'repeater', 'comparator', 'redstone', 'redstone_torch',
+        )),
 
-        PLANT_LEVEL: Object.freeze({
-            "minecraft:wheat": Object.freeze({ level: 7, seed: "minecraft:wheat_seeds" }),
-            "minecraft:carrots": Object.freeze({ level: 7, seed: "minecraft:carrot" }),
-            "minecraft:potatoes": Object.freeze({ level: 7, seed: "minecraft:potato" }),
-            "minecraft:beetroot": Object.freeze({ level: 7, seed: "minecraft:beetroot_seeds" }),
-            "minecraft:sweet_berry_bush": Object.freeze({ level: 2, seed: "minecraft:sweet_berries", harvested: 1, harvested_state: "growth" }),
-            "minecraft:nether_wart": Object.freeze({ level: 3, seed: "minecraft:nether_wart" }),
-        }) as Readonly<Record<string, { level: number, seed: string, harvested?: number, harvested_state?: string }>>,
-        COCOA_VALID_LOGS: Object.freeze(new Set([
-            'minecraft:jungle_log',
-            'minecraft:stripped_jungle_log',
-            'minecraft:jungle_wood',
-            'minecraft:stripped_jungle_wood',
-        ])) as Readonly<Set<string>>,
-        COCOA_DIRECTIONS: [ /** N/S/E/W offsets */
-            { x: 0, z: 1, dir: 0 },  // south
+        DISALLOWED_ITEM: new Set(mc(
+            'bundle', ...eachColor('bundle'),
+            'undyed_shulker_box', ...eachColor('shulker_box'),
+            // potion
+            'potion', 'lingering_potion', 'splash_potion', 'ominous_bottle',
+            // dyeable leather
+            'leather_horse_armor', 'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+            'wolf_armor',
+            // bucket
+            'axolotl_bucket', 'cod_bucket', 'pufferfish_bucket', 'salmon_bucket',
+            'tadpole_bucket', 'tropical_fish_bucket',
+            // bees
+            'bee_nest', 'beehive',
+            // misc
+            'arrow', // tripped arrow
+            'banner', 'bed', 'goat_horn', 'suspicious_stew', 'firework_rocket', 'firework_star',
+            'shield', 'filled_map', 'empty_map',
+            'bow', 'fishing_rod', 'crossbow',
+            // dev
+            'command_block', 'chain_command_block', 'repeating_command_block',
+        )),
+
+        FOOD: new Set(mc(
+            'apple', 'beetroot', 'carrot', 'chorus_fruit', 'glow_berries', 'golden_carrot', 'melon_slice',
+            'potato', 'poisonous_potato', 'pumpkin_pie', 'sweet_berries', 'golden_apple', 'enchanted_golden_apple',
+            'baked_potato', 'cooked_beef', 'cooked_chicken', 'cooked_cod', 'cooked_mutton', 'cooked_porkchop',
+            'cooked_rabbit', 'cooked_salmon', 'beef', 'chicken', 'cod', 'mutton', 'porkchop', 'rabbit', 'salmon',
+            'pufferfish', 'tropical_fish', 'beetroot_soup', 'mushroom_stew', 'rabbit_stew', 'suspicious_stew',
+            'bread', 'cookie', 'dried_kelp', 'honey_bottle', 'rotten_flesh', 'spider_eye',
+        )),
+        FOOD_ALWAYS_EDIBLE: new Set(mc( // canAlwaysEat
+            'apple', 'chorus_fruit', 'golden_apple',
+            'enchanted_golden_apple', 'suspicious_stew', 'honey_bottle',
+        )),
+    },
+
+    HARVEST: {
+        PLANT_LEVEL: {
+            'minecraft:wheat': { level: 7, seed: 'minecraft:wheat_seeds' },
+            'minecraft:carrots': { level: 7, seed: 'minecraft:carrot' },
+            'minecraft:potatoes': { level: 7, seed: 'minecraft:potato' },
+            'minecraft:beetroot': { level: 7, seed: 'minecraft:beetroot_seeds' },
+            'minecraft:nether_wart': { level: 3, seed: 'minecraft:nether_wart' },
+            'minecraft:sweet_berry_bush': {
+                level: 2, seed: 'minecraft:sweet_berries',
+                harvested: 1, harvested_state: 'growth'
+            },
+        } as Record<string, { level: number, seed: string, harvested?: number, harvested_state?: string }>,
+        COCOA_VALID_LOGS: new Set(mc('jungle_log', 'stripped_jungle_log', 'jungle_wood', 'stripped_jungle_wood')),
+        COCOA_DIRECTIONS: [
+            { x: 0, z: 1, dir: 0 }, // south
             { x: -1, z: 0, dir: 1 }, // west
             { x: 0, z: -1, dir: 2 }, // north
-            { x: 1, z: 0, dir: 3 },  // east
-        ] as const
-    }),
-    OPENABLE: Object.freeze({
-        ENABLED: true,
+            { x: 1, z: 0, dir: 3 }, // east
+        ],
+    },
+
+    OPENABLE: {
+        IRON_BY_HAND: true,
+        AUTO_CLOSE: false,
         SHOP_BELL: true,
+
         DOOR: true, GATE: true, TRAPDOOR: true,
-        IRON_BY_HAND: true, AUTO_CLOSE: false, AUTO_CLOSE_RADIUS: 1, AUTO_CLOSE_DELAY: 10,
-        MAX_LINKED: 16
-    }),
-    WAXED_OF: Object.freeze({
-        ENABLED: true,
-        DURABILITY: true,
-    }),
-    WATER_CAULDRON: Object.freeze({
-        ENABLED: true,
-        FIND_NEAR_COLOR: true,
-        HARDENED_POWDER: true
-    }),
-    BONEMEAL: Object.freeze({
-        ENABLED: true
-    })
+        AUTO_CLOSE_RADIUS: 1,
+        AUTO_CLOSE_DELAY: 10,
+        MAX_LINKED: 16,
+    },
+
+    WAXED_OF: { ENABLED: true },
+    BONEMEAL: { ENABLED: true },
 })

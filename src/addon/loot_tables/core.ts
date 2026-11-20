@@ -11,16 +11,14 @@
  */
 
 import {
-    type Dimension,
-    type Entity,
-    type EntityDamageCause,
+    type EntityDamageCause, type Vector3,
+    type Entity, type Dimension,
     type EntityDieAfterEvent,
     EntityComponentTypes,
-    EquipmentSlot,
+    ItemComponentTypes,
     ItemStack,
-    type Vector3
 } from "@minecraft/server"
-import { getEqu, pickupCooldown, rand, RUNTIME } from "../../lib"
+import { getHeld, pickupCooldown, rand, RUNTIME } from "../../lib"
 const { DEBUG } = RUNTIME
 import {
     LOOT_TABLES,
@@ -54,14 +52,7 @@ const randIntInc = (min: number, max: number) => {
 }
 const resRange = (r: Range) => (typeof r === "number" ? r : randIntInc(r.min, r.max))
 const resFloat = (r: Range) => (typeof r === "number" ? r : rand(r.min, r.max))
-const getLooting = (killer: Entity): number => {
-    const hand = getEqu(killer)?.getEquipment(EquipmentSlot.Mainhand)
-    const enchants = hand?.getComponent("minecraft:enchantable")?.getEnchantments() ?? []
-    for (const e of enchants)
-        if (e.type.id === "looting" || e.type.id === "minecraft:looting")
-            return e.level
-    return 0
-}
+const getLooting = (killer: Entity): number => getHeld(killer)?.getComponent(ItemComponentTypes.Enchantable)?.getEnchantment("looting")?.level ?? 0
 
 const buildCtx = (data: EntityDieAfterEvent): LootContext => {
     const { damageSource: dmg, deadEntity: ded } = data
@@ -90,10 +81,7 @@ const check = (c: LootCondition, ctx: LootContext): boolean => {
         case "on_fire": return ctx.onFire === (c.value ?? true)
         case "is_baby": return ctx.isBaby === (c.value ?? true)
         case "damage_cause": return c.causes.includes(ctx.cause)
-        default: {
-            // const _e: never = c
-            return false
-        }
+        default: return false
     }
 }
 
@@ -129,7 +117,7 @@ const applyFn = (functions: LootFunction[] | undefined, ctx: LootContext): { cou
             case "set_durability":
                 durability = Math.min(1, Math.max(0, resFloat(fn.durability)))
                 break
-            default: { const _e: never = fn }
+            default: fn satisfies never
         }
     }
     return { count: Math.max(0, Math.floor(count)), durability }

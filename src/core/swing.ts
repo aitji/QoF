@@ -1,4 +1,7 @@
-import { world, system, Player, PlayAnimationOptions, Entity, PlayerSpawnAfterEvent } from "@minecraft/server"
+import {
+    type Player, type Entity, type PlayAnimationOptions,
+    system
+} from "@minecraft/server"
 
 // internal
 type swingHand = "main" | "off"

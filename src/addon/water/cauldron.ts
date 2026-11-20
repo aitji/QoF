@@ -1,6 +1,13 @@
-import { Block, BlockComponentTypes, BlockFluidContainerComponent, BlockPermutation, EntityEquippableComponent, EquipmentSlot, FluidType, ItemStack, Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
-import { addItem, checkPerm, clamp, getEqu, playSound, RUNTIME, setEqu } from "../../lib"
-const { DEBUG, WATER_CAULDRON: { FIND_NEAR_COLOR, HARDENED_POWDER } } = Object.freeze(RUNTIME)
+import {
+    type Block, type Player,
+    type BlockFluidContainerComponent,
+    type PlayerInteractWithBlockBeforeEvent,
+    BlockComponentTypes, FluidType,
+    ItemStack, system
+} from "@minecraft/server"
+import { addItem, cache, checkPerm, clamp, createThrottle, heldAfterDelay, playSound, RUNTIME, setEqu } from "../../lib"
+const { DEBUG, WATER_CAULDRON: { FIND_NEAR_COLOR, HARDENED_POWDER } } = RUNTIME
+
 const RGB_PRECISION = 4 // hardcode, don't make config
 const DYE_COLORS: { name: string; r: number; g: number; b: number }[] = [
     { name: 'white', r: 0.9412, g: 0.9412, b: 0.9412 },
@@ -23,161 +30,130 @@ const DYE_COLORS: { name: string; r: number; g: number; b: number }[] = [
 
 // helper
 const toKey = (r: number, g: number, b: number) => `${r.toFixed(RGB_PRECISION)},${g.toFixed(RGB_PRECISION)},${b.toFixed(RGB_PRECISION)}`
-const DYE_COLOR_MAP = new Map<string, string>(DYE_COLORS.map(({ name, r, g, b }) => [toKey(r, g, b), name]))
-function getNearestDye(r: number, g: number, b: number) {
+const DYE_COLOR_MAP = new Map(DYE_COLORS.map(({ name, r, g, b }) => [toKey(r, g, b), name]))
+
+const getNearestDye = (r: number, g: number, b: number) => {
     const exact = DYE_COLOR_MAP.get(toKey(r, g, b))
     if (exact) return { color: exact, distance: 0 }
+    if (!FIND_NEAR_COLOR) return
 
-    if (!FIND_NEAR_COLOR) return { color: 'null', distance: -1 }
     let nearest = DYE_COLORS[0]
     let minDist = Infinity
     for (const dye of DYE_COLORS) {
         const dist = 0.299 * (r - dye.r) ** 2 + 0.587 * (g - dye.g) ** 2 + 0.114 * (b - dye.b) ** 2
-        if (dist < minDist) { minDist = dist; nearest = dye }
+        if (dist < minDist) {
+            minDist = dist
+            nearest = dye
+        }
     }
     return { color: nearest.name, distance: minDist }
 }
 
-type DyeableEntry = {
+type Dyeable = {
     match: (id: string) => boolean
     dyed: (id: string, dye: string) => string | undefined
     clean: (id: string) => string
     allowClean?: boolean
 }
 
-const DYEABLE: DyeableEntry[] = [
-    { // wool_slab -> *_wool_slab
-        match: id => id.includes('wool_slab'),
-        dyed: (_id, dye) => `minecraft:${dye}_wool_slab`,
-        clean: _ => 'minecraft:white_wool_slab',
-    },
-    { // wool_stairs -> *_wool_stairs
-        match: id => id.includes('wool_stairs'),
-        dyed: (_id, dye) => `minecraft:${dye}_wool_stairs`,
-        clean: _ => 'minecraft:white_wool_stairs',
-    },
-    { // concrete_slab -> *_concrete_slab
-        match: id => id.includes('concrete_slab'),
-        dyed: (_id, dye) => `minecraft:${dye}_concrete_slab`,
-        clean: _ => 'minecraft:white_concrete_slab',
-    },
-    { // concrete_stairs -> *_concrete_stairs
-        match: id => id.includes('concrete_stairs'),
-        dyed: (_id, dye) => `minecraft:${dye}_concrete_stairs`,
-        clean: _ => 'minecraft:white_concrete_stairs',
-    },
-    { // carpet -> *_carpet
-        match: id => id.includes('carpet'),
-        dyed: (_id, dye) => `minecraft:${dye}_carpet`,
-        clean: _ => 'minecraft:white_carpet',
-    },
-    { // wool -> *_wool
-        match: id => id.includes('wool'),
-        dyed: (_id, dye) => `minecraft:${dye}_wool`,
-        clean: _ => 'minecraft:white_wool',
-    },
-    { // concrete / concrete_powder -> *_concrete[_powder]
-        match: id => id.includes('concrete'),
-        dyed: (id, dye) => HARDENED_POWDER ? `minecraft:${dye}_concrete` : `minecraft:${dye}_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
-        clean: id => HARDENED_POWDER ? `minecraft:white_concrete` : `minecraft:white_concrete${id.endsWith('_powder') ? '_powder' : ''}`,
-    },
-    { // glass / glass_pane -> *_stained_glass[_pane]
-        match: id => id.includes('glass'),
-        dyed: (id, dye) => `minecraft:${dye}_stained_glass${id.endsWith('_pane') ? '_pane' : ''}`,
-        clean: id => id.endsWith('_pane') ? 'minecraft:glass_pane' : 'minecraft:glass',
-    },
-    { // hardened_clay / terracotta / glazed_terracotta -> hardened_clay / *(_glazed)_terracotta
-        match: id => id.includes('hardened_clay') || id.includes('terracotta'),
-        dyed: (id, dye) => `minecraft:${dye}${id.includes('_glazed') ? '_glazed' : ''}_terracotta`,
-        clean: _id => _id.includes("_glazed") ? 'white_glazed_terracotta' : 'hardened_clay',
-    },
-    { // *_cushion - *_cushion
-        match: id => id.endsWith("_cushion"),
-        dyed: (_, dye) => `minecraft:${dye}_cushion`,
-        clean: id => 'minecraft:white_cushion'
-    },
-    { // candle -> *_candle
-        match: id => id.includes('candle'),
-        dyed: (_id, dye) => `minecraft:${dye}_candle`,
-        clean: _ => 'minecraft:candle',
-    },
-    { // arrow -> arrow
-        match: id => id === 'minecraft:arrow',
-        dyed: (_id, dye) => undefined,
-        clean: _ => 'minecraft:arrow',
-        allowClean: true
-    },
+// *_part <-> white_part
+const plain = (part: string, clean = `white_${part}`): Dyeable => ({
+    match: id => id.includes(part),
+    dyed: (_, dye) => `minecraft:${dye}_${part}`,
+    clean: () => `minecraft:${clean}`
+})
+const powder = (id: string) => !HARDENED_POWDER && id.endsWith('_powder') ? '_powder' : ''
+const pane = (id: string) => id.endsWith('_pane') ? '_pane' : ''
+const glazed = (id: string) => id.includes('_glazed') ? '_glazed' : ''
 
+const DYEABLE: Dyeable[] = [
+    plain('wool_slab'),
+    plain('wool_stairs'),
+    plain('concrete_slab'),
+    plain('concrete_stairs'),
+    plain('carpet'),
+    plain('wool'),
+    plain('candle', 'candle'),
+    { ...plain('cushion'), match: id => id.endsWith('_cushion') },
+    {
+        match: id => id.includes('concrete'),
+        dyed: (id, dye) => `minecraft:${dye}_concrete${powder(id)}`,
+        clean: id => `minecraft:white_concrete${powder(id)}`,
+    },
+    {
+        match: id => id.includes('glass'),
+        dyed: (id, dye) => `minecraft:${dye}_stained_glass${pane(id)}`,
+        clean: id => `minecraft:glass${pane(id)}`,
+    },
+    {
+        match: id => id.includes('hardened_clay') || id.includes('terracotta'),
+        dyed: (id, dye) => `minecraft:${dye}${glazed(id)}_terracotta`,
+        clean: id => glazed(id) ? 'white_glazed_terracotta' : 'hardened_clay',
+    },
+    {
+        match: id => id === 'minecraft:arrow',
+        dyed: () => undefined,
+        clean: () => 'minecraft:arrow',
+        allowClean: true,
+    },
     // (shulkers, banners, bundles) have nbt cannot safe replace
 ]
 
 const reduceWaterState = (block: Block, fluid: BlockFluidContainerComponent) => {
     if (fluid.fillLevel <= 0) return
-    block.setPermutation(BlockPermutation.resolve(block.typeId).withState('fill_level', fluid.fillLevel - 1))
+
+    block.setPermutation(block.permutation.withState('fill_level', fluid.fillLevel - 1))
     playSound(block.dimension, block.center(), { ID: "cauldron.dyearmor", VOLUME: 1.0, PITCH: 1.0 })
 }
 
-function applyDye(
-    fluid: BlockFluidContainerComponent, isWater: boolean, nearDye: string,
-    block: Block, itemStack: ItemStack, player: Player
-) {
+const applyDye = (player: Player, block: Block, fluid: BlockFluidContainerComponent, itemStack: ItemStack, dye?: string) => {
     const id = itemStack.typeId
-    const amount = itemStack.amount
     const entry = DYEABLE.find(e => e.match(id))
     if (!entry) return
-    const cls = entry.clean(id)
-    const resultId = isWater ? cls : entry.dyed(id, nearDye)
 
+    const clean = entry.clean(id)
+    const resultId = dye ? entry.dyed(id, dye) : clean
     if (!resultId) return
-    const allowClean = entry?.allowClean
-    if (cls === id && !allowClean) return // wash the wash
+
+    const { allowClean } = entry
+    if (!dye && clean === id && !allowClean) return // wash the wash
     if (resultId === id && !allowClean) return reduceWaterState(block, fluid)
 
-    const used = clamp(amount, 1, 16)
-    const remain = amount - used
-    const giveItem = new ItemStack(resultId, used)
-    const remainItem = remain > 0 ? new ItemStack(id, remain) : undefined
+    const used = clamp(itemStack.amount, 1, 16)
+    const remain = itemStack.amount - used
 
-    setEqu(player, remainItem)
-    addItem(player, giveItem)
+    setEqu(player, remain > 0 ? new ItemStack(id, remain) : undefined)
+    addItem(player, new ItemStack(resultId, used))
 
     reduceWaterState(block, fluid)
 }
 
-// main
-const delay: Record<string, number> = {}
+// caller
+const throttled = createThrottle(8)
 export const cauldron_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { player, block, itemStack, isFirstEvent } = data
-
-    if (!isFirstEvent) {
-        const playerDelay = delay[player.id] || 0
-        if (playerDelay > system.currentTick) return
-    }
-    delay[player.id] = system.currentTick + 8
-
-    if (checkPerm(player) === false) return
-    if (!block || block.typeId !== 'minecraft:cauldron') return
+    if (throttled(player.id, isFirstEvent)) return
+    if (!checkPerm(player)) return
+    if (!itemStack || block.typeId !== 'minecraft:cauldron') return
 
     const fluid = block.getComponent(BlockComponentTypes.FluidContainer)
     if (!fluid || fluid.fillLevel <= 0) return
 
-    const slot = player.selectedSlotIndex
-    const equ = getEqu(player)!
+    const slot = cache.getPlayer(player, "selectedSlotIndex")
     system.run(() => {
-        if (slot !== player.selectedSlotIndex) player.selectedSlotIndex = slot
-        if (itemStack?.typeId !== equ?.getEquipment(EquipmentSlot.Mainhand)?.typeId) return
+        if (heldAfterDelay(player, slot)?.typeId !== itemStack.typeId) return
         if (fluid.getFluidType() !== FluidType.Water) return
 
-        const { red, green, blue } = fluid.fluidColor
+        const { red, green, blue, alpha } = fluid.fluidColor
         const isWater = red === 0 && green === 0 && blue === 0
-        const dye = getNearestDye(red, green, blue)
+        const nearest = getNearestDye(red, green, blue)
+        if (!nearest) return
 
-        if (dye.color === 'null') return
         if (DEBUG) console.log(
-            `nearest dye: ${dye.color} §8~${dye.distance.toFixed(6)} §r§7` +
-            `(RGBA=${red.toFixed(2)},${green.toFixed(2)},${blue.toFixed(2)},${fluid.fluidColor.alpha})`
+            `nearest dye: ${nearest.color} §8~${nearest.distance.toFixed(6)} §r§7` +
+            `(RGBA=${red.toFixed(2)},${green.toFixed(2)},${blue.toFixed(2)},${alpha})`
         )
 
-        if (itemStack) applyDye(fluid, isWater, dye.color, block, itemStack, player)
+        applyDye(player, block, fluid, itemStack, isWater ? undefined : nearest.color)
     })
 }

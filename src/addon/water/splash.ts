@@ -1,48 +1,42 @@
-import { Block, Dimension, Entity, EquipmentSlot, GameMode, ItemStack, PlayerInteractWithBlockBeforeEvent, system, type Vector3 } from "@minecraft/server"
-import { addItem, getEqu, playSound, RUNTIME, setEqu } from "../../lib"
-import { getPlayer } from "../../core/cache"
-const {
-    DEBUG,
-    WATER_CONCRETE: {
-        DONE_PARTICLE, DONE_SOUND
+import {
+    type PlayerInteractWithBlockBeforeEvent,
+    type Vector3, type Block, type Dimension,
+    type Entity,
+    ItemStack, system
+} from "@minecraft/server"
+import { addItem, heldAfterDelay, isCreative, playSound, tryRemove, RUNTIME, setEqu, cache } from "../../lib"
+const { WATER_CONCRETE: { DONE_PARTICLE, DONE_SOUND } } = RUNTIME
+
+type Lingering = { location: Vector3, dimension: Dimension, until: number }
+const LINGERING = new Set<Lingering>()
+const LINGERING_INIT = 35 * 20
+const LINGERING_DECAY = 2 * 20
+
+// 3x3, from 2 above to 1 below
+const OFFSETS: Vector3[] = []
+for (let y = 2; y >= -1; y--) {
+    for (let x = -1; x <= 1; x++) {
+        for (let z = -1; z <= 1; z++) OFFSETS.push({ x, y, z })
     }
-} = RUNTIME
+}
 
-// internal
-type Location = { vec3: Vector3, dimension: Dimension }
-const LINGERING_AREA = new Map<Location, number>() // {vec3, dim}, tickdiff
-const lingering_init = 35 * 20
-const lingering_decay = 2 * 20
-const splash_offset = {
-    y: [2, 1, 0, -1],
-    xz: [
-        { x: 0, z: 0 },
-        { x: 0, z: 1 },
-        { x: 0, z: -1 },
-
-        { x: 1, z: 0 },
-        { x: 1, z: 1 },
-        { x: 1, z: -1 },
-
-        { x: -1, z: 0 },
-        { x: -1, z: 1 },
-        { x: -1, z: -1 },
-    ]
+const harden = (block: Block, dimension: Dimension) => {
+    block.setType(block.typeId.replace('_powder', ''))
+    dimension.spawnParticle(DONE_PARTICLE, block.location)
+    playSound(dimension, block.location, DONE_SOUND)
 }
 
 const convertPowder = (location: Vector3, dimension: Dimension) => {
+    const origin = dimension.getBlock(location)
+    if (!origin) return 0
+
     let count = 0
-    const block = dimension?.getBlock(location)
-    for (const y of splash_offset.y) {
-        for (const xz of splash_offset.xz) {
-            const con = block?.offset({ x: xz.x, y: y, z: xz.z })
-            if (!con) continue
-            if (!con.typeId.endsWith('concrete_powder')) continue
-            con.setType(con.typeId.replace('_powder', ''))
-            dimension.spawnParticle(DONE_PARTICLE, con.location)
-            playSound(dimension, con.location, DONE_SOUND)
-            count++
-        }
+    for (const offset of OFFSETS) {
+        const block = origin.offset(offset)
+        if (!block?.typeId.endsWith('concrete_powder')) continue
+
+        harden(block, dimension)
+        count++
     }
     return count
 }
@@ -51,59 +45,42 @@ const convertPowder = (location: Vector3, dimension: Dimension) => {
 export const projectileHit = (projectile: Entity, location?: Vector3, dimension?: Dimension) => {
     if (!location || !dimension || !projectile) return
 
-    switch (projectile.typeId) {
-        case 'minecraft:splash_potion':
-            convertPowder(location, dimension)
-            break
-        case 'minecraft:lingering_potion':
-            const count = convertPowder(location, dimension)
-            LINGERING_AREA.set({ vec3: location, dimension }, system.currentTick + lingering_init - (count * lingering_decay))
-            break
-        default: return
+    const { typeId } = projectile
+    if (typeId === 'minecraft:splash_potion') convertPowder(location, dimension)
+    else if (typeId === 'minecraft:lingering_potion') {
+        const count = convertPowder(location, dimension)
+        LINGERING.add({ location, dimension, until: system.currentTick + LINGERING_INIT - count * LINGERING_DECAY })
     }
 }
 
 export const splash_pending = (tick: number) => {
-    for (const [loc, diff] of LINGERING_AREA) {
-        const { vec3, dimension } = loc
-        if (tick > diff) {
-            const area = dimension.getEntities({ type: "minecraft:area_effect_cloud", maxDistance: 2, closest: 1, location: vec3 })[0]
-            if (area) try { area.kill() } catch { area.remove() }
-            LINGERING_AREA.delete(loc)
-            break
+    for (const area of LINGERING) {
+        const { location, dimension } = area
+        if (tick > area.until) {
+            const cloud = dimension.getEntities({ type: "minecraft:area_effect_cloud", maxDistance: 2, closest: 1, location })[0]
+            if (cloud) tryRemove(cloud)
+            LINGERING.delete(area)
+            continue
         }
 
-        const reduce = convertPowder(vec3, dimension)
-        if (reduce > 0) LINGERING_AREA.set(loc, LINGERING_AREA.get(loc)! - (reduce * lingering_decay))
+        area.until -= convertPowder(location, dimension) * LINGERING_DECAY
     }
 }
 
 export const splash_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { block, itemStack, player } = data
     if (itemStack?.typeId !== 'minecraft:potion') return
-
-    const { selectedSlotIndex } = player
-    const { dimension } = block
-    if (!block) return
     if (!block.typeId.endsWith('concrete_powder')) return
 
+    const slot = cache.getPlayer(player, "selectedSlotIndex")
     system.run(() => {
-        // gate
-        if (getPlayer(player, 'gameMode') !== GameMode.Creative) {
-            if (player.selectedSlotIndex !== selectedSlotIndex) {
-                player.selectedSlotIndex = selectedSlotIndex
-                if (getEqu(player)?.getEquipment(EquipmentSlot.Mainhand)?.typeId !== 'minecraft:potion') return
-            }
+        if (!isCreative(player)) {
+            if (heldAfterDelay(player, slot)?.typeId !== 'minecraft:potion') return
 
-            // item
-            const bottle = new ItemStack("minecraft:glass_bottle", 1)
-            setEqu(player, undefined, "Mainhand")
-            addItem(player, bottle)
+            setEqu(player, undefined)
+            addItem(player, new ItemStack('minecraft:glass_bottle', 1))
         }
 
-        // block
-        block.setType(block.typeId.replace('_powder', ''))
-        dimension.spawnParticle(DONE_PARTICLE, block.location)
-        playSound(dimension, block.location, DONE_SOUND)
+        harden(block, block.dimension)
     })
 }

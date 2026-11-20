@@ -1,90 +1,56 @@
 import {
-    BlockPermutation, Difficulty, EntityComponentTypes,
-    GameMode, PlayerInteractWithBlockBeforeEvent, system, world
+    type Player, type PlayerInteractWithBlockBeforeEvent,
+    Difficulty, EntityComponentTypes, ItemStack, world
 } from "@minecraft/server"
-import { checkPerm, getInv, RUNTIME } from "../../lib"
+import { checkPerm, createThrottle, isBlockItem, isCreative, RUNTIME } from "../../lib"
 import { blockHandle, fireHandle, seedsHandle, torchHandle } from "./handlers"
-import * as cache from "../../core/cache"
 
 const {
-    DEBUG, CARRIED_CHEST, BLOCK_INTERACTION_DELAY,
-    OFFHAND: {
-        ENABLED, NEED_SNEAK, ITEMBUTBLOCK,
-        FOOD_DATA, CAN_ALWAYS_USE
-    },
+    BLOCK_INTERACTION_DELAY,
+    OFFHAND: { CAN_ALWAYS_USE, FOOD, FOOD_ALWAYS_EDIBLE },
     HARVEST: { COCOA_VALID_LOGS }
 } = RUNTIME
 
 // public ---
-export { offhand_playerSpawn, offhand_playerLeave, offhand_player } from "./swap"
+export { offhand_playerLeave, offhand_player } from "./swap"
 export { offhand_playerInteractWithEntity } from "./entity"
 // ---
 
-const delay: Record<string, number> = {}
+const throttled = createThrottle(BLOCK_INTERACTION_DELAY)
+
+const WEARABLE = ['_boat', 'minecart', 'harness', 'bundle', '_boots', '_leggings', '_chestplate', '_helmet']
+const HOE_IDLE = new Set(['minecraft:farmland', 'minecraft:soul_sand']) // hoe does nothing here
+
+// vanilla return empty in food component -.-
+const canEat = (player: Player, typeId: string, creative: boolean) => {
+    if (creative || FOOD_ALWAYS_EDIBLE.has(typeId) || world.getDifficulty() === Difficulty.Peaceful) return true
+
+    const hunger = player.getComponent(EntityComponentTypes.Hunger)!
+    return hunger.currentValue < hunger.effectiveMax
+}
+
+// mainhand alr do smth
+const mainhandBusy = ({ player, block }: PlayerInteractWithBlockBeforeEvent, item: ItemStack, creative: boolean) => {
+    const { typeId } = item
+    if (CAN_ALWAYS_USE.has(typeId) || WEARABLE.some(part => typeId.endsWith(part))) return true
+    if (block.typeId === 'minecraft:jukebox' && typeId.startsWith('minecraft:music_disc_')) return true
+    if (FOOD.has(typeId) && canEat(player, typeId, creative)) return true
+
+    if (block.hasTag('dirt')) {
+        if (item.hasTag('minecraft:is_shovel')) return true
+        if (item.hasTag('minecraft:is_hoe') && !HOE_IDLE.has(block.typeId) && !COCOA_VALID_LOGS.has(block.typeId)) return true
+    }
+
+    return isBlockItem(typeId)
+}
+
 export const offhand_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
-    const { player, isFirstEvent, block, blockFace, itemStack } = data
+    const { player, isFirstEvent, itemStack } = data
+    if (throttled(player.id, isFirstEvent)) return
+    if (!checkPerm(player)) return
 
-    const now = system.currentTick
-    if (!isFirstEvent) {
-        const stamp = delay[player.id] ?? -1
-        if (stamp === now + BLOCK_INTERACTION_DELAY) return
-        if (stamp > now) return
-    }
-    delay[player.id] = now + BLOCK_INTERACTION_DELAY
-
-    if (checkPerm(player) === false) return
-    const creative = cache.getPlayer(player, 'gameMode') === GameMode.Creative
-
-    if (itemStack) {
-        const typeId = itemStack?.typeId ?? ''
-        const food = FOOD_DATA[typeId] // vanilla return empty in food component -.-
-        const hunger = player.getComponent(EntityComponentTypes.Hunger)!
-
-        // disallow main hand always use item
-        if (typeId) {
-            const ends = typeId.endsWith.bind(typeId)
-            const starts = typeId.startsWith.bind(typeId)
-
-            if (
-                CAN_ALWAYS_USE.has(typeId) ||
-                ends('_boat') ||
-                ends('minecart') ||
-                ends('harness') ||
-                ends('bundle') ||
-                ends('_boots') ||
-                ends('_leggings') ||
-                ends('_chestplate') ||
-                ends('_helmet') ||
-                (block && block.typeId === 'minecraft:jukebox' && starts('minecraft:music_disc_'))
-            ) return
-        }
-
-        // ignore foods
-        if (food) {
-            if (
-                creative ||
-                food?.canAlwaysEat ||
-                world.getDifficulty() === Difficulty.Peaceful ||
-                hunger.currentValue < hunger.effectiveMax
-            ) return
-        }
-
-        // shovel/hoe
-        if (
-            block && block?.hasTag('dirt') &&
-            itemStack && (
-                itemStack.hasTag('minecraft:is_shovel') ||
-                itemStack.hasTag('minecraft:is_hoe') && !(
-                    block.typeId === 'minecraft:farmland' ||
-                    block.typeId === 'minecraft:soul_sand' ||
-                    COCOA_VALID_LOGS.has(block.typeId)
-                )
-            )
-        ) return
-
-        if (ITEMBUTBLOCK[typeId] === true) return
-        try { if (BlockPermutation.resolve(itemStack.typeId)) return } catch { }
-    }
+    const creative = isCreative(player)
+    if (itemStack && mainhandBusy(data, itemStack, creative)) return
 
     // handle offhand
     torchHandle(data, creative)

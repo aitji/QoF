@@ -1,31 +1,28 @@
-import { type Block, EquipmentSlot, GameMode, type Player, PlayerInteractWithBlockBeforeEvent, system, world } from "@minecraft/server"
-import { cache, checkPerm, getEqu, reduceItem, setEqu, sumLoc, swing } from "../lib"
+import {
+    type Block, type Player,
+    type PlayerInteractWithBlockBeforeEvent,
+    EquipmentSlot, system
+} from "@minecraft/server"
+import { cache, checkPerm, createThrottle, getHeld, reduceItem, setEqu, swing } from "../lib"
 
-const delay: Record<string, number> = {}
-world.afterEvents.playerLeave.subscribe(({ playerId }) => { delete delay[playerId] })
-
+const throttled = createThrottle(8)
 export const bonemeal_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { player, block, itemStack, isFirstEvent } = data
-    if (checkPerm(player) === false) return
-
-    if (!isFirstEvent && (delay[player.id] ?? 0) > system.currentTick) return
-    delay[player.id] = system.currentTick + 8
+    if (!checkPerm(player)) return
+    if (throttled(player.id, isFirstEvent)) return
 
     if (itemStack?.typeId !== 'minecraft:bone_meal') return
-
-    const grown = [cactus].some(fn => fn(block))
-    if (grown) takeItem(player)
+    if (cactus(block)) takeItem(player)
 }
 
 const takeItem = (player: Player): void => {
-    if (cache.getPlayer(player, 'gamemode') === GameMode.Creative) return
-    const slot = player.selectedSlotIndex
-
+    const slot = cache.getPlayer(player, "selectedSlotIndex")
     system.run(() => {
-        if (slot !== player.selectedSlotIndex) return
-        const equ = getEqu(player)
-        const current = equ?.getEquipment(EquipmentSlot.Mainhand)
-        if (!equ || current?.typeId !== 'minecraft:bone_meal') return
+        if (slot !== cache.getPlayer(player, "selectedSlotIndex")) return
+
+        const current = getHeld(player)
+        if (current?.typeId !== 'minecraft:bone_meal') return
+
         setEqu(player, reduceItem(current), EquipmentSlot.Mainhand, true)
         swing(player, 'main')
     })
@@ -51,6 +48,7 @@ const cactus = (block: Block): boolean => {
 
     const { dimension } = block
     system.run(() => {
+        // todo: chance for flowers
         dimension.spawnParticle('qof:crop_growth_emitter', block.center())
         try { for (let i = 1; i <= room; i++) top.above(i)?.setType('minecraft:cactus') }
         catch { }

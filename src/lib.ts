@@ -1,246 +1,179 @@
 import {
-    Block, BlockPermutation, Dimension, Entity,
-    EntityComponentTypes, EquipmentSlot, GameMode,
-    ItemComponentTypes, ItemStack, LiquidType, Player,
-    PlayerPermissionLevel, system, Vector3,
-    world
+    type Block, type Dimension, type Entity, type EntityEquippableComponent, type Vector3,
+    BlockPermutation, Direction, EntityComponentTypes, EquipmentSlot, GameMode, system,
+    ItemComponentTypes, ItemStack, LiquidType, Player, PlayerPermissionLevel, world
 } from "@minecraft/server"
-// lazy import ---
-import { RUNTIME as E } from "./_store"
-import * as H from "./core/pickup"
-import * as C from "./core/cache"
-import * as S from "./core/swing"
+import { RUNTIME } from "./_store"
+import * as cache from "./core/cache"
 
-export const RUNTIME = E
-export const helper = H
-export const cache = C
-export const swing = S.swing
-export const pickupCooldown = H.pickupCooldown
-// ---
+export { RUNTIME, cache }
+export { swing } from "./core/swing"
+export { pickupCooldown } from "./core/pickup"
+export { createThrottle } from "./core/throttle"
+const { DEBUG, LIGHT: { LIGHT_BLOCK } } = RUNTIME
 
-type RoundType = 'none' | 'ceil' | 'floor' | 'round'
-type EquSlot = 'Mainhand' | 'Offhand' | 'Head' | 'Body' | 'Legs' | 'Feet'
+// type
+export type StateName = Parameters<BlockPermutation['getState']>[0]
+export type Dir = 'north' | 'south' | 'east' | 'west'
+export const OPPOSITE: Record<Dir, Dir> = { north: 'south', south: 'north', east: 'west', west: 'east' }
+type SoundDef = { ID: string, VOLUME?: number | number[], PITCH?: number | number[] }
 
-const { DEBUG } = E
-export const QOF_INFORMATION = {
-    version: {
-        qof: '1.6.2'
-    },
-    license: 'QoF Noncommercial License 1.0',
-    dependencies: {
-        '@minecraft/server': '^2.9.0',
-        'typescript': '^6.0.2',
-    },
-    authors: ['aitji', 'pickerth-12'],
-    url: 'https://github.com/aitji/QoF'
-}
-
-export const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
+// helpers
+export const debug = (message: string) => DEBUG && world.sendMessage(message)
 export const rand = (min: number, max: number) => Math.random() * (max - min) + min
-export const loop = (c: number, func: (i: number) => void) => { for (let i = 0; i < c; i++) func(i) }
-export const isSolid = (block?: Block): boolean => !!block && !block.isAir && !block.isLiquid && !block.isWaterlogged &&
-    block.isLiquidBlocking(LiquidType.Water) &&
-    !block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)
-
+export const checkRandom = (value: number | number[]) => Array.isArray(value) ? rand(value[0], value[1]) : value
 export const clamp = (n: number, min: number = 0, max: number = 8) => Math.max(min, Math.min(max, Math.ceil(n)))
-export const checkRandom = (arr: number | number[]) => {
-    switch (typeof arr) {
-        case 'object': return Math.random() * (arr[1] - arr[0]) + arr[0]
-        case 'number': return arr
-        default:
-            console.warn("RANDOM AREN'T SET CORRECTLY")
-            return 1
-    }
-}
+export const disSqu = (a: Vector3, b: Vector3) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2
+export const sumLoc = (a: Vector3, b: Vector3): Vector3 => ({ x: a.x + b.x, y: a.y + b.y, z: a.z + b.z })
+export const floorLoc = (loc: Vector3): Vector3 => ({ x: Math.floor(loc.x), y: Math.floor(loc.y), z: Math.floor(loc.z) })
 
 export function* roundRobin<T>(items: readonly T[], cursor: number, budget: number): Generator<T> {
     const total = items.length
     if (total === 0) return
 
-    const n = Math.min(budget, total)
-    for (let i = 0; i < n; i++) yield items[(cursor + i) % total]
+    const count = Math.min(budget, total)
+    for (let i = 0; i < count; i++) yield items[(cursor + i) % total]
 }
 export const cursor = (cursor: number, total: number, budget: number) =>
     total === 0 ? 0 : (cursor + Math.min(budget, total)) % total
-
-export const applyItemDamage = (player: Player, item: ItemStack) => { // only for weapon, not armor
-    const enchant = item?.getComponent(ItemComponentTypes.Enchantable)
-    const dur = item?.getComponent(ItemComponentTypes.Durability)
-
-    let changed = false
-    if (!enchant || !dur) {
-        if (DEBUG) world.sendMessage(`[lib] ${item.typeId} should be weapon that doesn't have durability or can be enchant`)
-        return { changed, item } // do nothing
-    }
-
-    const unbreaking = enchant.getEnchantment("unbreaking")
-    if (unbreaking && unbreaking?.level) {
-        if (!(Math.random() < 1 / (unbreaking.level + 1)))
-            return { changed, item }
-    }
-
-    const newDurability = dur.damage + 1
-    if (newDurability >= dur.maxDurability) {
-        item = new ItemStack('minecraft:air', 1)
-        playSound(player.dimension, player.location, { ID: "random.break", VOLUME: 1, PITCH: 0.9 })
-        changed = true
-    } else {
-        dur.damage = newDurability
-        changed = true
-    }
-
-    return { changed, item }
-}
-
-/**
- * @param {ItemStack} item
- * @param {number} amount=1 ; support negative
- * @param {Entity|null} entity=null ; if use negative number
- */
-export const reduceItem = (item: ItemStack, amount: number = 1, entity: Entity | null = null) => {
-    if (amount === 0) return item // ??
-    else if (amount > 0) {
-        if (item.amount <= 1) return new ItemStack("minecraft:air", 1)
-        else {
-            const reduceItem = item.clone()
-            reduceItem.amount -= 1
-
-            return reduceItem
-        }
-    } else if (amount < 0) {
-        if (!entity) throw Error(`[lib] reduceItem doesn't have Entity to add item`)
-        const clone = item.clone()
-        const container = getInv(entity)?.container
-
-        clone.amount = Math.abs(amount)
-        container?.addItem(clone)
-
-        return clone
-    } else {
-        if (DEBUG) world.sendMessage(`${item?.typeId || '[??]'} add amount +${amount || '[??]'} which is ${typeof amount || '[??]'}`)
-        return item
-    }
-}
-
-export const getDistance = (a: Vector3, b: Vector3) => {
-    const dx = a.x - b.x
-    const dy = a.y - b.y
-    const dz = a.z - b.z
-    return dx * dx + dy * dy + dz * dz // faster than (Math.sqrt)
-}
-
-export const sumLoc = (loc1: Vector3, loc2: Vector3, roundType: RoundType = 'none') => {
-    loc1 = roundLoc(loc1, roundType)
-    loc2 = roundLoc(loc2, roundType)
-
-    return {
-        x: loc1.x + loc2.x,
-        y: loc1.y + loc2.y,
-        z: loc1.z + loc2.z,
-    }
-}
-
-export const roundLoc = (loc: Vector3, roundType: RoundType = 'none') => {
-    switch (roundType) {
-        case 'ceil': return { x: Math.ceil(loc.x), y: Math.ceil(loc.y), z: Math.ceil(loc.z) }
-        case 'floor': return { x: Math.floor(loc.x), y: Math.floor(loc.y), z: Math.floor(loc.z) }
-        case 'round': return { x: Math.round(loc.x), y: Math.round(loc.y), z: Math.round(loc.z) }
-        default: return loc
-    }
-}
-
-export const reName = (typeId: string) => typeId
-    ?.split(":")[1]
-    ?.split('_')
-    ?.map(v => v[0]
-        ?.toUpperCase()
-        + v
-            ?.slice(1)
-            ?.toLowerCase()
-    )?.join(" ") // minecraft:trapped_chest -> Trapped Chest
-
+export const isCreative = (player: Player) => cache.getPlayer(player, 'gameMode') === GameMode.Creative
 export const checkPerm = (player: Player): boolean => {
-    const permLvl = cache.getPlayer(player, "permissionLevel") as PlayerPermissionLevel
-    switch (permLvl) {
-        case PlayerPermissionLevel.Custom:
-        case PlayerPermissionLevel.Visitor:
-            return false
-
-        default: return true
-    }
+    const level = cache.getPlayer(player, "permissionLevel")
+    return level !== PlayerPermissionLevel.Custom && level !== PlayerPermissionLevel.Visitor
 }
 
-// lazy helper, for lazy dev
-export const getEqu = (entity: Entity) => entity.getComponent(EntityComponentTypes.Equippable)
-export const getInv = (entity: Entity | Block | ItemStack) => entity.getComponent(EntityComponentTypes.Inventory)
-export const setEqu = (entity: Player | Entity, itemStack: ItemStack | undefined = undefined, slot: EquSlot = EquipmentSlot.Mainhand, ignoreCreative = false) => {
-    if (ignoreCreative && entity instanceof Player && C.getPlayer(entity, 'gameMode') === GameMode.Creative) return false
-    if (!slot) return false
+export const isSolid = (block?: Block): boolean =>
+    !!block && !block.isAir &&
+    !block.isLiquid && !block.isWaterlogged &&
+    block.isLiquidBlocking(LiquidType.Water) &&
+    !block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)
+
+const FACE_TO_METHOD = {
+    [Direction.Up]: 'above', [Direction.Down]: 'below',
+    [Direction.North]: 'north', [Direction.South]: 'south',
+    [Direction.East]: 'east', [Direction.West]: 'west',
+} as const
+export const neighbour = (block: Block, face: Direction): Block | undefined => block[FACE_TO_METHOD[face]]()
+
+const permutations = new Map<string, BlockPermutation>()
+export const permOf = (typeId: string) => {
+    let perm = permutations.get(typeId)
+    if (!perm) {
+        perm = BlockPermutation.resolve(typeId)
+        permutations.set(typeId, perm)
+    }
+    return perm
+}
+
+const blockItems = new Map<string, boolean>()
+export const isBlockItem = (typeId: string) => {
+    let known = blockItems.get(typeId)
+    if (known === undefined) {
+        try { known = !!BlockPermutation.resolve(typeId) }
+        catch { known = false }
+        blockItems.set(typeId, known)
+    }
+    return known
+}
+
+export const isLightBlock = (block?: Block) => block?.permutation.matches(LIGHT_BLOCK) ?? false
+export const isAirOrLight = (block?: Block) => !!block && (block.isAir || block.permutation.matches(LIGHT_BLOCK))
+
+export const getEqu = (entity: Entity) => entity.getComponent(EntityComponentTypes.Equippable)!
+export const getInv = (entity: Entity | Block | ItemStack) => entity.getComponent(EntityComponentTypes.Inventory)!
+export const getHeld = (entity: Entity, slot: EquipmentSlot = EquipmentSlot.Mainhand) => getEqu(entity)?.getEquipment(slot)
+
+export const tryRemove = (entity: Entity): boolean => {
+    try {
+        entity.remove()
+        return true
+    } catch { }
 
     try {
-        const equ = getEqu(entity)
-        if (!equ) return false
-        if (itemStack && itemStack.amount <= 0) itemStack = undefined
-
-        equ.setEquipment(slot as EquipmentSlot, itemStack)
+        entity.kill()
         return true
-    } catch (e) {
-        if (DEBUG) world.sendMessage(`entity=${typeof entity}, itemStack=${typeof itemStack}, slot=${typeof slot}`)
+    } catch {
         return false
     }
 }
-export const playSound = (dimension: Dimension, location: Vector3, sounds: { ID: string, VOLUME?: number | number[], PITCH?: number | number[] }) => {
-    const tryPlay = () => dimension.playSound(sounds.ID, location, {
-        volume: checkRandom(sounds.VOLUME ?? 1),
-        pitch: checkRandom(sounds.PITCH ?? 1)
+
+export const playSound = (dimension: Dimension, location: Vector3, sound: SoundDef) => {
+    const play = () => dimension.playSound(sound.ID, location, {
+        volume: checkRandom(sound.VOLUME ?? 1),
+        pitch: checkRandom(sound.PITCH ?? 1)
     })
 
-    try { tryPlay() }
-    catch { system.run(() => tryPlay()) }
+    try { play() }
+    catch { system.run(play) }
 }
-export const addItem = (player: Player, item: ItemStack, overrideAmount?: number): boolean => {
-    const inv = getInv(player)?.container
-    if (!inv) return false
 
-    let amount = overrideAmount ?? item.amount
-    const max = item.maxAmount ?? 64
+export const setEqu = (entity: Entity, item?: ItemStack, slot: EquipmentSlot = EquipmentSlot.Mainhand, ignoreCreative = false, equ?: EntityEquippableComponent) => {
+    if (ignoreCreative && entity instanceof Player && isCreative(entity)) return false
+    if (!equ) equ = getEqu(entity)
 
-    for (let i = 0; i < inv.size && amount > 0; i++) {
-        const slot = inv.getItem(i)
-        if (!slot) continue
-        if (
-            slot.typeId !== item.typeId ||
-            slot?.nameTag !== item?.nameTag
-        ) continue
+    try {
+        equ.setEquipment(slot, item && item.amount > 0 ? item : undefined)
+        return true
+    } catch {
+        debug(`[lib] setEqu failed: entity=${typeof entity}, item=${typeof item}, slot=${slot}`)
+        return false
+    }
+}
 
-        const space = max - slot.amount
-        if (space <= 0) continue
+export const reduceItem = (item: ItemStack) => {
+    if (item.amount <= 1) return new ItemStack("minecraft:air", 1)
 
-        const add = Math.min(space, amount)
-        slot.amount += add
-        inv.setItem(i, slot)
-        amount -= add
+    const reduced = item.clone()
+    reduced.amount -= 1
+    return reduced
+}
+
+export const applyItemDamage = (player: Player, item: ItemStack) => { // only for weapon, not armor
+    const enchant = item.getComponent(ItemComponentTypes.Enchantable)
+    const durability = item.getComponent(ItemComponentTypes.Durability)
+    if (!enchant || !durability) {
+        debug(`[lib] ${item.typeId} should be a tool with durability that can be enchanted`)
+        return { changed: false, item }
     }
 
-    for (let i = 0; i < inv.size && amount > 0; i++) {
-        if (inv.getItem(i)) continue
+    const unbreaking = enchant.getEnchantment("unbreaking")
+    if (unbreaking?.level && Math.random() >= 1 / (unbreaking.level + 1)) return { changed: false, item }
 
-        const add = Math.min(max, amount)
-        const newItem = item.clone()
-        newItem.amount = add
-
-        inv.setItem(i, newItem)
-        amount -= add
+    const worn = durability.damage + 1
+    if (worn >= durability.maxDurability) {
+        playSound(player.dimension, player.location, { ID: "random.break", VOLUME: 1, PITCH: 0.9 })
+        return { changed: true, item: new ItemStack("minecraft:air", 1) }
     }
 
-    if (amount > 0) player.runCommand(`give @s ${item.typeId} ${amount}`)
+    durability.damage = worn
+    return { changed: true, item }
+}
+
+export const addItem = (player: Player, item: ItemStack, amount: number = item.amount): boolean => {
+    const container = getInv(player)?.container
+    if (!container) return false
+
+    for (let left = amount; left > 0; left -= item.maxAmount) {
+        const stack = item.clone()
+        stack.amount = Math.min(left, item.maxAmount)
+
+        const overflow = container.addItem(stack)
+        if (overflow) player.dimension.spawnItem(overflow, player.location)
+    }
     return true
 }
 
-// debug tool lib
-export const dumpMeThatComp = (anything: Entity | Player | ItemStack | Block, boardcast = true) => {
-    const all = anything.getComponents()
-    const v = all.map(d => d.typeId).join(', ')
-    if (boardcast && DEBUG) world.sendMessage(v)
-    return v
+export const setOffhand = (player: Player, typeId: string, amount: number, data = 0) => {
+    // no native support :sadge:
+    return player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${typeId} ${amount} ${data}`).successCount === 1
+}
+
+export const consumeOffhand = (player: Player, offhand: ItemStack) => {
+    if (offhand.amount <= 1) return setEqu(player, undefined, EquipmentSlot.Offhand, false)
+    return setOffhand(player, offhand.typeId, offhand.amount - 1) ?? false
+}
+
+export const heldAfterDelay = (player: Player, slot: number) => {
+    if (cache.getPlayer(player, "selectedSlotIndex") !== slot) player.selectedSlotIndex = slot
+    return getHeld(player)
 }

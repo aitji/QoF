@@ -1,4 +1,4 @@
-import { EntityDamageCause } from "@minecraft/server"
+import { type EntityDamageCause } from "@minecraft/server"
 
 export type ItemId = `${string}:${string}`
 export type EntityId = `${string}:${string}`

@@ -1,53 +1,44 @@
-import { BlockComponentTypes, EquipmentSlot, PlayerInteractWithBlockBeforeEvent, system } from "@minecraft/server"
-import { applyItemDamage, checkPerm, checkRandom, getEqu, loop, playSound, RUNTIME, setEqu } from "../lib"
+import {
+    type PlayerInteractWithBlockBeforeEvent,
+    BlockComponentTypes, EquipmentSlot, system
+} from "@minecraft/server"
+import { applyItemDamage, cache, checkPerm, checkRandom, createThrottle, heldAfterDelay, playSound, RUNTIME, setEqu } from "../lib"
 
 const {
     BLOCK_INTERACTION_DELAY,
     WAXED_OF: { DURABILITY }
 } = RUNTIME
 
-const delay: Record<string, number> = {}
+const throttled = createThrottle(BLOCK_INTERACTION_DELAY)
 export const waxedOff_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { block, player, itemStack, isFirstEvent } = data
-    if (!isFirstEvent) {
-        const playerDelay = delay[player.id] || 0
-        if (playerDelay > system.currentTick) return
-    }
-    delay[player.id] = system.currentTick + BLOCK_INTERACTION_DELAY
+    if (throttled(player.id, isFirstEvent)) return
+    if (!checkPerm(player)) return
 
-    if (checkPerm(player) === false) return
-    if (
-        block && itemStack &&
-        itemStack.hasTag('minecraft:is_axe') &&
-        block.typeId.endsWith('_sign')
-    ) {
-        const sign = block.getComponent(BlockComponentTypes.Sign)
-        if (!sign) return
-        if (!sign.isWaxed) return
+    if (!itemStack?.hasTag('minecraft:is_axe') || !block.typeId.endsWith('_sign')) return
 
-        const slot = player.selectedSlotIndex
-        system.run(() => {
-            const { changed, item } = applyItemDamage(player, itemStack)
+    const sign = block.getComponent(BlockComponentTypes.Sign)
+    if (!sign?.isWaxed) return
 
-            if (changed && DURABILITY) {
-                if (slot !== player.selectedSlotIndex) player.selectedSlotIndex = slot
+    const slot = cache.getPlayer(player, "selectedSlotIndex")
+    system.run(() => {
+        const { changed, item } = applyItemDamage(player, itemStack)
 
-                const equ = getEqu(player)!
-                const curItem = equ.getEquipment(EquipmentSlot.Mainhand)
+        if (changed && DURABILITY) {
+            const curItem = heldAfterDelay(player, slot)
+            if (
+                curItem?.typeId === itemStack.typeId &&
+                curItem.nameTag === itemStack.nameTag
+            ) setEqu(player, item, EquipmentSlot.Mainhand, true)
+        }
 
-                if (
-                    curItem &&
-                    curItem.typeId === itemStack.typeId &&
-                    curItem.nameTag === itemStack.nameTag
-                ) setEqu(player, item, "Mainhand", true)
-            }
+        const dim = player.dimension
+        const center = block.center()
 
-            const dim = player.dimension
-            const center = block.center()
+        sign.setWaxed(false)
+        playSound(dim, center, { ID: "copper.wax.off", VOLUME: 1.0, PITCH: [0.8, 1.2] })
 
-            sign.setWaxed(false)
-            playSound(dim, center, { ID: "copper.wax.off", VOLUME: 1.0, PITCH: [0.8, 1.2] })
-            loop(checkRandom([15, 20]), () => dim.spawnParticle("qof:wax_off", center))
-        })
-    }
+        const particles = checkRandom([15, 20])
+        for (let i = 0; i < particles; i++) dim.spawnParticle("qof:wax_off", center)
+    })
 }

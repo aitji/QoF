@@ -1,9 +1,10 @@
-import { system, world } from "@minecraft/server"
+import { system, world, type Player } from "@minecraft/server"
 import { RUNTIME } from "./_store"
-import * as lib from "./lib"
 import * as debug from "./core/debug"
 import * as cache from "./core/cache"
 import * as swing from "./core/swing"
+import * as pickup from "./core/pickup"
+import * as throttle from "./core/throttle"
 
 // light
 import * as light from "./addon/light/core"
@@ -23,135 +24,133 @@ import * as waxedOff from "./addon/waxedOff"
 import * as loots from "./addon/loot_tables/core"
 import * as bonemeal from "./addon/bonemeal"
 
+const {
+    LIGHT, WATER_CONCRETE, CARRIED_CHEST, COMPOSTER, OFFHAND, OPENABLE,
+    REPAIR_ANVIL, WAXED_OF, WATER_CAULDRON, BONEMEAL, HARVEST, DEBUG
+} = RUNTIME
+const hopperComposter = COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER
+const OFFHANDBLOCKS = OFFHAND.ENABLED && OFFHAND.ALLOW_BLOCK_PLACEMENT
+
+type Hook<A extends unknown[]> = [enabled: boolean, handler: (...args: A) => void]
+const enabledOnly = <A extends unknown[]>(hooks: Hook<A>[]) => hooks.filter(([enabled]) => enabled).map(([, handler]) => handler)
+
+// gate-keeper
+const on = <E>(signal: { subscribe(callback: (event: E) => void): unknown }, hooks: Hook<[E]>[]) => {
+    const handlers = enabledOnly(hooks)
+    if (handlers.length === 0) return
+
+    signal.subscribe(event => { for (const handle of handlers) handle(event) })
+}
+
 // tick
 system.run(() => {
-    const { LIGHT, WATER_CONCRETE, CARRIED_CHEST, COMPOSTER, DEBUG, OPENABLE } = RUNTIME
+    const everyTick = enabledOnly<[number]>([
+        [LIGHT.ENABLED, light.light_pending],
+        [LIGHT.ENABLED, light.light_processFrames],
+        [WATER_CONCRETE.ENABLED, concrete.powder_pending],
+        [WATER_CONCRETE.ENABLED, splash.splash_pending],
+        [hopperComposter, composter.composter_pending],
+        [OPENABLE.ENABLED && OPENABLE.AUTO_CLOSE, openable.openable_pending],
+    ])
+    const perPlayer = enabledOnly<[Player, number]>([
+        [LIGHT.ENABLED, light.light_player],
+        [CARRIED_CHEST.ENABLED, chest.chest_player],
+        [OFFHAND.ENABLED, offhand.offhand_player],
+    ])
+
     system.runInterval(() => {
         const tick = system.currentTick
-        const players = cache.getCachedPlayers()
         const isCacheUp = tick % 1200 === 0
 
-        if (LIGHT.ENABLED) {
-            light.light_pending(tick)
-            light.light_processFrames(tick)
-        }
-
-        if (WATER_CONCRETE.ENABLED) {
-            concrete.powder_pending()
-            splash.splash_pending(tick)
-        }
-
-        if (COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER) {
-            composter.composter_pending(tick)
-        }
-
-        if (OPENABLE.ENABLED) {
-            openable.openable_pending(tick)
-        }
-
-        for (const player of players) {
-            if (LIGHT.ENABLED) light.light_player(player, tick)
-            if (CARRIED_CHEST.ENABLED) chest.chest_player(player)
-            if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_player(player, tick)
-
-            // cache update
-            if (isCacheUp) {
-                cache.update(
-                    "player", player.id,
-                    { permissionLevel: player.playerPermissionLevel }
-                )
-
-                // more later?
-            }
+        for (const run of everyTick) run(tick)
+        for (const player of cache.getCachedPlayers()) {
+            for (const run of perPlayer) run(player, tick)
+            if (isCacheUp) cache.update("player", player.id, { permissionLevel: player.playerPermissionLevel })
         }
 
         if (DEBUG) debug.debug_pending()
     }, RUNTIME.INTERVAL_DELAY)
 })
 
-world.afterEvents.entityDie.subscribe(data => {
-    if (data.deadEntity.typeId === 'minecraft:player') {
-        // die via carry
-        if (RUNTIME.CARRIED_CHEST.ENABLED && cache.getGameRule("keepInventory") === false) chest.chest_entityDie(data)
-    } else {
-        // mob drop
-        if (cache.getGameRule("doMobLoot") === true) loots.loots_entityDie(data)
-    }
-})
+// world handlers
+on(world.afterEvents.entityDie, [
+    [CARRIED_CHEST.ENABLED, ((d) =>
+        cache.getGameRule("keepInventory") === false &&
+        d.deadEntity?.typeId === 'minecraft:player' &&
+        chest.chest_entityDie(d))
+    ],
+    [true, ((d) =>
+        cache.getGameRule("doMobLoot") === true &&
+        loots.loots_entityDie(d))
+    ]
+])
 
-world.afterEvents.entityRemove.subscribe(data => {
-    if (RUNTIME.LIGHT.ENABLED) light.light_entityRemove(data)
-    if (RUNTIME.WATER_CONCRETE.ENABLED) concrete.powder_entityRemove(data)
+on(world.afterEvents.entityRemove, [
+    [LIGHT.ENABLED, light.light_entityRemove],
+    [WATER_CONCRETE.ENABLED, concrete.powder_entityRemove],
+    [true, pickup.helper_entityRemove],
+])
+on(world.afterEvents.playerPlaceBlock, [
+    [LIGHT.ENABLED, light.light_playerPlaceBlock],
+    [CARRIED_CHEST.ENABLED, chest.chest_playerPlaceBlock],
+    [hopperComposter, composter.composter_playerPlaceBlock],
+    [DEBUG, debug.debug_playerPlaceBlock],
+])
+on(world.beforeEvents.playerBreakBlock, [
+    [LIGHT.ENABLED, light.light_playerBreakBlock],
+    [HARVEST.ENABLED, harvest.harvest_playerBreakBlock],
+])
+on(world.beforeEvents.playerInteractWithBlock, [
+    [LIGHT.ENABLED, light_patcher.light_playerInteractWithBlock], // patcher
+    [REPAIR_ANVIL.ENABLED, anvil.anvil_playerInteractWithBlock],
+    [COMPOSTER.ENABLED, composter.composter_playerInteractWithBlock],
+    [CARRIED_CHEST.ENABLED, chest.chest_playerInteractWithBlock],
+    [OFFHANDBLOCKS, offhand.offhand_playerInteractWithBlock],
+    [OPENABLE.ENABLED, openable.openable_playerInteractWithBlock],
+    [WAXED_OF.ENABLED, waxedOff.waxedOff_playerInteractWithBlock],
+    [WATER_CAULDRON.ENABLED, cauldron.cauldron_playerInteractWithBlock],
+    [WATER_CONCRETE.ENABLED, splash.splash_playerInteractWithBlock],
+    [BONEMEAL.ENABLED, bonemeal.bonemeal_playerInteractWithBlock],
+])
+on(world.beforeEvents.playerInteractWithEntity, [
+    [OFFHANDBLOCKS, offhand.offhand_playerInteractWithEntity],
+])
+on(world.afterEvents.entitySpawn, [
+    [WATER_CONCRETE.ENABLED, concrete.powder_entitySpawn],
+])
+on(world.afterEvents.playerSpawn, [
+    [true, cache.player_track_start],
+    [true, ({ player, initialSpawn }) => {
+        if (!initialSpawn) return
 
-    lib.helper.helper_entityRemove(data)
-})
-world.afterEvents.playerPlaceBlock.subscribe(data => {
-    if (RUNTIME.LIGHT.ENABLED) light.light_playerPlaceBlock(data)
-    if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerPlaceBlock(data)
-    if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER) composter.composter_playerPlaceBlock(data)
-
-    if (RUNTIME.DEBUG) debug.debug_playerPlaceBlock(data)
-})
-world.beforeEvents.playerBreakBlock.subscribe(data => {
-    if (RUNTIME.LIGHT.ENABLED) light.light_playerBreakBlock(data)
-    if (RUNTIME.HARVEST.ENABLED) harvest.harvest_playerBreakBlock(data)
-})
-world.beforeEvents.playerInteractWithBlock.subscribe(data => {
-    if (RUNTIME.LIGHT.ENABLED) light_patcher.light_playerInteractWithBlock(data) // patcher
-    if (RUNTIME.REPAIR_ANVIL.ENABLED) anvil.anvil_playerInteractWithBlock(data)
-    if (RUNTIME.COMPOSTER.ENABLED) composter.composter_playerInteractWithBlock(data)
-    if (RUNTIME.CARRIED_CHEST.ENABLED) chest.chest_playerInteractWithBlock(data)
-    if (RUNTIME.OFFHAND.ENABLED && RUNTIME.OFFHAND.ALLOW_BLOCK_PLACEMENT) offhand.offhand_playerInteractWithBlock(data)
-    if (RUNTIME.OPENABLE.ENABLED) openable.openable_playerInteractWithBlock(data)
-    if (RUNTIME.WAXED_OF.ENABLED) waxedOff.waxedOff_playerInteractWithBlock(data)
-    if (RUNTIME.WATER_CAULDRON.ENABLED) cauldron.cauldron_playerInteractWithBlock(data)
-    if (RUNTIME.WATER_CONCRETE.ENABLED) splash.splash_playerInteractWithBlock(data)
-    if (RUNTIME.BONEMEAL.ENABLED) bonemeal.bonemeal_playerInteractWithBlock(data)
-})
-world.beforeEvents.playerInteractWithEntity.subscribe(data => {
-    if (RUNTIME.OFFHAND.ENABLED && RUNTIME.OFFHAND.ALLOW_BLOCK_PLACEMENT) offhand.offhand_playerInteractWithEntity(data)
-})
-world.afterEvents.entitySpawn.subscribe(data => {
-    if (RUNTIME.WATER_CONCRETE.ENABLED) concrete.powder_entitySpawn(data)
-})
-world.afterEvents.playerSpawn.subscribe(data => {
-    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerSpawn(data)
-    cache.player_track_start(data)
-})
-world.afterEvents.playerLeave.subscribe(data => {
-    const { playerId } = data
-    if (RUNTIME.OFFHAND.ENABLED) offhand.offhand_playerLeave(data)
-    cache.player_track_stop(data)
-    swing.swing_playerLeave(playerId)
-})
-world.afterEvents.playerSpawn.subscribe(data => {
-    const { player, initialSpawn } = data
-    if (initialSpawn) {
         cache.player_init_update(player)
         swing.swing_playerSpawn(player)
-    }
-})
-world.afterEvents.playerGameModeChange.subscribe(data => {
-    cache.player_gamemode_update(data)
-})
-world.afterEvents.gameRuleChange.subscribe((data) =>
-    cache.gamerule_update(data)
-)
-world.afterEvents.pistonActivate.subscribe(data => {
-    if (RUNTIME.COMPOSTER.ENABLED && RUNTIME.COMPOSTER.WORK_WITH_HOPPER)
-        composter.composter_pistonActivate(data)
-})
-world.afterEvents.entityHitBlock.subscribe(data => {
-    openable.openable_entityHitBlock(data)
-}, { entityTypes: ["minecraft:player"] })
-world.afterEvents.projectileHitBlock.subscribe(data => {
-    splash.projectileHit(data.projectile, data.getBlockHit()?.block?.location, data.dimension)
-})
-world.afterEvents.projectileHitEntity.subscribe(data => {
-    splash.projectileHit(data.projectile, data.getEntityHit()?.entity?.location, data.dimension)
-})
+    }],
+])
+on(world.afterEvents.playerLeave, [
+    [OFFHAND.ENABLED, offhand.offhand_playerLeave],
+    [true, cache.player_track_stop],
+    [true, ({ playerId: id }) => {
+        swing.swing_playerLeave(id)
+        throttle.throttle_playerLeave(id)
+    }],
+])
+on(world.afterEvents.playerHotbarSelectedSlotChange, [[true, cache.player_playerHotbarSelectedSlotChange]])
+on(world.afterEvents.playerGameModeChange, [[true, cache.player_gamemode_update]])
+on(world.afterEvents.gameRuleChange, [[true, cache.gamerule_update]])
+on(world.afterEvents.pistonActivate, [[hopperComposter, composter.composter_pistonActivate]])
+
+if (OPENABLE.ENABLED && OPENABLE.KNOCK) {
+    world.afterEvents.entityHitBlock.subscribe(
+        openable.openable_entityHitBlock,
+        { entityTypes: ["minecraft:player"] }
+    )
+}
+
+on(world.afterEvents.projectileHitBlock, [[WATER_CAULDRON.ENABLED, (d) => splash.projectileHit(d.projectile, d.getBlockHit()?.block?.location, d.dimension)]])
+on(world.afterEvents.projectileHitEntity, [[WATER_CAULDRON.ENABLED, (d) => splash.projectileHit(d.projectile, d.getEntityHit()?.entity?.location, d.dimension)]])
 
 // core routes
-world.beforeEvents.entityItemPickup.subscribe(data => { lib.helper.helper_entityItemPickup(data) })
-system.beforeEvents.startup.subscribe(event => { debug.debug_startup(event) })
-system.afterEvents.scriptEventReceive.subscribe(event => { debug.debug_scriptEventReceive(event) })
+world.beforeEvents.entityItemPickup.subscribe(pickup.helper_entityItemPickup)
+system.beforeEvents.startup.subscribe(debug.debug_startup)
+system.afterEvents.scriptEventReceive.subscribe(debug.debug_scriptEventReceive)

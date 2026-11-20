@@ -1,12 +1,19 @@
-import { Dimension, GameMode, GameRuleChangeAfterEvent, PlatformType, Player, PlayerGameModeChangeAfterEvent, PlayerLeaveAfterEvent, PlayerPermissionLevel, PlayerSpawnAfterEvent, system, world } from "@minecraft/server"
-import { RUNTIME } from "../_store" // "cache" got use in "lib" as lazy import, use setting from store directly
+import {
+    type Dimension, GameMode, type GameRuleChangeAfterEvent,
+    type PlatformType, type Player, type PlayerGameModeChangeAfterEvent,
+    type PlayerHotbarSelectedSlotChangeAfterEvent, type PlayerLeaveAfterEvent,
+    type PlayerPermissionLevel, type PlayerSpawnAfterEvent,
+    system, world
+} from "@minecraft/server"
+import { RUNTIME } from "../_store"
 const { DEBUG } = RUNTIME
 
 const PlayerDataShape = {
     name: '' as string,
     platformType: '' as PlatformType,
     gameMode: '' as GameMode,
-    permissionLevel: 0 as PlayerPermissionLevel
+    permissionLevel: 0 as PlayerPermissionLevel,
+    selectedSlotIndex: 0 as number
 }
 
 const WorldDataShape = {
@@ -24,7 +31,6 @@ export type TrackedGameRule = keyof WorldData['gamerule']
 export type CacheData = keyof PlayerData
 
 export const playerDataKeys = Object.keys(PlayerDataShape) as (keyof PlayerData)[]
-export const worldDataKeys = Object.keys(WorldDataShape) as (keyof WorldData)[]
 export const worldGameRuleKeys = Object.keys(WorldDataShape.gamerule) as TrackedGameRule[]
 const trackedGameRuleSet = new Set<string>(worldGameRuleKeys)
 
@@ -80,21 +86,27 @@ export const gamerule_update = (data: GameRuleChangeAfterEvent) => {
 }
 
 export const player_init_update = (player: Player) => {
-    const { id, name, playerPermissionLevel } = player
-    const platformType = player.clientSystemInfo.platformType
+    const { id, name, playerPermissionLevel: permissionLevel, selectedSlotIndex } = player
+    const { platformType } = player.clientSystemInfo
     const gameMode = player.getGameMode()
 
     return update('player', id, {
         name,
         platformType,
         gameMode,
-        permissionLevel: playerPermissionLevel
+        permissionLevel,
+        selectedSlotIndex
     })
 }
 
 export const player_gamemode_update = (data: PlayerGameModeChangeAfterEvent) => {
     const { player, toGameMode } = data
     update('player', player.id, { gameMode: toGameMode })
+}
+
+export const player_playerHotbarSelectedSlotChange = (data: PlayerHotbarSelectedSlotChangeAfterEvent) => {
+    const { player, newSlotSelected } = data
+    update('player', player.id, { selectedSlotIndex: newSlotSelected })
 }
 
 export const player_track_start = (data: PlayerSpawnAfterEvent) => {
@@ -130,19 +142,11 @@ export const update = <T extends CacheType>
     return next
 }
 
-export const getPlayer = (player: Player | string, get?: CacheData | string) => {
-    const id = typeof player === 'string' ? player : player.id
-    let data = playerData.get(id)
-
-    if (!data) {
-        if (typeof player === 'string') {
-            if (DEBUG) console.warn('[cache] cannot update player data throw empy string as return')
-            return ''
-        }
-        data = player_init_update(player)
-    }
-
-    return get ? data[get as CacheData] : data
+export function getPlayer(player: Player): PlayerData
+export function getPlayer<K extends CacheData>(player: Player, get: K): PlayerData[K]
+export function getPlayer(player: Player, get?: CacheData) {
+    const data = playerData.get(player.id) ?? player_init_update(player)
+    return get ? data[get] : data
 }
 
 export const getGameRule = (rule: TrackedGameRule): boolean | number | null => {
@@ -153,7 +157,8 @@ export const getGameRule = (rule: TrackedGameRule): boolean | number | null => {
 
 export const getCachedPlayers = (): Player[] => cachedPlayers
 export const getCachedDimension = (dimensionId: string): Dimension | null => {
-    if (cachedDimensions.has(dimensionId)) return cachedDimensions.get(dimensionId)!
+    const cached = cachedDimensions.get(dimensionId)
+    if (cached) return cached
 
     try {
         const dim = world.getDimension(dimensionId)

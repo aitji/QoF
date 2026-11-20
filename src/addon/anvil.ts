@@ -1,105 +1,68 @@
-import { system, BlockPermutation, EntityComponentTypes, EquipmentSlot, GameMode, PlayerInteractWithBlockBeforeEvent, world, Direction } from "@minecraft/server"
-import { checkRandom, reduceItem, RUNTIME, cache, getEqu, playSound, checkPerm } from "../lib"
+import {
+    type PlayerInteractWithBlockBeforeEvent,
+    type Direction,
+    system, BlockPermutation
+} from "@minecraft/server"
+import { RUNTIME, cache, checkPerm, createThrottle, heldAfterDelay, isCreative, playSound, reduceItem, setEqu } from "../lib"
 const { DEBUG, REPAIR_ANVIL: { ITEM_TYPEID, REPAIRABLE_ANVIL, REPAIR_SOUND, REPAIR_HELD_DELAY } } = RUNTIME
 
-const delay: Record<string, number> = {}
-const permCache = new Map<
-    string,
-    Map<Direction, BlockPermutation | null>
->()
 // helper
-function getCache(
-    typeId: string,
-    direction: Direction
-): BlockPermutation | null {
-    let inner = permCache.get(typeId)
-    if (!inner) {
-        inner = new Map<Direction, BlockPermutation | null>()
-        permCache.set(typeId, inner)
-    }
+const permCache = new Map<string, BlockPermutation | null>()
+function getCache(typeId: string, direction: Direction): BlockPermutation | null {
+    const key = `${typeId}:${direction}`
+    const cached = permCache.get(key)
+    if (cached !== undefined) return cached
 
-    let perm = inner.get(direction)
-    if (perm === undefined) {
-        try { perm = BlockPermutation.resolve(typeId).withState('minecraft:cardinal_direction', direction) }
-        catch (e) {
-            if (DEBUG) console.warn('[ANVIL] failed to resolve permutation for', typeId, e)
-            perm = null
-        }
+    let perm: BlockPermutation | null = null
+    try { perm = BlockPermutation.resolve(typeId).withState('minecraft:cardinal_direction', direction) }
+    catch (e) { if (DEBUG) console.warn('[ANVIL] failed to resolve permutation for', typeId, e) }
 
-        inner.set(direction, perm)
-    }
-
+    permCache.set(key, perm)
     return perm
 }
 
+const throttled = createThrottle(REPAIR_HELD_DELAY)
 export const anvil_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { player, itemStack, isFirstEvent, block } = data
-    if (
-        block &&
-        itemStack && itemStack.typeId === ITEM_TYPEID &&
-        !player.isSneaking
-    ) {
-        if (!isFirstEvent) {
-            const playerDelay = delay[player.id] || 0
-            if (REPAIRABLE_ANVIL[block.typeId] || itemStack && itemStack.typeId === ITEM_TYPEID) data.cancel = true
-            if (playerDelay > system.currentTick) return
-        }
+    if (itemStack?.typeId !== ITEM_TYPEID || player.isSneaking) return
 
-        delay[player.id] = system.currentTick + REPAIR_HELD_DELAY
-        if (checkPerm(player) === false) return
+    if (!isFirstEvent) data.cancel = true
+    if (throttled(player.id, isFirstEvent)) return
+    if (!checkPerm(player)) return
 
-        const currType = block.typeId
-        const nextType = REPAIRABLE_ANVIL[currType]
+    const currType = block.typeId
+    const nextType = REPAIRABLE_ANVIL[currType]
+    if (!nextType) return
 
-        if (!nextType) return
+    data.cancel = true
 
-        data.cancel = true
+    const state = block.permutation.getState('minecraft:cardinal_direction') as Direction
+    if (!state) return
 
-        const state = block.permutation.getState('minecraft:cardinal_direction') as Direction
-        if (!state) return
+    const slot = cache.getPlayer(player, "selectedSlotIndex")
+    system.run(() => {
+        const anvilPerm = getCache(nextType, state)
+        if (!anvilPerm) return
 
-        const slot = player.selectedSlotIndex
-        system.run(() => {
-            // new anvil
-            const anvilPerm = getCache(nextType, state)
-            if (!anvilPerm) return
+        const feedback = () => {
             block.setPermutation(anvilPerm)
 
-            const _playSound = () => {
-                const center = block.center()
-                const dim = player.dimension
+            const center = block.center()
+            const dim = player.dimension
 
-                playSound(dim, center, REPAIR_SOUND)
-                dim.spawnParticle("minecraft:wind_explosion_emitter", center)
-            }
+            playSound(dim, center, REPAIR_SOUND)
+            dim.spawnParticle("minecraft:wind_explosion_emitter", center)
+        }
 
-            if (cache.getPlayer(player, 'gameMode') === GameMode.Creative)
-                return _playSound()
+        if (isCreative(player)) return feedback()
 
-            // reduce item
-            const equ = getEqu(player)!
-            if (player.selectedSlotIndex !== slot) player.selectedSlotIndex = slot
-            const currItem = equ.getEquipment(EquipmentSlot.Mainhand)
+        const currItem = heldAfterDelay(player, slot)
+        if (currItem?.typeId !== itemStack.typeId) {
+            const removed = player.runCommand(`clear @s ${ITEM_TYPEID} 0 1`).successCount
+            if (removed) return feedback()
+            return
+        }
 
-            if (!currItem || currItem.typeId !== itemStack.typeId) {
-                // fallback
-                const cmd = player.runCommand(`clear @s ${ITEM_TYPEID} 0 1`)
-                const isDone = cmd.successCount
-
-                // fail to remove player item
-                if (!isDone || isDone === 0) {
-                    // revert anvil
-                    const oldPerm = getCache(currType, state)
-                    if (oldPerm) block.setPermutation(oldPerm)
-                } else _playSound()
-                return
-            }
-
-            // NOW: selectedSlotIndex === slot & currItem == itemStack
-            try {
-                equ.setEquipment(EquipmentSlot.Mainhand, reduceItem(itemStack))
-                _playSound()
-            } catch (e) { if (DEBUG) console.warn('[ANVIL] unknown case:', e) }
-        })
-    }
+        if (setEqu(player, reduceItem(itemStack))) feedback()
+    })
 }

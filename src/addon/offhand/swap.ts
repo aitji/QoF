@@ -1,10 +1,9 @@
 import {
-    EquipmentSlot, ItemComponentTypes, ItemLockMode, ItemStack,
-    PlatformType, Player, PlayerLeaveAfterEvent,
-    PlayerSpawnAfterEvent, system, world
+    type Player, type PlayerLeaveAfterEvent,
+    ItemLockMode, ItemStack, PlatformType,
+    EquipmentSlot, ItemComponentTypes,
 } from "@minecraft/server"
-import { getEqu, playSound, RUNTIME, sumLoc, swing } from "../../lib"
-import * as cache from "../../core/cache"
+import { cache, getEqu, playSound, RUNTIME, setOffhand, sumLoc, swing } from "../../lib"
 
 const {
     OFFHAND: {
@@ -14,82 +13,67 @@ const {
     }
 } = RUNTIME
 
-type SneakState = { lastSneakTick: number, wasSneaking: boolean }
-const sneakState = new Map<string, SneakState>()
-
-export const offhand_playerSpawn = (data: PlayerSpawnAfterEvent) => data.initialSpawn && _initPlayer(data.player)
-export const offhand_playerLeave = (data: PlayerLeaveAfterEvent) => sneakState.delete(data.playerId)
-
-system.run(() => { for (const player of world.getAllPlayers()) _initPlayer(player) })
-
-function _initPlayer(player: Player) {
-    const { id } = player
-    if (sneakState.has(id)) return
-    sneakState.set(id, { lastSneakTick: -999, wasSneaking: false })
-}
-
-const sneakWindow = {
+const SNEAK_WINDOW = {
     [PlatformType.Mobile]: DOUBLE_SNEAK_WINDOW_MOBILE as number,
     [PlatformType.Console]: DOUBLE_SNEAK_WINDOW_CONSOLE as number,
     [PlatformType.Desktop]: DOUBLE_SNEAK_WINDOW_DEFAULT as number
-} as const
+}
 
-export function offhand_player(player: Player, now: number) {
-    const { id, isSneaking } = player
-    if (!sneakState.has(id)) _initPlayer(player)
+type SneakState = { lastSneakTick: number, wasSneaking: boolean }
+const sneakState = new Map<string, SneakState>()
 
-    const state = sneakState.get(id)!
-
-    const plCache = cache.getPlayer(player)
-    const platform = (plCache as cache.PlayerData).platformType
-    const window = sneakWindow[platform]
-
-    const justReleased = state?.wasSneaking && !isSneaking
-    if (justReleased) {
-        const gap = now - state.lastSneakTick
-        if (gap <= window) {
-            swapItem(player)
-            state.lastSneakTick = 0
-        } else state.lastSneakTick = now
+const stateOf = (id: string) => {
+    let state = sneakState.get(id)
+    if (!state) {
+        state = { lastSneakTick: -999, wasSneaking: false }
+        sneakState.set(id, state)
     }
-
-    state.wasSneaking = isSneaking
+    return state
 }
 
-function hasUnsafeProperties(item: ItemStack) {
-    if (!item) return false
-    if (item.nameTag) return true
-    if (item.getLore().length > 0) return true
-    if (item?.lockMode !== ItemLockMode.none) return true
+export const offhand_playerLeave = ({ playerId }: PlayerLeaveAfterEvent) => sneakState.delete(playerId)
 
-    const enchants = item.getComponent(ItemComponentTypes.Enchantable)
-    if (enchants && enchants.getEnchantments().length > 0) return true
+const isUnsafe = (item: ItemStack) =>
+    !!item.nameTag ||
+    item.getLore().length > 0 ||
+    item.lockMode !== ItemLockMode.none ||
+    DISALLOWED_ITEM.has(item.typeId) ||
+    (item.getComponent(ItemComponentTypes.Enchantable)?.getEnchantments().length ?? 0) > 0
 
-    // edge case
-    const isDisallow = DISALLOWED_ITEM.has(item?.typeId ?? '')
-    if (isDisallow && isDisallow === true) return true
-
-    return false
-}
-
-function swapItem(player: Player) {
+const swapItem = (player: Player) => {
     const equippable = getEqu(player)!
     const mainhand = equippable.getEquipment(EquipmentSlot.Mainhand)
     const offhand = equippable.getEquipment(EquipmentSlot.Offhand)
 
-    if (mainhand && hasUnsafeProperties(mainhand)) {
-        const { location: loc, dimension: dim } = player
-        dim.spawnParticle(FAIL_PARTICLE, sumLoc(loc, PARTICLE_OFFSET))
-        playSound(dim, loc, SOUND_FAIL)
+    if (mainhand && isUnsafe(mainhand)) {
+        const { location, dimension } = player
+        dimension.spawnParticle(FAIL_PARTICLE, sumLoc(location, PARTICLE_OFFSET))
+        playSound(dimension, location, SOUND_FAIL)
         return
     }
 
     if (mainhand) swing(player, 'off')
     if (offhand) swing(player, 'main')
 
-    const durability = mainhand?.getComponent(ItemComponentTypes.Durability)
-    equippable.setEquipment(EquipmentSlot.Mainhand, offhand ?? undefined)
+    equippable.setEquipment(EquipmentSlot.Mainhand, offhand)
 
-    if (mainhand) player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${mainhand.typeId} ${mainhand.amount} ${durability ? durability.damage : 0}`)
+    // replaceitem keeps durability
+    if (mainhand) setOffhand(player, mainhand.typeId, mainhand.amount, mainhand.getComponent(ItemComponentTypes.Durability)?.damage ?? 0)
     else equippable.setEquipment(EquipmentSlot.Offhand, undefined)
+}
+
+// double sneak = swap
+export const offhand_player = (player: Player, now: number) => {
+    const state = stateOf(player.id)
+    const { isSneaking } = player
+
+    const justReleased = state.wasSneaking && !isSneaking
+    state.wasSneaking = isSneaking
+    if (!justReleased) return
+
+    const window = SNEAK_WINDOW[cache.getPlayer(player, 'platformType')]
+    if (now - state.lastSneakTick <= window) {
+        swapItem(player)
+        state.lastSneakTick = 0
+    } else state.lastSneakTick = now
 }

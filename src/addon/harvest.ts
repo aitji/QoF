@@ -1,131 +1,126 @@
-import { world, system, EquipmentSlot, ItemDurabilityComponent, ItemStack, EntityEquippableComponent, EntityInventoryComponent, Container, BlockPermutation, Block, PlayerBreakBlockBeforeEvent, EntityComponentTypes, Player, GameMode, Direction } from "@minecraft/server"
-import { applyItemDamage, reduceItem, RUNTIME, helper, cache, getEqu, getInv, sumLoc, checkRandom, swing } from "../lib"
-const { DEBUG, HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY, COCOA_VALID_LOGS, COCOA_DIRECTIONS } } = RUNTIME
+import {
+    type Block, type Dimension, type Player,
+    type PlayerBreakBlockBeforeEvent, type Vector3,
+    BlockPermutation, EquipmentSlot, system,
+    ItemStack, EntityComponentTypes
+} from "@minecraft/server"
+import { applyItemDamage, checkRandom, consumeOffhand, debug, getInv, getHeld, isCreative, pickupCooldown, reduceItem, tryRemove, RUNTIME, setEqu, sumLoc, swing } from "../lib"
+const { HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY, COCOA_VALID_LOGS, COCOA_DIRECTIONS } } = RUNTIME
+
+type Crop = (typeof PLANT_LEVEL)[string]
+const COCOA_ID = 'minecraft:cocoa'
+const COCOA: Crop = { level: 2, seed: 'minecraft:cocoa_beans' }
+export const SEED_TO_PLANT: Record<string, string> = Object.fromEntries(
+    Object.entries(PLANT_LEVEL).map(([plant, { seed }]) => [seed, plant])
+)
 
 export const resolveCocoaPermutation = (block: Block, originalDir: number) => {
     const { location, dimension } = block
 
-    const tryDir = (dir: number) => {
+    const hasLog = (dir: number) => {
         const { x, z } = COCOA_DIRECTIONS[dir]
-        const neighbour = dimension.getBlock({ x: location.x + x, y: location.y, z: location.z + z })!
-        return COCOA_VALID_LOGS.has(neighbour?.typeId) ? dir : null
+        const neighbour = dimension.getBlock({ x: location.x + x, y: location.y, z: location.z + z })
+        return COCOA_VALID_LOGS.has(neighbour?.typeId ?? '')
     }
 
-    const resolvedDir = tryDir(originalDir)
-        ?? COCOA_DIRECTIONS.find(({ dir }) => tryDir(dir) !== null)?.dir // sadge o(n)
-        ?? originalDir
+    const dir = hasLog(originalDir)
+        ? originalDir
+        : COCOA_DIRECTIONS.find(d => hasLog(d.dir))?.dir ?? originalDir // :sadge: o(n)
 
-    return BlockPermutation.resolve('minecraft:cocoa', { 'direction': resolvedDir, 'age': 0 })
+    return BlockPermutation.resolve(COCOA_ID, { direction: dir, age: 0 })
 }
 
-const consumeOffhand = (player: Player, seed: string, equippable: EntityEquippableComponent) => {
-    const offhandItem = equippable?.getEquipment(EquipmentSlot.Offhand)
-    if (!offhandItem || offhandItem.typeId !== seed) return false
+const takeOffhandSeed = (player: Player, seed: string) => {
+    const offhand = getHeld(player, EquipmentSlot.Offhand)
+    if (offhand?.typeId !== seed) return false
 
-    const newAmount = offhandItem.amount - 1
-    if (newAmount <= 0) equippable.setEquipment(EquipmentSlot.Offhand, undefined)
-    else player.runCommand(`replaceitem entity @s slot.weapon.offhand 0 ${seed} ${newAmount}`)
+    consumeOffhand(player, offhand)
     swing(player, 'off')
     return true
 }
 
+const takeInvSeed = (player: Player, seed: string) => {
+    const container = getInv(player)?.container
+    const slot = container?.find(new ItemStack(seed, 1))
+    if (!container || slot === undefined) return false
+
+    const stack = container.getItem(slot)!
+    container.setItem(slot, stack.amount > 1 ? reduceItem(stack) : undefined)
+    return true
+}
+
+// seed dropped from crop
+const takeDropSeed = (dimension: Dimension, location: Vector3, seed: string) => {
+    for (const drop of dimension.getEntities({ type: 'minecraft:item', maxDistance: 2, location })) {
+        const stack = drop.getComponent(EntityComponentTypes.Item)?.itemStack
+        if (!stack || !drop.isValid || stack.typeId !== seed || stack.amount <= 1) continue
+
+        try {
+            const rest = dimension.spawnItem(reduceItem(stack), location)
+            pickupCooldown(rest)
+            rest.applyImpulse(drop.getVelocity())
+        } catch { /**air?*/ }
+
+        if (!tryRemove(drop)) debug(`[harvest] cannot remove ${seed}`)
+        return true
+    }
+    return false
+}
+
 export const harvest_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
     const { player, itemStack, block } = data
-    if (!itemStack) return
-    if (cache.getPlayer(player, 'gameMode') === GameMode.Creative) return
+    if (!itemStack || isCreative(player)) return
 
     const isHoe = itemStack.typeId.endsWith("_hoe")
     const isAxe = itemStack.typeId.endsWith("_axe")
+    if (!isHoe && !isAxe) return
 
-    if (isHoe || isAxe) {
-        if (isAxe && block?.typeId !== 'minecraft:cocoa') return
+    const { typeId, location, dimension } = block
+    const isCocoa = typeId === COCOA_ID
+    if (isAxe && !isCocoa) return
 
-        const equippable = getEqu(player)!
-        let item = equippable?.getEquipment(EquipmentSlot.Mainhand)!
-        if (block) {
-            const { typeId, location, dimension } = block
+    const crop = isCocoa ? COCOA : PLANT_LEVEL[typeId]
+    if (!crop) return
 
-            const level = PLANT_LEVEL[typeId]?.level ?? (typeId === 'minecraft:cocoa' ? 2 : NaN)
-            const seed = PLANT_LEVEL[typeId]?.seed ?? (typeId === 'minecraft:cocoa' ? 'minecraft:cocoa_beans' : NaN)
-
-            const growth = block.permutation.getState("growth") ?? block.permutation.getState("age")!
-            const originalDir = block.permutation.getState("direction") ?? 0!
-
-            if (!level) return
-            if (growth && growth >= level) {
-                system.run(() => {
-                    if (DURABILITY) {
-                        const { changed, item: newItem } = applyItemDamage(player, item)
-                        if (changed) equippable?.setEquipment(EquipmentSlot.Mainhand, newItem)
-                    }
-
-                    const offhandItem = (!isAxe && typeId !== 'minecraft:cocoa') && equippable?.getEquipment(EquipmentSlot.Offhand)!
-                    const offhandEntry = offhandItem
-                        ? Object.entries(PLANT_LEVEL).find(([, v]) => v.seed === offhandItem.typeId)
-                        : undefined
-
-                    const swapTypeId = offhandEntry?.[0]
-                    const plantTypeId = (isHoe && swapTypeId === 'minecraft:cocoa') ? typeId : (swapTypeId ?? typeId)
-                    const plantSeed = (isHoe && swapTypeId === 'minecraft:cocoa') ? seed : (offhandEntry?.[1]?.seed ?? seed)
-                    const target = dimension.getBlock(location)!
-
-                    let isPlanted = false
-                    const apply = () => {
-                        isPlanted = true
-
-                        const harvested = PLANT_LEVEL[typeId]?.harvested
-                        if (harvested && harvested > 0) return target.setPermutation(
-                            BlockPermutation.resolve(
-                                plantTypeId, {
-                                [PLANT_LEVEL[typeId]?.harvested_state as string]: harvested
-                            })
-                        )
-
-                        if (plantTypeId === 'minecraft:cocoa') target.setPermutation(resolveCocoaPermutation(target, originalDir))
-                        else target.setPermutation(BlockPermutation.resolve(plantTypeId))
-                    }
-
-                    if (!LOSS_SEED) return apply()
-                    if (consumeOffhand(player, plantSeed, equippable)) return apply()
-
-                    const container = getInv(player)?.container!
-                    const slot = container.find(new ItemStack(plantSeed, 1))
-                    if (slot !== undefined) {
-                        const currItem = container.getItem(slot)!
-                        const newItem = reduceItem(currItem)
-                        container.setItem(slot, newItem)
-                        apply()
-                    } else {
-                        const itemEntity = dimension.getEntities({ type: 'minecraft:item', maxDistance: 2, location })
-
-                        for (const en of itemEntity) {
-                            const enItem = en.getComponent(EntityComponentTypes.Item)?.itemStack
-                            if (!enItem || !en?.isValid) continue
-
-                            if (enItem?.typeId === plantSeed) {
-                                const newItem = reduceItem(enItem)
-                                if (!newItem || newItem.typeId === 'minecraft:air') continue
-                                try {
-                                    const newEn = dimension.spawnItem(newItem, location)!
-                                    helper.pickupCooldown(newEn)
-                                    newEn.applyImpulse(en.getVelocity())
-                                } catch { /** cannot apply vec to "air" */ }
-
-                                try { en.remove() }
-                                catch {
-                                    try { en.kill() }
-                                    catch (_) { if (DEBUG) world.sendMessage(`[harvest] cannot remove ${plantSeed} ${_}`) }
-                                } finally { return apply() }
-                            }
-                        }
-                    }
-
-                    if (!isPlanted) {
-                        const fail = () => dimension.spawnParticle("minecraft:villager_angry", sumLoc(location, { x: checkRandom([.4, .7]), y: checkRandom([.2, .6]), z: checkRandom([.4, .7]) }))
-                        fail()
-                    }
-                })
-            } else if (!player.isSneaking) data.cancel = true
-        }
+    const { permutation } = block
+    const growth = (permutation.getState("growth") ?? permutation.getState("age")) as number | undefined
+    if (!growth || growth < crop.level) {
+        if (!player.isSneaking) data.cancel = true // not growth
+        return
     }
+
+    const originalDir = (permutation.getState("direction") ?? 0) as number
+    system.run(() => {
+        if (DURABILITY) {
+            const { changed, item } = applyItemDamage(player, itemStack)
+            if (changed) setEqu(player, item)
+        }
+
+        // offhand
+        const offhandId = isCocoa ? undefined : getHeld(player, EquipmentSlot.Offhand)?.typeId
+        const swap = offhandId ? SEED_TO_PLANT[offhandId] : undefined
+        const plantId = swap ?? typeId
+        const plantSeed = swap ? offhandId! : crop.seed
+
+        const hasSeed = !LOSS_SEED ||
+            takeOffhandSeed(player, plantSeed) ||
+            takeInvSeed(player, plantSeed) ||
+            takeDropSeed(dimension, location, plantSeed)
+
+        if (!hasSeed) return dimension.spawnParticle(
+            "minecraft:villager_angry",
+            sumLoc(location, {
+                x: checkRandom([.4, .7]),
+                y: checkRandom([.2, .6]),
+                z: checkRandom([.4, .7])
+            })
+        )
+
+        const target = dimension.getBlock(location)!
+        const { harvested, harvested_state } = crop
+
+        if (harvested) target.setPermutation(BlockPermutation.resolve(plantId, { [harvested_state!]: harvested }))
+        else if (plantId === COCOA_ID) target.setPermutation(resolveCocoaPermutation(target, originalDir))
+        else target.setPermutation(BlockPermutation.resolve(plantId))
+    })
 }
