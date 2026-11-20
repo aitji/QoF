@@ -11,6 +11,7 @@ const COPPER_LANTERNS = ['', 'exposed_', 'weathered_', 'oxidized_'].flatMap(age 
 type Sound = { ID: string, VOLUME: number, PITCH: number | number[] }
 type LightInfo = { light: number, inLiquid?: boolean }
 type LightGroup = { always?: string[], dry?: string[], wet?: string[] }
+type LightDir = 'up' | 'down' | 'north' | 'south' | 'east' | 'west'
 
 // table help
 const lightTable = (levels: Record<number, LightGroup>) => {
@@ -55,19 +56,55 @@ export const SETTINGS = Object.freeze({
         PARTICLE_OFFSET: { x: -.5, y: 0, z: -.5 },
 
         // bug patched //
-        SEEDTOBLOCK: {
-            'minecraft:wheat_seeds': { asBlock: 'minecraft:wheat', pot: 'minecraft:farmland', sound: 'nature' },
-            'minecraft:carrot': { asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' },
-            'minecraft:potato': { asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' },
-            'minecraft:beetroot_seeds': { asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' },
-            'minecraft:nether_wart': { asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' },
-        } as Record<string, { asBlock: string, pot: string, sound: 'nature' | 'nether' }>,
-        SOUND_SHOVEL_USE: { ID: 'use.grass', VOLUME: 1.0, PITCH: 0.8 } as Sound,
-        SOUND_HOE_USE: { ID: 'use.gravel', VOLUME: 1.0, PITCH: 0.8 } as Sound,
-        FIRE_ITEM: {
-            'minecraft:flint_and_steel': { ID: 'fire.ignite', VOLUME: 1.0, PITCH: [0.8, 1.2] },
-            'minecraft:fire_charge': { ID: 'mob.ghast.fireball', VOLUME: 1.0, PITCH: 1.0, REDUCE_ITEM: true },
-        } as Record<string, Sound & { REDUCE_ITEM?: boolean }>,
+        PATCHER: {
+            SEEDTOBLOCK: {
+                'minecraft:wheat_seeds': { asBlock: 'minecraft:wheat', pot: 'minecraft:farmland', sound: 'nature' },
+                'minecraft:carrot': { asBlock: 'minecraft:carrots', pot: 'minecraft:farmland', sound: 'nature' },
+                'minecraft:potato': { asBlock: 'minecraft:potatoes', pot: 'minecraft:farmland', sound: 'nature' },
+                'minecraft:beetroot_seeds': { asBlock: 'minecraft:beetroot', pot: 'minecraft:farmland', sound: 'nature' },
+                'minecraft:nether_wart': { asBlock: 'minecraft:nether_wart', pot: 'minecraft:soul_sand', sound: 'nether' },
+            } as Record<string, { asBlock: string, pot: string, sound: 'nature' | 'nether' }>,
+            SOUND_SHOVEL_USE: { ID: 'use.grass', VOLUME: 1.0, PITCH: 0.8 } as Sound,
+            SOUND_HOE_USE: { ID: 'use.gravel', VOLUME: 1.0, PITCH: 0.8 } as Sound,
+            FIRE_ITEM: {
+                'minecraft:flint_and_steel': { ID: 'fire.ignite', VOLUME: 1.0, PITCH: [0.8, 1.2] },
+                'minecraft:fire_charge': { ID: 'mob.ghast.fireball', VOLUME: 1.0, PITCH: 1.0, REDUCE_ITEM: true },
+            } as Record<string, Sound & { REDUCE_ITEM?: boolean }>,
+            REFUNED: {
+                FACING_BY_INDEX: ['down', 'up', 'north', 'south', 'west', 'east'],
+                OPPOSITE: {
+                    up: 'down', down: 'up', north: 'south',
+                    south: 'north', east: 'west', west: 'east'
+                } as Record<LightDir, LightDir>,
+                LEVER_SUPPORT: {
+                    down_east_west: 'up', down_north_south: 'up',
+                    up_east_west: 'down', up_north_south: 'down',
+                    east: 'west', west: 'east', south: 'north', north: 'south'
+                } as Record<string, LightDir>,
+                GROUND_BLOCKS: new Set([ // solid
+                    'minecraft:twisting_vines',
+                    'minecraft:redstone_wire',
+                    'minecraft:powered_repeater', 'minecraft:unpowered_repeater',
+                    'minecraft:powered_comparator', 'minecraft:unpowered_comparator',
+                    'minecraft:turtle_egg',
+                    'minecraft:flower_pot',
+                    'minecraft:cactus_flower',
+                    'minecraft:leaf_litter',
+                    'minecraft:cake',
+                    'minecraft:dragon_egg',
+                    'minecraft:anvil',
+                    'minecraft:chipped_anvil',
+                    'minecraft:damaged_anvil'
+                ]),
+                REFUND_ITEM: {
+                    'minecraft:redstone_wire': 'minecraft:redstone',
+                    'minecraft:powered_repeater': 'minecraft:repeater',
+                    'minecraft:unpowered_repeater': 'minecraft:repeater',
+                    'minecraft:powered_comparator': 'minecraft:comparator',
+                    'minecraft:unpowered_comparator': 'minecraft:comparator'
+                } as Record<string, string>,
+            }
+        },
 
         LIGHT_WIKI: lightTable({
             15: {

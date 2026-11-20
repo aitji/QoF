@@ -1,13 +1,45 @@
 import {
     type PlayerInteractWithBlockBeforeEvent, type Block,
     system, ItemStack, LiquidType,
+    PlayerPlaceBlockAfterEvent,
 } from "@minecraft/server"
-import { applyItemDamage, cache, checkPerm, createThrottle, heldAfterDelay, isAirOrLight, isCreative, isLightBlock, neighbour, permOf, pickupCooldown, playSound, reduceItem, RUNTIME, setEqu, swing } from "../../lib"
+import { type BlockStateSuperset } from "@minecraft/vanilla-data"
+import { addItem, applyItemDamage, cache, checkPerm, checkRandom, createThrottle, heldAfterDelay, isAirOrLight, isCreative, isLightBlock, neighbour, permOf, pickupCooldown, playSound, reduceItem, RUNTIME, setEqu, sumLoc, swing } from "../../lib"
 import { suppressLight } from "./core"
 const {
     BLOCK_INTERACTION_DELAY,
-    LIGHT: { SEEDTOBLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, FIRE_ITEM }
+    LIGHT: { PATCHER: {
+        SEEDTOBLOCK, SOUND_SHOVEL_USE, SOUND_HOE_USE, FIRE_ITEM,
+        REFUNED: {
+            FACING_BY_INDEX, OPPOSITE, LEVER_SUPPORT,
+            GROUND_BLOCKS, REFUND_ITEM
+        }
+    } }
 } = RUNTIME
+
+type Dir = 'up' | 'down' | 'north' | 'south' | 'east' | 'west'
+const isGroundBlock = (id: string) => GROUND_BLOCKS.has(id)
+    || id.endsWith('_carpet')
+    || id.endsWith('_pressure_plate')
+    || id.endsWith('_coral')
+    || id.endsWith('rail')
+
+const getNeighbor = (block: Block, dir?: Dir): Block | undefined => {
+    switch (dir) {
+        case 'up': return block.above()
+        case 'down': return block.below()
+        case 'north': return block.north()
+        case 'south': return block.south()
+        case 'east': return block.east()
+        case 'west': return block.west()
+        default: return undefined
+    }
+}
+
+const getFacing = (block: Block): Dir | undefined => {
+    const v = block.permutation.getState('facing_direction')
+    return (typeof v === 'number' ? FACING_BY_INDEX[v] : v) as Dir | undefined
+}
 
 const throttled = createThrottle(BLOCK_INTERACTION_DELAY)
 const SEED_SOUND = {
@@ -128,4 +160,61 @@ export const light_playerInteractWithBlock = (data: PlayerInteractWithBlockBefor
     dirtCheck(data, itemStack)
     seedCheck(data, itemStack)
     fireCheck(data, itemStack)
+}
+
+// refuned system ._.
+const getSupports = (block: Block): (Block | undefined)[] | undefined => {
+    const { typeId } = block
+    const state = (name: any) => block.permutation.getState(name)
+    const pick = (...dirs: (Dir | undefined)[]) => dirs.map(d => getNeighbor(block, d))
+
+    if (typeId.endsWith('torch')) {
+        const f = String(state('torch_facing_direction'))
+        return pick(f === 'top' || f === 'unknown' ? 'down' : f as Dir)
+    }
+    if (typeId !== 'minecraft:sea_lantern' && typeId.endsWith('lantern')) return pick(state('hanging') ? 'up' : 'down')
+    if (typeId === 'minecraft:lever') return pick(LEVER_SUPPORT[String(state('lever_direction'))])
+
+    if (typeId.endsWith('_button') || typeId === 'minecraft:ladder') {
+        const f = getFacing(block)
+        return pick(f && OPPOSITE[f])
+    }
+    if (typeId.endsWith('_hanging_sign')) {
+        if (state('hanging')) return pick('up')
+        const f = getFacing(block)
+        return f === 'north' || f === 'south' ? pick('east', 'west') : pick('north', 'south')
+    }
+    if (
+        typeId === 'minecraft:sulfur_spike' ||
+        typeId === 'minecraft:pointed_dripstone'
+    ) return pick(state('hanging') ? 'up' : 'down')
+    if (isGroundBlock(typeId)) return pick('down')
+
+    return undefined
+}
+
+export const light_playerPlaceBlock = (data: PlayerPlaceBlockAfterEvent) => {
+    const { player, block, dimension } = data
+    const { typeId, location } = block
+    if (!typeId.startsWith('minecraft:')) return
+
+    let supports: (Block | undefined)[] | undefined
+    try { supports = getSupports(block) }
+    catch { return }
+
+    if (!supports?.length) return
+    const refuned = supports.every(s => !!s && (isLightBlock(s) as boolean))
+
+    if (refuned) {
+        if (!isCreative(player)) addItem(player, new ItemStack(REFUND_ITEM[typeId] ?? typeId, 1), 1)
+        dimension.setBlockType(location, 'minecraft:air')
+        dimension.spawnParticle(
+            "minecraft:villager_angry",
+            sumLoc(location, {
+                x: checkRandom([.4, .7]),
+                y: checkRandom([.2, .6]),
+                z: checkRandom([.4, .7])
+            })
+        )
+    }
 }

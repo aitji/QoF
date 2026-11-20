@@ -92,6 +92,7 @@ on(world.afterEvents.entityRemove, [
 ])
 on(world.afterEvents.playerPlaceBlock, [
     [LIGHT.ENABLED, light.light_playerPlaceBlock],
+    [LIGHT.ENABLED, light_patcher.light_playerPlaceBlock],
     [CARRIED_CHEST.ENABLED, chest.chest_playerPlaceBlock],
     [hopperComposter, composter.composter_playerPlaceBlock],
     [DEBUG, debug.debug_playerPlaceBlock],

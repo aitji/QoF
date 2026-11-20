@@ -76,7 +76,7 @@ export const isBlockItem = (typeId: string) => {
     return known
 }
 
-export const isLightBlock = (block?: Block) => block?.permutation.matches(LIGHT_BLOCK) ?? false
+export const isLightBlock = (block?: Block) => block?.permutation?.matches(LIGHT_BLOCK) ?? false
 export const isAirOrLight = (block?: Block) => !!block && (block.isAir || block.permutation.matches(LIGHT_BLOCK))
 
 export const getEqu = (entity: Entity) => entity.getComponent(EntityComponentTypes.Equippable)!
