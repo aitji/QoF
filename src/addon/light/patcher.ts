@@ -23,6 +23,7 @@ const isGroundBlock = (id: string) => GROUND_BLOCKS.has(id)
     || id.endsWith('_pressure_plate')
     || id.endsWith('_coral')
     || id.endsWith('rail')
+    || id.endsWith('candle')
 
 const getNeighbor = (block: Block, dir?: Dir): Block | undefined => {
     switch (dir) {

@@ -94,7 +94,15 @@ export const SETTINGS = Object.freeze({
                     'minecraft:dragon_egg',
                     'minecraft:anvil',
                     'minecraft:chipped_anvil',
-                    'minecraft:damaged_anvil'
+                    'minecraft:damaged_anvil',
+                    'minecraft:snow_layer',
+                    'minecraft:brown_mushroom',
+                    'minecraft:red_mushroom',
+
+                    // just check ground is ok
+                    'minecraft:glow_lichen',
+                    'minecraft:sculk_vein',
+                    'minecraft:resin_clump'
                 ]),
                 REFUND_ITEM: {
                     'minecraft:redstone_wire': 'minecraft:redstone',
