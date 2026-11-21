@@ -125,7 +125,6 @@ on(world.afterEvents.playerSpawn, [
         if (!initialSpawn) return
 
         cache.player_init_update(player)
-        swing.swing_playerSpawn(player)
     }],
 ])
 on(world.afterEvents.playerLeave, [
