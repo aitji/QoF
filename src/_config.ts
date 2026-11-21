@@ -50,6 +50,22 @@ export const SETTINGS = Object.freeze({
         LIGHT_PLAYER_BATCH: 64,
         LIGHT_PRIORITY: 'brightest',
         LIGHT_BLOCK: 'qof:light_block',
+        VANILLA_LIGHT: 'minecraft:light_block',
+        RESCAN_TICK: 20,
+        SKIP_RECHECK: 20,
+        GRAVITY: new Set([
+            'minecraft:sand', 'minecraft:red_sand', 'minecraft:gravel',
+            'minecraft:suspicious_sand', 'minecraft:suspicious_gravel',
+            'minecraft:dragon_egg',
+            'minecraft:anvil', 'minecraft:chipped_anvil', 'minecraft:damaged_anvil'
+        ]),
+        PLUS_3D: Object.freeze([
+            { x: 1, y: 0, z: 0 }, { x: -1, y: 0, z: 0 },
+            { x: 0, y: 1, z: 0 }, { x: 0, y: -1, z: 0 },
+            { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: -1 },
+        ] as const),
+        PLUS: Object.freeze([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]] as const),
+        SIDES: Object.freeze([[1, 0], [-1, 0], [0, 1], [0, -1]] as const),
 
         FAIL_SOUND_INTERVAL: 30,
         FAIL_PARTICLE: 'minecraft:water_evaporation_bucket_emitter',

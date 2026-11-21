@@ -4,8 +4,8 @@ import {
     PlayerPlaceBlockAfterEvent,
 } from "@minecraft/server"
 import { type BlockStateSuperset } from "@minecraft/vanilla-data"
-import { addItem, applyItemDamage, cache, checkPerm, checkRandom, createThrottle, heldAfterDelay, isAirOrLight, isCreative, isLightBlock, neighbour, permOf, pickupCooldown, playSound, reduceItem, RUNTIME, setEqu, sumLoc, swing } from "../../lib"
-import { suppressLight } from "./core"
+import { addItem, applyItemDamage, cache, checkPerm, checkRandom, createThrottle, heldAfterDelay, isCreative, neighbour, permOf, pickupCooldown, playSound, reduceItem, RUNTIME, setEqu, sumLoc, swing } from "../../lib"
+import { isManagedLight, suppressLight } from "./core"
 const {
     BLOCK_INTERACTION_DELAY,
     LIGHT: { PATCHER: {
@@ -78,7 +78,7 @@ const dirtCheck = ({ player, block }: PlayerInteractWithBlockBeforeEvent, item: 
     if (!shovel && !item.hasTag('minecraft:is_hoe')) return
 
     const above = block.above()
-    if (!above || !isLightBlock(above)) return
+    if (!above || !isManagedLight(above)) return
 
     const slot = cache.getPlayer(player, "selectedSlotIndex")
     system.run(() => {
@@ -109,7 +109,7 @@ const seedCheck = ({ player, block }: PlayerInteractWithBlockBeforeEvent, item: 
     if (!seed || seed.pot !== block.typeId) return
 
     const above = block.above()
-    if (!above || !isLightBlock(above)) return
+    if (!above || !isManagedLight(above)) return
 
     const slot = cache.getPlayer(player, "selectedSlotIndex")
     system.run(() => {
@@ -130,14 +130,18 @@ const fireCheck = ({ player, block, blockFace }: PlayerInteractWithBlockBeforeEv
     if (!fireSound) return
 
     const target = neighbour(block, blockFace)
-    if (!target || !isLightBlock(target)) return
+    if (!target || !isManagedLight(target)) return
 
     suppressLight(target, false)
 
     const slot = cache.getPlayer(player, "selectedSlotIndex")
     system.run(() => {
         try {
-            if (!target.below()!.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water) || !isAirOrLight(target)) return
+            const supported = !target.below()!.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)
+            if (!supported || !(target.isAir || isManagedLight(target))) {
+                if (isManagedLight(target)) target.setPermutation(permOf('minecraft:air'))
+                return
+            }
 
             target.setType('minecraft:fire')
         } catch { return }
@@ -204,7 +208,7 @@ export const light_playerPlaceBlock = (data: PlayerPlaceBlockAfterEvent) => {
     catch { return }
 
     if (!supports?.length) return
-    const refuned = supports.every(s => !!s && (isLightBlock(s) as boolean))
+    const refuned = supports.every(s => isManagedLight(s))
 
     if (refuned) {
         if (!isCreative(player)) addItem(player, new ItemStack(REFUND_ITEM[typeId] ?? typeId, 1), 1)

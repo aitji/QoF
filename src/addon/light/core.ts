@@ -15,7 +15,8 @@ const {
         LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT,
         LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR,
         FAIL_PARTICLE, PARTICLE_OFFSET, LIGHT_BLOCK, SOUND_FAIL, FAIL_SOUND_INTERVAL,
-        LIGHT_PENDING_BATCH, LIGHT_PLAYER_BATCH, PRIORITY
+        LIGHT_PENDING_BATCH, LIGHT_PLAYER_BATCH, PRIORITY, RESCAN_TICK, SKIP_RECHECK,
+        VANILLA_LIGHT, GRAVITY, SIDES, PLUS_3D, PLUS
     }
 } = RUNTIME
 
@@ -23,10 +24,10 @@ const SEP = '|'
 const FOREVER = 'Infinity'
 const SUPP_BREAK = 8
 const LEVEL = 'qof:light_level' as StateName
-const PLUS = [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]
 
+type Kind = 'qof' | 'vanilla' | 'skip'
 type Pos = { dim: string, x: number, y: number, z: number }
-type Entry = Pos & { time: number, level: number, isWater: boolean, owner: string }
+type Entry = Pos & { time: number, level: number, isWater: boolean, owner: string, kind: Kind, scan: number }
 
 const lightMap = new Map<string, Entry>()
 const frameSet = new Set<string>()
@@ -34,6 +35,7 @@ const entityLights = new Map<string, Set<string>>()
 const suppressedLocs = new Map<string, number>()
 const frozenKeys = new Set<string>()
 const frozenDypKeys = new Map<string, string>()
+const vanillaDypKeys = new Map<string, string>()
 
 // helper
 const clamp15 = (n: number) => clamp(n, 0, 15)
@@ -47,6 +49,70 @@ const lightPerm = (level: number) => {
     return lightPerms[n] ??= permOf(LIGHT_BLOCK).withState(LEVEL, n)
 }
 
+const vanillaPerms: BlockPermutation[] = []
+const vanillaPerm = (level: number) => {
+    const n = clamp15(level)
+    return vanillaPerms[n] ??= permOf(`${VANILLA_LIGHT}_${n}`)
+}
+const permFor = (kind: Kind, level: number) => kind === 'vanilla' ? vanillaPerm(level) : lightPerm(level)
+
+const isVanillaLight = (b: Block) => b.typeId.startsWith(VANILLA_LIGHT)
+const levelOf = (b: Block): number => isVanillaLight(b)
+    ? Number(b.typeId.slice(VANILLA_LIGHT.length + 1)) || 0
+    : (b.permutation.getState(LEVEL) as number ?? 0)
+
+const nb = (b: Block, x: number, y: number, z: number) => {
+    try { return b.offset({ x, y, z }) } catch { return undefined }
+}
+const isGravity = (id: string) => GRAVITY.has(id) || id.endsWith('_concrete_powder')
+const isGap = (b?: Block) => !!b && (b.isAir || isLightBlock(b) || isVanillaLight(b))
+const isFloating = (b: Block) => isGravity(b.typeId) && isGap(nb(b, 0, -1, 0))
+const cactusBottom = (cactus: Block): Block | undefined => {
+    let cur = cactus
+    for (let i = 1; i < 3; i++) {
+        const below = nb(cur, 0, -1, 0)
+        if (below?.typeId !== 'minecraft:cactus') return cur
+        cur = below
+    }
+    return nb(cur, 0, -1, 0)?.typeId === 'minecraft:cactus' ? undefined : cur
+}
+
+const inCactusZone = (block: Block) => {
+    for (const [x, z] of SIDES) {
+        for (let k = 0; k < 3; k++) {
+            const cactus = nb(block, x, -k, z)
+            if (cactus?.typeId !== 'minecraft:cactus') continue
+
+            const bottom = cactusBottom(cactus)
+            if (!bottom) {
+                if (k === 0) return true
+                continue
+            }
+            if (block.y <= bottom.y + 3 - 1) return true
+        }
+    }
+    return false
+}
+
+const needVanilla = (block: Block) =>
+    nb(block, 0, 1, 0)?.typeId === 'minecraft:scaffolding' ||
+    'minecraft:grass_path' === (nb(block, 0, -1, 0)?.typeId ?? '')
+
+const toVanilla = (block: Block, entry: Entry) => {
+    entry.kind = 'vanilla'
+    if (isLightBlock(block)) block.setPermutation(vanillaPerm(entry.level))
+    mirrorVanilla(blockKey(block), entry)
+}
+
+const lightKind = (block: Block): Kind => {
+    for (const o of PLUS_3D) {
+        const n = nb(block, o.x, o.y, o.z)
+        if (n && isFloating(n)) return 'skip'
+    }
+    if (needVanilla(block) || inCactusZone(block)) return 'vanilla'
+    return 'qof'
+}
+
 const bKey = (dim: string, x: number | string, y: number | string, z: number | string) => `${dim}${SEP}${x}${SEP}${y}${SEP}${z}`
 const blockKey = (b: Block) => bKey(b.dimension.id, b.x, b.y, b.z)
 const parseKey = (key: string): Pos => {
@@ -55,7 +121,7 @@ const parseKey = (key: string): Pos => {
 }
 
 const frameDypId = (key: string) => `frame${SEP}${key}`
-const addEntry = (key: string, level: number, isWater: boolean, owner: string, time: number) => lightMap.set(key, { time, level, isWater, owner, ...parseKey(key) })
+const addEntry = (key: string, level: number, isWater: boolean, owner: string, time: number, kind: Kind = 'qof', scan = 0) => lightMap.set(key, { time, level, isWater, owner, kind, scan, ...parseKey(key) })
 const trackOwner = (owner: string, key: string) => {
     if (owner === FOREVER) return
 
@@ -86,11 +152,30 @@ const mirrorThaw = (key: string) => {
     frozenDypKeys.delete(key)
 }
 
+const mirrorVanilla = (key: string, e: Entry) => {
+    if (vanillaDypKeys.has(key)) return
+    try {
+        const id = `vanilla${SEP}${key}${SEP}${e.isWater}`
+        world.setDynamicProperty(id, true)
+        vanillaDypKeys.set(key, id)
+    } catch { }
+}
+
+const unmirrorVanilla = (key: string) => {
+    const id = vanillaDypKeys.get(key)
+    if (!id) return
+
+    try { world.setDynamicProperty(id, undefined) } catch { }
+    vanillaDypKeys.delete(key)
+}
+
 const forget = (key: string) => {
     lightMap.delete(key)
+    unmirrorVanilla(key)
     if (frozenKeys.delete(key)) mirrorThaw(key)
 }
 
+export const isManagedLight = (b?: Block) => !!b && (isLightBlock(b) || (isVanillaLight(b) && lightMap.has(blockKey(b))))
 export const suppressLight = (block: Block, clean: boolean) => {
     if (!ENABLED) return
 
@@ -156,6 +241,15 @@ function* restoreFromDYP() {
                 }
                 break
             }
+            case 'vanilla': {
+                const key = keyAt(1)
+                vanillaDypKeys.set(key, dy)
+
+                const known = lightMap.get(key)
+                if (known) known.kind = 'vanilla'
+                else addEntry(key, 0, p[5] === 'true', FOREVER, -1, 'vanilla')
+                break
+            }
             case 'supp':
                 world.setDynamicProperty(dy, undefined)
                 break
@@ -198,16 +292,28 @@ const putLight = (block: Block, level: number, owner: string) => {
 
     const known = lightMap.get(key)
     if (known) {
+        if (known.kind === 'skip') return
         known.time = DECAY_LIGHT_TICK
         known.level = level
+        if (known.kind === 'qof' && needVanilla(block)) toVanilla(block, known)
+        return
+    }
+
+    if (isVanillaLight(block)) return // someone placed it
+
+    const tick = system.currentTick
+    const kind = lightKind(block)
+    if (kind === 'skip') {
+        suppressedLocs.set(key, tick + SKIP_RECHECK)
         return
     }
 
     const isWater = typeId === 'minecraft:water'
-    addEntry(key, level, isWater, owner, DECAY_LIGHT_TICK)
+    addEntry(key, level, isWater, owner, DECAY_LIGHT_TICK, kind, tick)
     trackOwner(owner, key)
 
-    if (isLightable(block, isWater)) block.setPermutation(lightPerm(level))
+    if (isLightable(block, isWater)) block.setPermutation(permFor(kind, level))
+    if (kind === 'vanilla') mirrorVanilla(key, lightMap.get(key)!)
 }
 
 const spreadOffsets = new Map<number, Vector3[]>()
@@ -230,8 +336,8 @@ const spreadLight = (origin: Block | undefined, level: number, owner: string, he
     for (const offset of offsetsFor(height)) {
         try {
             const block = origin.offset(offset)
-            if (!block || block.below()?.typeId === 'minecraft:grass_path') continue
-            if (isLightable(block, true)) putLight(block, level, owner)
+            if (!block) continue
+            if (isLightable(block, true) || (isVanillaLight(block) && lightMap.has(blockKey(block)))) putLight(block, level, owner)
         } catch { }
     }
 }
@@ -299,16 +405,25 @@ const stepLight = (key: string, entry: Entry, thaw: boolean) => {
             mirrorThaw(key)
         }
 
-        const lightable = isLightable(block, entry.isWater)
+        const vanilla = isVanillaLight(block)
+        const lightable = isLightable(block, entry.isWater) || vanilla
         if (entry.time >= 0) {
-            if (lightable) block.setPermutation(lightPerm(entry.level))
+            const now = system.currentTick
+            if (now - entry.scan >= RESCAN_TICK) {
+                entry.kind = lightKind(block)
+                entry.scan = now
+            } else if (entry.kind === 'qof' && needVanilla(block)) entry.kind = 'vanilla'
+            if (lightable && entry.kind !== 'skip') block.setPermutation(permFor(entry.kind, entry.level))
+
+            if (entry.kind === 'vanilla') mirrorVanilla(key, entry)
+            else if (entry.kind === 'qof') unmirrorVanilla(key)
         } else { // fade out
-            const current = block.permutation.getState(LEVEL) as number ?? 0
+            const current = levelOf(block)
             if (current <= 0) {
                 if (lightable) block.setPermutation(permOf(entry.isWater ? 'minecraft:water' : 'minecraft:air'))
                 return true
             }
-            if (lightable) block.setPermutation(lightPerm(current - LIGHT_REDUCE_LINEAR))
+            if (lightable) block.setPermutation(permFor(vanilla ? 'vanilla' : 'qof', current - LIGHT_REDUCE_LINEAR))
         }
         entry.time -= LIGHT_REDUCE_LINEAR
     } catch { }
@@ -436,6 +551,12 @@ export const light_entityRemove = ({ removedEntityId }: EntityRemoveAfterEvent) 
 export const light_playerPlaceBlock = ({ block }: PlayerPlaceBlockAfterEvent) => {
     const key = blockKey(block)
     suppressedLocs.set(key, system.currentTick + SUPP_BREAK)
+
+    if (block.typeId === 'minecraft:scaffolding') {
+        const below = nb(block, 0, -1, 0)
+        const entry = below && lightMap.get(blockKey(below))
+        if (below && entry && entry.kind === 'qof') toVanilla(below, entry)
+    }
     if (!isFrame(block)) return
 
     frameSet.add(key)

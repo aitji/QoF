@@ -10,7 +10,7 @@ const VANILLA_REPLACEABLE = new Set([
     'minecraft:deadbush', 'minecraft:snow_layer', 'minecraft:fire',
     'minecraft:soul_fire', 'minecraft:vine', 'minecraft:nether_sprouts',
     'minecraft:crimson_roots', 'minecraft:warped_roots', 'minecraft:seagrass',
-    RUNTIME.LIGHT.LIGHT_BLOCK
+    RUNTIME.LIGHT.LIGHT_BLOCK, 'minecraft:light_block'
 ])
 
 export const isReplaceableTarget = (b: Block): boolean => b.isAir || b.isLiquid || VANILLA_REPLACEABLE.has(b.typeId)
