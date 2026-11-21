@@ -15,7 +15,7 @@ const {
         LIGHT_WIKI: light, ENABLED, LIGHT_ENTITY, DECAY_LIGHT_TICK, REDUCE_LIGHT,
         LIGHT_RENDER_RADIUS, LIGHT_RENDER_PER_PLAYER, LIGHT_FIRE_LEVEL, LIGHT_REDUCE_LINEAR,
         FAIL_PARTICLE, PARTICLE_OFFSET, LIGHT_BLOCK, SOUND_FAIL, FAIL_SOUND_INTERVAL,
-        LIGHT_PENDING_BATCH, LIGHT_PLAYER_BATCH
+        LIGHT_PENDING_BATCH, LIGHT_PLAYER_BATCH, PRIORITY
     }
 } = RUNTIME
 
@@ -236,13 +236,36 @@ const spreadLight = (origin: Block | undefined, level: number, owner: string, he
     }
 }
 
+const pickLight = (a: number, b: number): number => {
+    let level = 0
+    switch (PRIORITY) {
+        case 'main':
+            level = clamp15(a > 0 ? a : b)
+            break
+        case 'off':
+            level = clamp15(b > 0 ? b : a)
+            break
+        case 'combined':
+            level = clamp15(a + b)
+            break
+        case 'hypot':
+            level = clamp15(Math.hypot(a, b))
+            break
+        case 'brightest':
+        default:
+            level = clamp15(a > b ? a : b)
+            break
+    }
+    level *= REDUCE_LIGHT
+    return level
+}
+
 const lightUp = (en: Entity, mainId: string | undefined, offId: string | undefined, height: number, tick: number) => {
     try {
         const a = getItemLight(mainId, en, tick)
         const b = getItemLight(offId, en, tick)
         if (!(a || b)) return
-
-        const level = clamp15(Math.hypot(a, b) * REDUCE_LIGHT)
+        const level = pickLight(a, b)
         if (level <= 0) return
 
         spreadLight(en.dimension.getBlock(en.location), level, en.id, height)
@@ -383,7 +406,7 @@ export const light_player = (player: Player, tick: number) => {
         let level = en.getComponent(EntityComponentTypes.OnFire) ? LIGHT_FIRE_LEVEL * REDUCE_LIGHT : 0
 
         const glow = LIGHT_ENTITY[en.typeId]
-        if (glow) level = Math.hypot(level, glow.light * REDUCE_LIGHT)
+        if (glow) level = pickLight(glow.light, level)
         if (level <= 0) continue
 
         spreadLight(en.dimension.getBlock(en.location), clamp15(level), en.id)

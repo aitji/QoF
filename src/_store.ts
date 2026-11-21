@@ -92,6 +92,7 @@ export const RUNTIME = Object.freeze({ // RUNTIME = _config + pack settings
     LIGHT: {
         ...S.LIGHT,
         ENABLED: lightMode.ENABLED,
+        PRIORITY: setting('qof:LIGHT.PRIORITY', S.LIGHT.LIGHT_PRIORITY) as 'brightest' | 'main' | 'off' | 'combined' | 'hypot',
         REDUCE_LIGHT: parseFloat((lightMode.BRIGHTNESS / 10).toFixed(1)), // lightLevel * REDUCE_LIGHT
     },
     REPAIR_ANVIL: {

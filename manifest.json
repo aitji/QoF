@@ -64,6 +64,19 @@
       ],
       "default": "normal"
     },
+    {
+      "type": "dropdown",
+      "text": "§7Light Source Priority:",
+      "name": "qof:LIGHT.PRIORITY",
+      "options": [
+        {"name": "brightest", "text": "Prefer Brightest"},
+        {"name": "main", "text": "Prefer Mainhand"},
+        {"name": "off", "text": "Prefer Offhand (Fire)"},
+        {"name": "combined", "text": "Combined (Sum)"},
+        {"name": "hypot", "text": "Combined (Hypotenuse)"}
+      ],
+      "default": "brightest"
+    },
 
 
 

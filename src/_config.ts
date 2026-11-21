@@ -48,6 +48,7 @@ export const SETTINGS = Object.freeze({
         LIGHT_FIRE_LEVEL: 10,
         LIGHT_PENDING_BATCH: 64,
         LIGHT_PLAYER_BATCH: 64,
+        LIGHT_PRIORITY: 'brightest',
         LIGHT_BLOCK: 'qof:light_block',
 
         FAIL_SOUND_INTERVAL: 30,
