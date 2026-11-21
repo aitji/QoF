@@ -51,15 +51,21 @@ const takeInvSeed = (player: Player, seed: string) => {
 
 // seed dropped from crop
 const takeDropSeed = (dimension: Dimension, location: Vector3, seed: string) => {
-    for (const drop of dimension.getEntities({ type: 'minecraft:item', maxDistance: 2, location })) {
-        const stack = drop.getComponent(EntityComponentTypes.Item)?.itemStack
-        if (!stack || !drop.isValid || stack.typeId !== seed || stack.amount <= 1) continue
+    const center = { x: location.x + .5, y: location.y, z: location.z + .5 }
 
-        try {
-            const rest = dimension.spawnItem(reduceItem(stack), location)
-            pickupCooldown(rest)
-            rest.applyImpulse(drop.getVelocity())
-        } catch { /**air?*/ }
+    for (const drop of dimension.getEntities({ type: 'minecraft:item', maxDistance: 2, location: center })) {
+        if (!drop.isValid) continue
+        const stack = drop.getComponent(EntityComponentTypes.Item)?.itemStack
+        debug(`[harvest] near: ${stack?.typeId} x${stack?.amount}`)
+        if (!stack || stack.typeId !== seed) continue
+
+        if (stack.amount > 1) {
+            try {
+                const rest = dimension.spawnItem(reduceItem(stack), center)
+                pickupCooldown(rest)
+                rest.applyImpulse(drop.getVelocity())
+            } catch { /* air? */ }
+        }
 
         if (!tryRemove(drop)) debug(`[harvest] cannot remove ${seed}`)
         return true
@@ -104,8 +110,8 @@ export const harvest_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
 
         const hasSeed = !LOSS_SEED ||
             takeOffhandSeed(player, plantSeed) ||
-            takeInvSeed(player, plantSeed) ||
-            takeDropSeed(dimension, location, plantSeed)
+            takeDropSeed(dimension, location, plantSeed) ||
+            takeInvSeed(player, plantSeed)
 
         if (!hasSeed) return dimension.spawnParticle(
             "minecraft:villager_angry",
