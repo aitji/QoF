@@ -1,5 +1,5 @@
 import { type Player, EntityDamageCause, EquipmentSlot, GameMode } from "@minecraft/server"
-import { cache, getEqu, isSolid, playSound, RUNTIME } from "../lib"
+import { cache, getEqu, isCreative, isSolid, playSound, RUNTIME } from "../lib"
 const { FARMGUARD: { FOOTPRINT, SAFE_FALL, LOOKAHEAD_TICKS, REQUIRE_SAFE, MAX_SAFE_FALL, PROTECTED, FALL_DMG } } = RUNTIME
 
 // helpers
@@ -49,8 +49,10 @@ export const farmguard_player = (player: Player) => {
                 dim.spawnParticle(fx.particle, { x, y: y - vy, z })
                 playSound(dim, pos, fx.sound)
 
-                if (dist > FALL_DMG.BLOCKS) playSound(dim, pos, FALL_DMG.BIG)
-                else playSound(dim, pos, FALL_DMG.SMALL)
+                if (!isCreative(player)) {
+                    if (dist > FALL_DMG.BLOCKS) playSound(dim, pos, FALL_DMG.BIG)
+                    else playSound(dim, pos, FALL_DMG.SMALL)
+                }
             } else {
                 fx.sound.VOLUME = 0.1
                 playSound(dim, pos, fx.sound)
