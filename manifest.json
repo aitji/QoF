@@ -140,7 +140,7 @@
 
     {
       "type": "dropdown",
-      "text": "§l§6Cauldrons§r §7---------------------------------------------\n§7Allow more items to interact with cauldrons:",
+      "text": "§l§6Cauldrons§r §7-----------------------------------------------\n§7Allow more items to interact with cauldrons:",
       "name": "qof:WATER_CAULDRON.MODE",
       "options": [
         {"name": "off", "text": "Off"},
@@ -181,6 +181,20 @@
       "text": "Knock sound §7when hitting a door",
       "name": "qof:OPENABLE.KNOCK",
       "default": true
+    },
+
+
+
+    {
+      "type": "dropdown",
+      "text": "§l§6Farm Guard§r §7--------------------------------------------\n§7Stop farmland from being trampled when you land on it:",
+      "name": "qof:FARMGUARD.MODE",
+      "options": [
+        {"name": "off", "text": "Off§7, vanilla trampling"},
+        {"name": "on", "text": "Only Safe§7, sneaking / Feather Falling"},
+        {"name": "safe", "text": "Always Safe§7, farmland is never trampled"}
+      ],
+      "default": "on"
     },
 
 

@@ -74,6 +74,12 @@ const openableMode = mode('qof:OPENABLE.MODE', {
     iron: { ENABLED: true, IRON_BY_HAND: true },
 }, S.OPENABLE.IRON_BY_HAND ? 'iron' : 'on')
 
+const farmguardMode = mode('qof:FARMGUARD.MODE', {
+    off: { ENABLED: false, REQUIRE_SAFE: false },
+    on: { ENABLED: true, REQUIRE_SAFE: true },
+    safe: { ENABLED: true, REQUIRE_SAFE: false },
+}, S.FARMGUARD.ENABLED ? (S.FARMGUARD.REQUIRE_SAFE ? 'safe' : 'on') : 'off')
+
 // harvest + waxed off
 const consumeDurability = setting('qof:CONSUME_DURABILITY', true)
 
@@ -117,5 +123,5 @@ export const RUNTIME = Object.freeze({ // RUNTIME = _config + pack settings
     WAXED_OF: { ENABLED: setting('qof:WAXED_OF.ENABLED', S.WAXED_OF.ENABLED), DURABILITY: consumeDurability },
     WATER_CAULDRON: cauldronMode,
     BONEMEAL: { ENABLED: setting('qof:BONEMEAL.ENABLED', S.BONEMEAL.ENABLED) },
-    FARMGUARD: { ENABLED: setting('qof:FARMGUARD.ENABLED', S.FARMGUARD.ENABLED) },
+    FARMGUARD: { ...S.FARMGUARD, ...farmguardMode },
 })

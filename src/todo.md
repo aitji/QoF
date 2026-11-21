@@ -50,7 +50,7 @@ this file is only for top priority todo, if something like refactor some code or
 mostly assign by aitji *:wink:*
 
 - [ ] 2 seat horse
-- [ ] blackstone recipes
+- [x] blackstone recipes
 - [x] update light level to new version
 - [x] add mob light emit
 - [x] [aitji/composter] and add composte list

@@ -376,5 +376,13 @@ export const SETTINGS = Object.freeze({
 
     WAXED_OF: { ENABLED: true },
     BONEMEAL: { ENABLED: true },
-    FARMGUARD: { ENABLED: true },
+    FARMGUARD: {
+        ENABLED: true,
+        REQUIRE_SAFE: true,
+        MIN_FEATHER_LEVEL: 1,
+        FOOTPRINT: [[-0.3, -0.3], [0.3, -0.3], [-0.3, 0.3], [0.3, 0.3]],
+        SAFE_FALL: 3,
+        LOOKAHEAD_TICKS: 1,
+        MAX_SAFE_FALL: 8,
+    },
 })
