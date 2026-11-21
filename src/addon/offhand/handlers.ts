@@ -13,7 +13,7 @@ import { getSpecialPermutation, hasEntityInBlock, isDoorItem, isReplaceableTarge
 const {
     CARRIED_CHEST,
     HARVEST: { COCOA_VALID_LOGS },
-    LIGHT: { FIRE_ITEM },
+    LIGHT: { PATCHER: { FIRE_ITEM } },
     OFFHAND: { ALLOW_REPLACE, NEED_SNEAK, FACE_TO_TORCH_DIR, TORCH_ID, PLACE_SOUND }
 } = RUNTIME
 
