@@ -16,7 +16,7 @@ const { DEBUG, LIGHT: { LIGHT_BLOCK } } = RUNTIME
 export type StateName = Parameters<BlockPermutation['getState']>[0]
 export type Dir = 'north' | 'south' | 'east' | 'west'
 export const OPPOSITE: Record<Dir, Dir> = { north: 'south', south: 'north', east: 'west', west: 'east' }
-type SoundDef = { ID: string, VOLUME?: number | number[], PITCH?: number | number[] }
+export type SoundDef = { ID: string, VOLUME?: number | number[], PITCH?: number | number[] }
 
 // helpers
 export const debug = (message: string) => DEBUG && world.sendMessage(message)

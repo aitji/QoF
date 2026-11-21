@@ -36,8 +36,8 @@ this file is only for top priority todo, if something like refactor some code or
   - [x] max 16 each time player click cauldron (behave like tripped arrow)
 - [x] if player have full inventory, container addItem will fail silently
 - [ ] sapling replant ; drop sapling auto plant on ground
-- [ ] farmland guard ; sneak / feather falling < stop farmland from trampled
-  - [ ] turtle egg too
+- [x] farmland guard ; sneak / feather falling < stop farmland from trampled
+  - [x] turtle egg too
 - [x] double door ; support fence gates & trapdoor
   - [x] please change this i hate this modules name
     - [x] door knocking

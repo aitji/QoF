@@ -384,5 +384,20 @@ export const SETTINGS = Object.freeze({
         SAFE_FALL: 3,
         LOOKAHEAD_TICKS: 1,
         MAX_SAFE_FALL: 8,
+        PROTECTED: new Map<string, { particle: string; sound: Sound }>([
+            ["minecraft:farmland", { particle: "qof:break_dirt", sound: { ID: "fall.gravel", VOLUME: 0.4, PITCH: 1.0 } }],
+            ["minecraft:turtle_egg", { particle: "qof:break_turtle_egg", sound: { ID: "fall.egg", VOLUME: 0.4, PITCH: 1.0 } }],
+        ]),
+        FALL_DMG: {
+            BLOCKS: 8,
+            BIG: {
+                ID: 'damage.fallbig',
+                PITCH: 0.7
+            } as Sound,
+            SMALL: {
+                ID: 'damage.fallsmall',
+                PITCH: 0.75
+            } as Sound
+        }
     },
 })
