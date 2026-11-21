@@ -65,7 +65,7 @@ const nb = (b: Block, x: number, y: number, z: number) => {
     try { return b.offset({ x, y, z }) } catch { return undefined }
 }
 const isGravity = (id: string) => GRAVITY.has(id) || id.endsWith('_concrete_powder')
-const isGap = (b?: Block) => !!b && (b.isAir || isLightBlock(b) || isVanillaLight(b))
+const isGap = (b?: Block) => !!b && (b.isAir || b.isLiquid || isLightBlock(b) || isVanillaLight(b))
 const isFloating = (b: Block) => isGravity(b.typeId) && isGap(nb(b, 0, -1, 0))
 const cactusBottom = (cactus: Block): Block | undefined => {
     let cur = cactus
