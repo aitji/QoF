@@ -362,6 +362,7 @@ export const SETTINGS = Object.freeze({
             { x: 0, z: -1, dir: 2 }, // north
             { x: 1, z: 0, dir: 3 }, // east
         ],
+        STEM: new Set(['minecraft:melon_stem', 'minecraft:pumpkin_stem'])
     },
 
     OPENABLE: {

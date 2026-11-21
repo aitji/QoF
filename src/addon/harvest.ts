@@ -5,7 +5,7 @@ import {
     ItemStack, EntityComponentTypes
 } from "@minecraft/server"
 import { applyItemDamage, checkRandom, consumeOffhand, debug, getInv, getHeld, isCreative, pickupCooldown, reduceItem, tryRemove, RUNTIME, setEqu, sumLoc, swing } from "../lib"
-const { HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY, COCOA_VALID_LOGS, COCOA_DIRECTIONS } } = RUNTIME
+const { HARVEST: { LOSS_SEED, PLANT_LEVEL, DURABILITY, COCOA_VALID_LOGS, COCOA_DIRECTIONS, STEM } } = RUNTIME
 
 type Crop = (typeof PLANT_LEVEL)[string]
 const COCOA_ID = 'minecraft:cocoa'
@@ -76,6 +76,7 @@ const takeDropSeed = (dimension: Dimension, location: Vector3, seed: string) => 
 export const harvest_playerBreakBlock = (data: PlayerBreakBlockBeforeEvent) => {
     const { player, itemStack, block } = data
     if (!itemStack || isCreative(player)) return
+    if (STEM.has(block.typeId) && !player.isSneaking) return data.cancel = true
 
     const isHoe = itemStack.typeId.endsWith("_hoe")
     const isAxe = itemStack.typeId.endsWith("_axe")
