@@ -44,6 +44,7 @@ export const checkPerm = (player: Player): boolean => {
 
 export const isSolid = (block?: Block): boolean =>
     !!block && !block.isAir &&
+    !block.permutation.matches(LIGHT_BLOCK) &&
     !block.isLiquid && !block.isWaterlogged &&
     block.isLiquidBlocking(LiquidType.Water) &&
     !block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)
