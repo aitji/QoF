@@ -56,7 +56,6 @@ const takeDropSeed = (dimension: Dimension, location: Vector3, seed: string) => 
     for (const drop of dimension.getEntities({ type: 'minecraft:item', maxDistance: 2, location: center })) {
         if (!drop.isValid) continue
         const stack = drop.getComponent(EntityComponentTypes.Item)?.itemStack
-        debug(`[harvest] near: ${stack?.typeId} x${stack?.amount}`)
         if (!stack || stack.typeId !== seed) continue
 
         if (stack.amount > 1) {

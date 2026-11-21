@@ -104,14 +104,12 @@ export const debug_pending = () => {
     }
 
     const d = new Date(Date.now() + 7 * 60 * 60 * 1000) // < this is my time
-    lastTime = `§t§i§m§e§7§f> ${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}:${d.getUTCSeconds().toString().padStart(2, '0')}`
+    lastTime = `§t§i§m§e§7§f| ${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}:${d.getUTCSeconds().toString().padStart(2, '0')}`
     score("§eTotal props", ids.length)
     score("§eTotal bytes", bytes)
     score(lastTime, 0)
-    const o = cache.getCachedDimension("minecraft:overworld")!.getEntities({ type: "qof:chest" }).length
-    const n = cache.getCachedDimension("minecraft:nether")!.getEntities({ type: "qof:chest" }).length
-    const e = cache.getCachedDimension("minecraft:the_end")!.getEntities({ type: "qof:chest" }).length
-    score(`§7chest`, o + n + e)
+    const chest = ['overworld', 'nether', 'the_end'].reduce((a, e) => a + cache.getCachedDimension(e)!.getEntities({ type: 'qof:chest' }).length, 0)
+    score(`§f| chest`, chest ?? 0)
 
     for (const id of ids) {
         const val = world.getDynamicProperty(id)
@@ -182,6 +180,8 @@ export const debug_startup = (event: StartupEvent) => {
 
             case 'bulk':
                 world.clearDynamicProperties()
+                const obj = world.scoreboard.getObjective('dyp')
+                system.run(() => obj?.getParticipants().forEach(e => obj.removeParticipant(e)))
                 msg = '§7dynamic property has been removed'
                 break
             case 'list-value':
