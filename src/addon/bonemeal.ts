@@ -7,7 +7,7 @@ import { cache, checkPerm, createThrottle, getHeld, isSolid, reduceItem, setEqu,
 
 type Grower = (block: Block, player: Player) => boolean
 
-const throttled = createThrottle(8)
+const throttled = createThrottle(4)
 export const bonemeal_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
     const { player, block, itemStack, isFirstEvent } = data
     if (itemStack?.typeId !== 'minecraft:bone_meal') return
