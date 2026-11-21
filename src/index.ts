@@ -23,10 +23,11 @@ import * as openable from "./addon/openable/core"
 import * as waxedOff from "./addon/waxedOff"
 import * as loots from "./addon/loot_tables/core"
 import * as bonemeal from "./addon/bonemeal"
+import * as farmguard from "./addon/farmguard"
 
 const {
     LIGHT, WATER_CONCRETE, CARRIED_CHEST, COMPOSTER, OFFHAND, OPENABLE,
-    REPAIR_ANVIL, WAXED_OF, WATER_CAULDRON, BONEMEAL, HARVEST, DEBUG
+    REPAIR_ANVIL, WAXED_OF, WATER_CAULDRON, BONEMEAL, HARVEST, DEBUG, FARMGUARD
 } = RUNTIME
 const hopperComposter = COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER
 const OFFHANDBLOCKS = OFFHAND.ENABLED && OFFHAND.ALLOW_BLOCK_PLACEMENT
@@ -54,6 +55,7 @@ system.run(() => {
     ])
     const perPlayer = enabledOnly<[Player, number]>([
         [LIGHT.ENABLED, light.light_player],
+        [FARMGUARD.ENABLED, farmguard.farmguard_player],
         [CARRIED_CHEST.ENABLED, chest.chest_player],
         [OFFHAND.ENABLED, offhand.offhand_player],
     ])
@@ -132,6 +134,7 @@ on(world.afterEvents.playerLeave, [
     [true, cache.player_track_stop],
     [true, ({ playerId: id }) => {
         swing.swing_playerLeave(id)
+        farmguard.farmguard_playerLeave(id)
         throttle.throttle_playerLeave(id)
     }],
 ])

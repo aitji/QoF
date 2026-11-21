@@ -117,4 +117,5 @@ export const RUNTIME = Object.freeze({ // RUNTIME = _config + pack settings
     WAXED_OF: { ENABLED: setting('qof:WAXED_OF.ENABLED', S.WAXED_OF.ENABLED), DURABILITY: consumeDurability },
     WATER_CAULDRON: cauldronMode,
     BONEMEAL: { ENABLED: setting('qof:BONEMEAL.ENABLED', S.BONEMEAL.ENABLED) },
+    FARMGUARD: { ENABLED: setting('qof:FARMGUARD.ENABLED', S.FARMGUARD.ENABLED) },
 })

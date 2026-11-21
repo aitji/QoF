@@ -376,4 +376,5 @@ export const SETTINGS = Object.freeze({
 
     WAXED_OF: { ENABLED: true },
     BONEMEAL: { ENABLED: true },
+    FARMGUARD: { ENABLED: true },
 })
