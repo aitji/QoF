@@ -4,19 +4,23 @@ import {
     type Container, type Player,
     type PlayerInteractWithBlockBeforeEvent,
     type Block, type RawText,
-    world, system, ItemStack, BlockPermutation, EquipmentSlot,
+    world, system, ItemStack, BlockPermutation,
     ItemLockMode, InputPermissionCategory, EntityComponentTypes
 } from "@minecraft/server"
-import { type Dir, RUNTIME, checkPerm, debug, getEqu, getInv, getHeld, isCreative, playSound, cache } from "../lib"
+import { type Dir, RUNTIME, checkPerm, debug, getInv, getHeld, isCreative, playSound, cache } from "../lib"
 const {
     CARRIED_CHEST: {
-        CARRY_TAG, ENTITY_TYPE, CHEST_ID, DOUBLE_CHEST_SIZE,
-        SLOWNESS_DURATION, SLOWNESS_AMPLIFIER, SOUND_PICK_UP,
-        APPLY_IMPULSE, PLAYER_JUMP, CONTAINER_NAMETAG, MAX_DISPLAY
+        CARRY_TAG, ENTITY_TYPE, CHEST_ID, SLOWNESS_DURATION,
+        SLOWNESS_AMPLIFIER, SOUND_PICK_UP, APPLY_IMPULSE,
+        PLAYER_JUMP, CONTAINER_NAMETAG, MAX_DISPLAY,
+        DOUBLE_CHEST_SIZE, MAX_REGIONS, MAX_SETTLE_TICKS,
+        PLACE_WINDOW, KICK_TICK
     }
 } = RUNTIME
 
 const STORAGE = 'qof:chest.storage'
+const REGIONS = 'qof:chest.regions'
+const REGION_TAG = 'region '
 const ALERT = 'qof.chest.alert'
 const HALF = DOUBLE_CHEST_SIZE / 2
 const SIDES: Record<Dir, [left: Dir, right: Dir]> = {
@@ -26,8 +30,19 @@ const SIDES: Record<Dir, [left: Dir, right: Dir]> = {
     west: ['south', 'north'],
 }
 
+const placing = new Map<string, number>()
+const picking = new Set<string>()
+
 type CarryData = { selectedSlotIndex: number, blockTypeId: string }
-const STATE_KEYS = ['minecraft:cardinal_direction', 'facing_direction', 'direction'] as const
+type Snapshot = (ItemStack | undefined)[]
+type Region = 0 | 1 // 0=top 0-26, 1=bottom 27-53
+type Pair = {
+    items: Snapshot
+    seen?: Region
+    known?: Region
+    ruleRegion: Region
+}
+
 const JUMP_BLOCKS = new Set<string>([
     ...(PLAYER_JUMP.ALLOW_JUMP_IN_LAVA ? ['minecraft:lava', 'minecraft:flowing_lava'] : []),
     ...(PLAYER_JUMP.ALLOW_JUMP_IN_SCAFFOLDING ? ['minecraft:scaffolding'] : []),
@@ -49,6 +64,46 @@ const isFaceChest = (block: Block | undefined, facing: string) =>
     block?.typeId === CHEST_ID &&
     block.permutation.getState("minecraft:cardinal_direction") === facing
 
+const flip = (region: Region): Region => region === 0 ? 1 : 0
+const regionKey = (block: Block) => `${block.dimension.id}|${block.x}|${block.y}|${block.z}`
+const readRegions = (): Record<string, Region> => {
+    const raw = world.getDynamicProperty(REGIONS)
+    try { return typeof raw === 'string' ? JSON.parse(raw) : {} }
+    catch { return {} }
+}
+
+const writeRegions = (map: Record<string, Region>) => {
+    const keys = Object.keys(map)
+    keys.slice(0, Math.max(0, keys.length - MAX_REGIONS)).forEach(k => delete map[k])
+    world.setDynamicProperty(REGIONS, Object.keys(map).length ? JSON.stringify(map) : undefined)
+}
+
+const setRegion = (block: Block, region: Region) => {
+    const map = readRegions()
+    const key = regionKey(block)
+    delete map[key]
+
+    map[key] = region
+    writeRegions(map)
+}
+
+const takeRegion = (block: Block): Region | undefined => {
+    const map = readRegions()
+    const key = regionKey(block)
+    const region = map[key]
+    if (region === undefined) return
+
+    delete map[key]
+    writeRegions(map)
+    return region
+}
+
+const regionOf = (entity: Entity): Region | undefined => {
+    const tag = entity.getTags().find(t => t.startsWith(REGION_TAG))
+    if (!tag) return
+    return tag.substring(REGION_TAG.length) === '1' ? 1 : 0
+}
+
 const setJump = (player: Player, allow: boolean) => {
     if (!PLAYER_JUMP.NO_JUMP_HOLD_CHEST) return
 
@@ -57,15 +112,27 @@ const setJump = (player: Player, allow: boolean) => {
     catch (e) { debug(`§7Can't set jump ${player.name} to ${allow}:§8 ${e}`) }
 }
 
+const isCarryItem = (item?: ItemStack) => !!item && item.nameTag === CONTAINER_NAMETAG && item.lockMode === ItemLockMode.slot
+const clearCarryItems = (player: Player, keepSlot?: number) => {
+    const inv = getInv(player)?.container
+    if (!inv) return
+
+    for (let i = 0; i < inv.size; i++) {
+        if (i === keepSlot) continue
+        if (isCarryItem(inv.getItem(i))) inv.setItem(i, undefined)
+    }
+}
+
 // no longer carry
 const dropCarry = (player: Player) => {
-    try { getEqu(player)?.setEquipment(EquipmentSlot.Mainhand) } catch { }
+    try { clearCarryItems(player) }
+    catch { }
     player.removeTag(CARRY_TAG)
     setJump(player, true)
     player.setDynamicProperty(STORAGE, undefined)
 }
 
-const copyInv = (container: Container) => Array.from({ length: container.size }, (_, i) => container.getItem(i))
+const copyInv = (container: Container): Snapshot => Array.from({ length: container.size }, (_, i) => container.getItem(i))
 const safeMove = (from: Container, fromSlot: number, to: Container, toSlot: number) => {
     try { from.moveItem(fromSlot, toSlot, to) }
     catch { }
@@ -82,8 +149,8 @@ const findInv = (player: Player) => {
     const near = player.dimension.getEntities({ ...query, location: player.location, closest: 1 })
     if (near.length) return near[0]
 
-    for (const id of ["overworld", "nether", "the_end"]) { // todo: cringe, need entity track in cache, use this as fallback
-        const found = world.getDimension(id).getEntities(query)
+    for (const id of ["overworld", "nether", "the_end"]) {
+        const found = cache.getCachedDimension(`minecraft:${id}`)!.getEntities(query)
         if (found.length) return found[0]
     }
 }
@@ -123,8 +190,7 @@ const buildCarryItem = (blockTypeId: string, player: Player, container?: Contain
     return carry
 }
 
-// chest to entity
-const block2inv = (block: Block, heldInv: Entity) => {
+const block2inv = (block: Block, heldInv: Entity): Region | undefined => {
     const container = getInv(block)?.container
     if (!container) return
     const heldCont = getInv(heldInv)!.container!
@@ -133,7 +199,9 @@ const block2inv = (block: Block, heldInv: Entity) => {
         for (let i = 0; i < container.size; i++)
             if (container.getItem(i))
                 safeMove(container, i, heldCont, i)
-        return
+
+        // leftover half?
+        return takeRegion(block)
     }
 
     const facing = block.permutation.getState("minecraft:cardinal_direction") as Dir
@@ -145,63 +213,128 @@ const block2inv = (block: Block, heldInv: Entity) => {
     const partner = hasLeft ? left : block[sides[1]]()
     const ours = hasLeft ? 0 : HALF
     const theirs = hasLeft ? HALF : 0
+    const region: Region = hasLeft ? 0 : 1
 
     for (let i = ours; i < ours + HALF; i++)
         if (container.getItem(i))
             safeMove(container, i, heldCont, i - ours)
 
+    if (partner && isFaceChest(partner, facing)) setRegion(partner, flip(region))
+
     // partner half surv
     const parked = Array.from({ length: HALF }, (_, i) => theirs + i).filter(i => container.getItem(i))
-    if (parked.length === 0 || !partner) return
+    if (parked.length === 0 || !partner) return region
 
     const relay = block.dimension.spawnEntity(ENTITY_TYPE as any, block.location)
     const relayCont = getInv(relay)!.container!
-    for (const i of parked) safeMove(container, i, relayCont, i)
+    for (const i of parked) safeMove(container, i, relayCont, i - theirs)
 
     system.runTimeout(() => {
         try {
             const partnerCont = getInv(partner)?.container
             if (!partnerCont) return
 
-            for (const i of parked) safeMove(relayCont, i, partnerCont, i - theirs)
+            for (const i of parked) safeMove(relayCont, i - theirs, partnerCont, i - theirs)
         } finally { relay.remove() }
     }, 1)
+
+    return region
 }
 
-// entity to chest
-const inv2block = (heldInv: Entity, block: Block, neighbourInv: (ItemStack | undefined)[][]) => {
+const fillSingle = (heldInv: Entity, block: Block, region?: Region) => {
     const container = getInv(block)?.container
     if (!container) return
     const heldCont = getInv(heldInv)!.container!
 
-    if (container.size !== DOUBLE_CHEST_SIZE) {
-        for (let i = 0; i < container.size; i++) safeMove(heldCont, i, container, i)
+    for (let i = 0; i < container.size; i++) safeMove(heldCont, i, container, i)
+    heldInv.remove()
+
+    // may get partner
+    if (region !== undefined) setRegion(block, region)
+}
+
+const readPair = (block: Block): Pair | undefined => {
+    const cont = getInv(block)?.container
+    if (cont?.size !== DOUBLE_CHEST_SIZE) return
+
+    const facing = block.permutation.getState("minecraft:cardinal_direction") as Dir
+    const sides = SIDES[facing]
+    if (!sides) return
+
+    const left = block[sides[0]]()
+    const hasLeft = isFaceChest(left, facing)
+    const partner = hasLeft ? left : block[sides[1]]()
+    const ruleRegion: Region = hasLeft ? 0 : 1
+
+    const view = copyInv(cont)
+    const lo = view.slice(0, HALF)
+    const hi = view.slice(HALF)
+    const loUsed = lo.some(Boolean)
+    const hiUsed = hi.some(Boolean)
+
+    let seen: Region | undefined
+    if (loUsed !== hiUsed) seen = loUsed ? 0 : 1
+    else if (loUsed) seen = flip(ruleRegion)
+
+    const items: Snapshot = seen === 1 ? hi : seen === 0 ? lo : new Array(HALF).fill(undefined)
+    const known = partner && isFaceChest(partner, facing) ? takeRegion(partner) : undefined
+    return { items, seen, known, ruleRegion }
+}
+
+const fillPair = (heldInv: Entity, block: Block, perm: BlockPermutation, mine: Region, partnerItems: Snapshot, waited = 0) => {
+    if (!heldInv.isValid) return
+
+    const dest = getInv(block)?.container
+    if (dest?.size !== DOUBLE_CHEST_SIZE) {
+        if (waited < MAX_SETTLE_TICKS) {
+            if (waited === KICK_TICK) {
+                try {
+                    block.setType("minecraft:air")
+                    block.setPermutation(perm)
+                } catch (e) { debug(`§7[chest] re-place failed:§8 ${e}`) }
+            }
+
+            system.runTimeout(() => fillPair(heldInv, block, perm, mine, partnerItems, waited + 1), 1)
+            return
+        }
+
+        debug(`§c[chest] pair did not settle, falling back to single fill`)
+        if (dest) {
+            const heldCont = getInv(heldInv).container!
+            for (let i = 0; i < dest.size; i++) safeMove(heldCont, i, dest, i)
+        }
         heldInv.remove()
         return
     }
 
-    system.runTimeout(() => {
-        const dest = getInv(block)!.container!
-        for (let i = 0; i < HALF; i++) safeMove(heldCont, i, dest, i)
+    try {
+        const heldCont = getInv(heldInv)!.container!
+        const theirs = flip(mine)
 
-        const their = neighbourInv[0] ?? []
-        their.forEach((item, i) => { if (item) dest.setItem(HALF + i, item) })
-        heldInv.remove()
-    }, 1)
+        for (let i = 0; i < HALF; i++) {
+            dest.setItem(mine * HALF + i, heldCont.getItem(i))
+            dest.setItem(theirs * HALF + i, partnerItems[i])
+        }
+    } finally { heldInv.remove() }
 }
 
-const pickUp = (player: Player, block: Block) => {
-    if (!getInv(block)) return
+const pickUp = (player: Player, block: Block, slot: number) => {
+    if (player.hasTag(CARRY_TAG) || !getInv(block)) return
+
+    const inv = getInv(player)?.container
+    if (!inv || inv.getItem(slot)) return
 
     const blockTypeId = block.typeId
     if (blockTypeId.includes('lit_') || blockTypeId === "minecraft:jukebox") return
 
     const holdingEntity = spawnInv(player)
     holdingEntity.addTag(`type ${blockTypeId}`)
-    block2inv(block, holdingEntity)
 
-    getEqu(player)!.setEquipment(EquipmentSlot.Mainhand, buildCarryItem(blockTypeId, player, getInv(holdingEntity)?.container))
-    player.setDynamicProperty(STORAGE, JSON.stringify({ selectedSlotIndex: cache.getPlayer(player, "selectedSlotIndex"), blockTypeId }))
+    const region = block2inv(block, holdingEntity)
+    if (region !== undefined) holdingEntity.addTag(`${REGION_TAG}${region}`)
+
+    inv.setItem(slot, buildCarryItem(blockTypeId, player, getInv(holdingEntity)?.container))
+    player.setDynamicProperty(STORAGE, JSON.stringify({ selectedSlotIndex: slot, blockTypeId }))
     player.addTag(CARRY_TAG)
     setJump(player, false)
     playSound(player.dimension, player.location, SOUND_PICK_UP)
@@ -211,23 +344,34 @@ const pickUp = (player: Player, block: Block) => {
 }
 
 export const chest_playerInteractWithBlock = (data: PlayerInteractWithBlockBeforeEvent) => {
-    const { player, block } = data
+    const { player, block, itemStack } = data
+
+    if (player.hasTag(CARRY_TAG) && isCarryItem(itemStack)) placing.set(player.id, system.currentTick)
     if (!player.isSneaking || player.hasTag(CARRY_TAG) || getHeld(player)) return
     if (!checkPerm(player) || !getInv(block)) return
+    if (picking.has(player.id)) return
 
     data.cancel = true
+    picking.add(player.id)
+
+    const slot = cache.getPlayer(player, "selectedSlotIndex")
     system.runTimeout(() => {
-        try { pickUp(player, block) }
+        try { pickUp(player, block, slot) }
         catch (e) {
             dropCarry(player)
             debug(`§cContainer pickup error: ${e}`)
         }
+        finally { picking.delete(player.id) }
     }, 1)
 }
 
 export const chest_playerPlaceBlock = ({ player, block }: PlayerPlaceBlockAfterEvent) => {
     if (!block || !getInv(block) || !player.hasTag(CARRY_TAG)) return
-    if (carryData(player)?.selectedSlotIndex !== cache.getPlayer(player, "selectedSlotIndex")) return
+
+    const usedAt = placing.get(player.id)
+    const viaCarry = usedAt !== undefined && system.currentTick - usedAt <= PLACE_WINDOW
+    if (!viaCarry && carryData(player)?.selectedSlotIndex !== cache.getPlayer(player, "selectedSlotIndex")) return
+    placing.delete(player.id)
 
     const holdingEntity = findInv(player)
     if (!holdingEntity) {
@@ -242,29 +386,24 @@ export const chest_playerPlaceBlock = ({ player, block }: PlayerPlaceBlockAfterE
     if (block.typeId !== blockTypeId) return
 
     const { dimension, location } = block
-    const neighbourSnapshots: (ItemStack | undefined)[][] = []
 
     try {
         const perm = block.permutation
-        if (blockTypeId === CHEST_ID) {
-            const facing = perm.getState("minecraft:cardinal_direction") as Dir
-            for (const side of SIDES[facing] ?? []) {
-                const neighbour = block[side]()
-                const container = getInv(neighbour!)?.container
-                if (container && isFaceChest(neighbour, facing)) neighbourSnapshots.push(copyInv(container))
-            }
-        }
+        const mine = regionOf(holdingEntity)
+
+        const pair = blockTypeId === CHEST_ID ? readPair(block) : undefined
+        const partnerRegion = pair && (pair.known ?? pair.seen)
+        const mineRegion: Region = mine ?? (partnerRegion !== undefined ? flip(partnerRegion) : pair?.ruleRegion ?? 0)
 
         // fresh block
         dimension.setBlockType(location, "minecraft:air")
-        dimension.setBlockType(location, blockTypeId)
         const placed = dimension.getBlock(location)!
+        placed.setPermutation(perm)
 
-        const key = STATE_KEYS.find(k => perm.getState(k))
-        if (key) placed.setPermutation(BlockPermutation.resolve(placed.typeId, { [key]: perm.getState(key)! }))
-
-        inv2block(holdingEntity, placed, neighbourSnapshots)
-    } catch {
+        if (pair) fillPair(holdingEntity, placed, perm, mineRegion, pair.items)
+        else fillSingle(holdingEntity, placed, mine)
+    } catch (e) {
+        debug(`§c[chest] place error: ${e}`)
         try { holdingEntity.teleport(player.location, { dimension: player.dimension }) }
         catch { }
 
@@ -299,12 +438,16 @@ export const chest_player = (player: Player) => {
     if (allowJump !== canJump) setJump(player, allowJump)
 
     const data = carryData(player)
-    if (data?.selectedSlotIndex !== cache.getPlayer(player, "selectedSlotIndex")) return
+    if (!data) return
 
     const { selectedSlotIndex: slot, blockTypeId } = data
-    const item = getHeld(player)
-    const isCarryItem = item?.typeId === blockTypeId && item.nameTag === CONTAINER_NAMETAG
-    if (isCarryItem) return
+    const inv = getInv(player)?.container
+    if (!inv) return
+
+    clearCarryItems(player, slot)
+
+    const item = inv.getItem(slot)
+    if (item?.typeId === blockTypeId && isCarryItem(item)) return
 
     if (item) {
         if (!player.hasTag(ALERT)) player.sendMessage(`§7§ohotbar Slot #${slot + 1} need to be empty.`)
@@ -313,14 +456,14 @@ export const chest_player = (player: Player) => {
     }
 
     // item gone, give it back
-    const inv = findInv(player)
-    if (!inv) {
+    const holding = findInv(player)
+    if (!holding) {
         player.removeTag(CARRY_TAG)
         player.sendMessage(`§7§ocould not find saved inventory...`)
         return
     }
 
-    getEqu(player)!.setEquipment(EquipmentSlot.Mainhand, buildCarryItem(blockTypeId, player, getInv(inv)?.container))
+    inv.setItem(slot, buildCarryItem(blockTypeId, player, getInv(holding)?.container))
     player.removeTag(ALERT)
 }
 

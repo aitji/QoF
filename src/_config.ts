@@ -234,10 +234,15 @@ export const SETTINGS = Object.freeze({
         ENTITY_TYPE: 'qof:chest',
         CHEST_ID: 'minecraft:chest',
         CONTAINER_NAMETAG: '§r§fCarried Container',
-        DOUBLE_CHEST_SIZE: 54, // don't edit
         SLOWNESS_DURATION: .5 * 20,
         SLOWNESS_AMPLIFIER: 2,
         SOUND_PICK_UP: { ID: 'armor.equip_leather', VOLUME: 1.0, PITCH: 0.8 } as Sound,
+        // don't edit
+        DOUBLE_CHEST_SIZE: 54,
+        MAX_REGIONS: 128,
+        MAX_SETTLE_TICKS: 10,
+        PLACE_WINDOW: 3,
+        KICK_TICK: 2,
     },
 
     OFFHAND: {

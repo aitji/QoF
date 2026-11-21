@@ -85,6 +85,7 @@ system.run(() => {
     }
 })
 
+let lastTime = ''
 export const debug_pending = () => {
     const obj = getDypObjective()
     try { world.scoreboard.setObjectiveAtDisplaySlot(DisplaySlotId.Sidebar, { objective: obj }) }
@@ -92,8 +93,25 @@ export const debug_pending = () => {
 
     const ids = world.getDynamicPropertyIds()
     const bytes = world.getDynamicPropertyTotalByteCount()
+    if (lastTime && obj.hasParticipant(lastTime)) obj.removeParticipant(lastTime)
+    else {
+        const par = obj.getParticipants()
+        for (const p of par) {
+            const { displayName } = p
+            if (!displayName.startsWith(`§t§i§m§e§7`)) continue
+            else obj.removeParticipant(displayName)
+        }
+    }
+
+    const d = new Date(Date.now() + 7 * 60 * 60 * 1000) // < this is my time
+    lastTime = `§t§i§m§e§7§f> ${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}:${d.getUTCSeconds().toString().padStart(2, '0')}`
     score("§eTotal props", ids.length)
     score("§eTotal bytes", bytes)
+    score(lastTime, 0)
+    const o = cache.getCachedDimension("minecraft:overworld")!.getEntities({ type: "qof:chest" }).length
+    const n = cache.getCachedDimension("minecraft:nether")!.getEntities({ type: "qof:chest" }).length
+    const e = cache.getCachedDimension("minecraft:the_end")!.getEntities({ type: "qof:chest" }).length
+    score(`§7chest`, o + n + e)
 
     for (const id of ids) {
         const val = world.getDynamicProperty(id)
