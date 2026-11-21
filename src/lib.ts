@@ -76,13 +76,16 @@ export const isBlockItem = (typeId: string) => {
     }
     return known
 }
-
+export const gate = (entity: Entity) => !entity || !entity.isValid
 export const isLightBlock = (block?: Block) => block?.permutation?.matches(LIGHT_BLOCK) ?? false
 export const isAirOrLight = (block?: Block) => !!block && (block.isAir || block.permutation.matches(LIGHT_BLOCK))
 
 export const getEqu = (entity: Entity) => entity.getComponent(EntityComponentTypes.Equippable)!
 export const getInv = (entity: Entity | Block | ItemStack) => entity.getComponent(EntityComponentTypes.Inventory)!
-export const getHeld = (entity: Entity, slot: EquipmentSlot = EquipmentSlot.Mainhand) => getEqu(entity)?.getEquipment(slot)
+export const getHeld = (entity: Entity, slot: EquipmentSlot = EquipmentSlot.Mainhand) => {
+    if (gate(entity)) return undefined
+    return getEqu(entity)?.getEquipment(slot)
+}
 
 export const tryRemove = (entity: Entity): boolean => {
     try {
