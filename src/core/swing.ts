@@ -44,8 +44,6 @@ export function swing(player: Player | Entity, hand: swingTarget = "main", optio
     return played
 }
 
-export const swing_playerSpawn = (player: Player) =>
-    system.runTimeout(() => player.isValid && swing(player, 'main'), 80)
 export const swing_playerLeave = (id: string) => {
     lastSwing.delete(`${id}:main`)
     lastSwing.delete(`${id}:off`)
