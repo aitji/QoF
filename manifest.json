@@ -2,10 +2,10 @@
     "format_version": 3,
     "header": {
         "description": "§7Nice little features to make your game much better! Resource Pack Helper",
-        "name": "§fQ§eo§fF §c(rp-1.6.2)",
+        "name": "§fQ§eo§fF §c(rp-1.7.0)",
         "uuid": "d5db87ea-f84d-4c92-b8a4-732c5a0dc569",
         "pack_scope": "world",
-        "version": "1.6.2",
+        "version": "1.7.0",
         "min_engine_version": "1.26.52"
     },
     "modules": [
@@ -13,14 +13,20 @@
             "description": "§7Nice little features to make your game much better! Resource Pack Helper",
             "type": "resources",
             "uuid": "743f6949-53be-44b6-b326-398005028819",
-            "version": "1.6.2"
+            "version": "1.7.0"
+        }
+    ],
+    "dependencies": [
+        {
+            "uuid": "bfdc43e4-e4a8-4d50-8883-7d3bdd1667de",
+            "version": "1.7.0"
         }
     ],
     "capabilities": ["pbr"],
     "settings": [
         {
           "type": "label",
-          "text": "§l§cQ§r§lo§cF§r was made by §c@aitji§r (script) and §9@pickerth-12§r (ideas & design). §7You can tweak everything below to your liking!\n§cTurn on BetaAPIs in Experiments"
+          "text": "§l§cQ§r§lo§cF§r §7by §c@aitji§r (script) & §9@pickerth-12§r (design). Tweak anything below to your liking!"
         },
 
         {
