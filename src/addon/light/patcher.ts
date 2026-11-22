@@ -42,6 +42,12 @@ const getFacing = (block: Block): Dir | undefined => {
     return (typeof v === 'number' ? FACING_BY_INDEX[v] : v) as Dir | undefined
 }
 
+const torchSupport = (block: Block, facing: string) => getNeighbor(block, facing === 'top' || facing === 'unknown' ? 'down' : facing as Dir)
+export const torchOnLight = (block: Block, facing: string) => {
+    try { return isManagedLight(torchSupport(block, facing)) }
+    catch { return false }
+}
+
 const throttled = createThrottle(BLOCK_INTERACTION_DELAY)
 const SEED_SOUND = {
     nature: { ID: "place.grass", VOLUME: 0.8, PITCH: [0.8, 1] },
@@ -173,10 +179,7 @@ const getSupports = (block: Block): (Block | undefined)[] | undefined => {
     const state = (name: any) => block.permutation.getState(name)
     const pick = (...dirs: (Dir | undefined)[]) => dirs.map(d => getNeighbor(block, d))
 
-    if (typeId.endsWith('torch')) {
-        const f = String(state('torch_facing_direction'))
-        return pick(f === 'top' || f === 'unknown' ? 'down' : f as Dir)
-    }
+    if (typeId.endsWith('torch')) return [torchSupport(block, String(state('torch_facing_direction')))]
     if (typeId !== 'minecraft:sea_lantern' && typeId.endsWith('lantern')) return pick(state('hanging') ? 'up' : 'down')
     if (typeId === 'minecraft:lever') return pick(LEVER_SUPPORT[String(state('lever_direction'))])
 

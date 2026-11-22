@@ -8,6 +8,7 @@ import {
 } from "@minecraft/server"
 import { applyItemDamage, consumeOffhand, debug, disSqu, getInv, getHeld, isAirOrLight, isBlockItem, isLightBlock, isSolid, neighbour, playSound, RUNTIME, setOffhand, sumLoc, swing } from "../../lib"
 import { suppressLight } from "../light/core"
+import { torchOnLight } from "../light/patcher"
 import { resolveCocoaPermutation, SEED_TO_PLANT } from "../harvest"
 import { getSpecialPermutation, hasEntityInBlock, isDoorItem, isReplaceableTarget, resolveOrientedPermutation } from "./placement"
 
@@ -32,7 +33,8 @@ const usesOnClick = (block: Block) => {
     return NEED_SNEAK.has(id) || id.endsWith('_door') || id.endsWith('_trapdoor') || id.endsWith('_fence_gate')
 }
 
-const canPlaceTorchOn = (block: Block) => {
+const canPlaceTorchOn = (block: Block, facing: string) => {
+    if (torchOnLight(block, facing)) return false
     if (isAirOrLight(block)) return true
 
     const replace = ALLOW_REPLACE[block.typeId]
@@ -59,6 +61,8 @@ export const torchHandle = (data: PlayerInteractWithBlockBeforeEvent, creative: 
     }
 
     if (light) {
+        if (!canPlaceTorchOn(block, 'top')) return
+
         data.cancel = true
         system.run(() => place(block, 'top'))
         return
@@ -68,19 +72,21 @@ export const torchHandle = (data: PlayerInteractWithBlockBeforeEvent, creative: 
         if (CARRIED_CHEST.ENABLED && NEED_SNEAK.has(block.typeId) && player.isSneaking && getInv(block)?.container) return
 
         const target = neighbour(block, blockFace)
-        if (!target || !canPlaceTorchOn(target)) return
+        const facing = FACE_TO_TORCH_DIR[blockFace] ?? 'top'
+        if (!target || !canPlaceTorchOn(target, facing)) return
 
         data.cancel = true
-        system.run(() => place(target, FACE_TO_TORCH_DIR[blockFace] ?? 'top'))
+        system.run(() => place(target, facing))
         return
     }
 
     // replaceable blocks
     if (ALLOW_REPLACE[block.typeId] === undefined) return
+    if (torchOnLight(block, 'top')) return
 
     data.cancel = true
     system.run(() => {
-        if (canPlaceTorchOn(block)) place(block, 'top')
+        if (canPlaceTorchOn(block, 'top')) place(block, 'top')
     })
 }
 
