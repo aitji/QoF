@@ -30,7 +30,7 @@ const {
     REPAIR_ANVIL, WAXED_OF, WATER_CAULDRON, BONEMEAL, HARVEST, DEBUG, FARMGUARD
 } = RUNTIME
 const hopperComposter = COMPOSTER.ENABLED && COMPOSTER.WORK_WITH_HOPPER
-const OFFHANDBLOCKS = OFFHAND.ENABLED && OFFHAND.ALLOW_BLOCK_PLACEMENT
+const OFFHANDBLOCKS = OFFHAND.ENABLED
 
 type Hook<A extends unknown[]> = [enabled: boolean, handler: (...args: A) => void]
 const enabledOnly = <A extends unknown[]>(hooks: Hook<A>[]) => hooks.filter(([enabled]) => enabled).map(([, handler]) => handler)

@@ -7,7 +7,7 @@ import { blockHandle, fireHandle, seedsHandle, torchHandle } from "./handlers"
 
 const {
     BLOCK_INTERACTION_DELAY,
-    OFFHAND: { CAN_ALWAYS_USE, FOOD, FOOD_ALWAYS_EDIBLE },
+    OFFHAND: { CAN_ALWAYS_USE, FOOD, FOOD_ALWAYS_EDIBLE, ALLOW_PLACE },
     HARVEST: { COCOA_VALID_LOGS }
 } = RUNTIME
 
@@ -53,8 +53,8 @@ export const offhand_playerInteractWithBlock = (data: PlayerInteractWithBlockBef
     if (itemStack && mainhandBusy(data, itemStack, creative)) return
 
     // handle offhand
-    torchHandle(data, creative)
     fireHandle(data)
     seedsHandle(data)
-    blockHandle(data, creative)
+    if (ALLOW_PLACE !== 'none') torchHandle(data, creative)
+    if (ALLOW_PLACE === 'all') blockHandle(data, creative)
 }

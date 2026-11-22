@@ -3,7 +3,8 @@ import {
     type Vector3, type Player, type Block,
     EquipmentSlot, ItemComponentTypes,
     ItemStack, LiquidType, system,
-    BlockPermutation, Direction
+    BlockPermutation, Direction,
+    world
 } from "@minecraft/server"
 import { applyItemDamage, consumeOffhand, debug, disSqu, getInv, getHeld, isAirOrLight, isBlockItem, isLightBlock, isSolid, neighbour, playSound, RUNTIME, setOffhand, sumLoc, swing } from "../../lib"
 import { suppressLight } from "../light/core"

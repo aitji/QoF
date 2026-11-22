@@ -42,13 +42,27 @@ export const checkPerm = (player: Player): boolean => {
     return level !== PlayerPermissionLevel.Custom && level !== PlayerPermissionLevel.Visitor
 }
 
-export const isSolid = (block?: Block): boolean =>
-    !!block && !block.isAir &&
-    !block.permutation.matches(LIGHT_BLOCK) &&
-    !block.permutation.matches('minecraft:light_block') &&
-    !block.isLiquid && !block.isWaterlogged &&
-    block.isLiquidBlocking(LiquidType.Water) &&
-    !block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)
+export const isSolid = (block?: Block): boolean => {
+    if (!block) return false
+    if (block.isAir) return true
+
+    if (
+        block.permutation.matches(LIGHT_BLOCK) ||
+        block.permutation.matches('minecraft:light_block') ||
+        block.isLiquid ||
+        block.isWaterlogged
+    ) return false
+
+    if (!block.isLiquidBlocking(LiquidType.Water)) return false
+    if (block.permutation.canBeDestroyedByLiquidSpread(LiquidType.Water)) return false
+
+    const hit = block.dimension.getBlockFromRay(
+        block.location,
+        { x: 0, y: 1, z: 0 },
+        { maxDistance: 1, includePassableBlocks: false }
+    )
+    return !!hit?.block
+}
 
 const FACE_TO_METHOD = {
     [Direction.Up]: 'above', [Direction.Down]: 'below',

@@ -49,12 +49,6 @@ const chestMode = mode('qof:CARRIED_CHEST.MODE', {
     no_jump: { ENABLED: true, NO_JUMP_HOLD_CHEST: true },
 }, 'jump')
 
-const offhandMode = mode('qof:OFFHAND.MODE', {
-    off: { ENABLED: false, ALLOW_BLOCK_PLACEMENT: false },
-    on: { ENABLED: true, ALLOW_BLOCK_PLACEMENT: false },
-    on_blocks: { ENABLED: true, ALLOW_BLOCK_PLACEMENT: true },
-}, 'on_blocks')
-
 const harvestMode = mode('qof:HARVEST.MODE', {
     off: { ENABLED: false, LOSS_SEED: false },
     free: { ENABLED: true, LOSS_SEED: false },
@@ -108,10 +102,8 @@ export const RUNTIME = Object.freeze({ // RUNTIME = _config + pack settings
     },
     OFFHAND: {
         ...S.OFFHAND,
-        ...offhandMode,
-        DOUBLE_SNEAK_WINDOW_MOBILE: setting('qof:OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE', S.OFFHAND.DOUBLE_SNEAK_WINDOW_MOBILE),
-        DOUBLE_SNEAK_WINDOW_CONSOLE: setting('qof:OFFHAND.DOUBLE_SNEAK_WINDOW_CONSOLE', S.OFFHAND.DOUBLE_SNEAK_WINDOW_CONSOLE),
-        DOUBLE_SNEAK_WINDOW_DEFAULT: setting('qof:OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT', S.OFFHAND.DOUBLE_SNEAK_WINDOW_DEFAULT),
+        ENABLED: setting('qof:OFFHAND.ENABLED', S.OFFHAND.ENABLED),
+        ALLOW_PLACE: setting('qof:OFFHAND.ALLOW_PLACE', S.OFFHAND.ALLOW_PLACE),
     },
     HARVEST: { ...S.HARVEST, ...harvestMode, DURABILITY: consumeDurability },
     OPENABLE: {

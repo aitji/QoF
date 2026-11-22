@@ -124,15 +124,21 @@
 
 
     {
-      "type": "dropdown",
-      "text": "§l§6Offhand§r §7------------------------------------------------\n§7Double-sneak to swap an item into your offhand. §8(Not supported yet for named, enchanted, or dyed items)\n§7Offhand slot:",
+      "type": "toggle",
+      "text": "§l§6Offhand§r §7------------------------------------------------\n§7Double-sneak to swap an item into your offhand. §8(Not supported yet for named, enchanted, or dyed items)\n§7Offhand:",
       "name": "qof:OFFHAND.MODE",
+      "default": true
+    },
+    {
+      "type": "dropdown",
+      "text": "§7Offhand block placement:",
+      "name": "qof:OFFHAND.ALLOW_PLACE",
       "options": [
-        {"name": "off", "text": "Off"},
-        {"name": "on", "text": "On"},
-        {"name": "on_blocks", "text": "On & block placement"}
+        {"name": "none", "text": "Disabled"},
+        {"name": "torch", "text": "Torches Only"},
+        {"name": "all", "text": "All Blocks §e*experiment"}
       ],
-      "default": "on_blocks"
+      "default": "torch"
     },
 
 

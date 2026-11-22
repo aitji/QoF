@@ -263,6 +263,7 @@ export const SETTINGS = Object.freeze({
     },
 
     OFFHAND: {
+        ENABLED: true,
         DOUBLE_SNEAK_WINDOW_MOBILE: 20,
         DOUBLE_SNEAK_WINDOW_CONSOLE: 16,
         DOUBLE_SNEAK_WINDOW_DEFAULT: 12,
@@ -270,7 +271,7 @@ export const SETTINGS = Object.freeze({
         SOUND_FAIL: { ID: 'note.bd', VOLUME: 0.3, PITCH: [0.8, 1.0] } as Sound,
         PARTICLE_OFFSET: { x: 0, y: 2, z: 0 },
         PLACE_SOUND: { ID: 'dig.wood', VOLUME: 1.0, PITCH: 0.8 } as Sound,
-
+        ALLOW_PLACE: "torch" as "none"|"torch"|"all",
         FACE_TO_TORCH_DIR: {
             Up: 'top', Down: 'top',
             North: 'south', South: 'north',

@@ -157,7 +157,7 @@ const SIDE: Record<number, (b: Block) => Block | undefined> = {
 const isFruitSoil = (b?: Block): boolean =>
     !!b && (b.hasTag('dirt') || b.typeId === 'minecraft:farmland' || b.typeId === 'minecraft:grass_path')
 
-const stem = (fruit: string, chance = 0.5): Grower => (block, player) => {
+const stem = (fruit: string, chance = 0.9): Grower => (block, player) => {
     const perm = block.permutation
     if (perm.getState('growth') !== 7) return false
     if (perm.getState('facing_direction') !== 0) return false
