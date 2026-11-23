@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-22T05:15:33.381Z",
+  "fetchedAt": "2026-11-23T05:54:39.218Z",
   "screenshots": [
     {
       "id": 2099214,
@@ -278,8 +278,8 @@
   },
   "summary": "A Minecraft Bedrock addon that adds small vanilla-friendly features. Each module is configurable through the in-game pack settings panel.",
   "status": 4,
-  "downloadCount": 29514,
-  "favoriteCount": 96,
+  "downloadCount": 29725,
+  "favoriteCount": 98,
   "isFeatured": false,
   "primaryCategoryId": 8830,
   "categories": [
@@ -365,88 +365,8 @@
     "thumbnailUrl": "https://media.forgecdn.net/avatars/thumbnails/1741/123/256/256/639108428299642827.png",
     "url": "https://media.forgecdn.net/avatars/1741/123/639108428299642827.png"
   },
-  "mainFileId": 9611948,
+  "mainFileId": 9750494,
   "latestFiles": [
-    {
-      "id": 8567615,
-      "gameId": 78022,
-      "modId": 1500007,
-      "isAvailable": true,
-      "displayName": "QoF-1.5.3 (Pre-Release)",
-      "fileName": "QoF-1.5.3.mcaddon",
-      "releaseType": 2,
-      "fileStatus": 4,
-      "hashes": [
-        {
-          "value": "b47b6ffe13c006e8805db9e04354ae87acbb0dff",
-          "algo": 1
-        },
-        {
-          "value": "434d2419f37d1f6169543111452abf3d",
-          "algo": 2
-        }
-      ],
-      "fileDate": "2026-08-03T06:55:45.27Z",
-      "fileLength": 228041,
-      "downloadCount": 1446,
-      "fileSizeOnDisk": 437051,
-      "downloadUrl": "https://edge.forgecdn.net/files/8567/615/QoF-1.5.3.mcaddon",
-      "gameVersions": [
-        "26.12",
-        "26.20",
-        "26.13",
-        "26.30"
-      ],
-      "sortableGameVersions": [
-        {
-          "gameVersionName": "26.12",
-          "gameVersionPadded": "0000000026.0000000012",
-          "gameVersion": "26.12",
-          "gameVersionReleaseDate": "2026-05-13T00:00:00Z",
-          "gameVersionTypeId": 73249
-        },
-        {
-          "gameVersionName": "26.20",
-          "gameVersionPadded": "0000000026.0000000020",
-          "gameVersion": "26.20",
-          "gameVersionReleaseDate": "2026-05-13T00:00:00Z",
-          "gameVersionTypeId": 73249
-        },
-        {
-          "gameVersionName": "26.13",
-          "gameVersionPadded": "0000000026.0000000013",
-          "gameVersion": "26.13",
-          "gameVersionReleaseDate": "2026-05-13T00:00:00Z",
-          "gameVersionTypeId": 73249
-        },
-        {
-          "gameVersionName": "26.30",
-          "gameVersionPadded": "0000000026.0000000030",
-          "gameVersion": "26.30",
-          "gameVersionReleaseDate": "2026-06-17T00:00:00Z",
-          "gameVersionTypeId": 73249
-        }
-      ],
-      "dependencies": [
-        {
-          "modId": 1598520,
-          "relationType": 2
-        }
-      ],
-      "alternateFileId": 0,
-      "isServerPack": false,
-      "fileFingerprint": 348312536,
-      "modules": [
-        {
-          "name": "QoF_v1.5.3_behavior_packs.mcpack",
-          "fingerprint": 2128566743
-        },
-        {
-          "name": "QoF_v1.5.3_resource_packs.mcpack",
-          "fingerprint": 3024173870
-        }
-      ]
-    },
     {
       "id": 9611948,
       "gameId": 78022,
@@ -454,7 +374,7 @@
       "isAvailable": true,
       "displayName": "QoF 1.6.1",
       "fileName": "QoF-1.6.1.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "fileStatus": 4,
       "hashes": [
         {
@@ -468,7 +388,7 @@
       ],
       "fileDate": "2026-11-14T15:11:01.777Z",
       "fileLength": 286534,
-      "downloadCount": 81,
+      "downloadCount": 131,
       "fileSizeOnDisk": 573428,
       "downloadUrl": "https://edge.forgecdn.net/files/9611/948/QoF-1.6.1.mcaddon",
       "gameVersions": [
@@ -510,21 +430,99 @@
           "fingerprint": 2231905754
         }
       ]
+    },
+    {
+      "id": 9750494,
+      "gameId": 78022,
+      "modId": 1500007,
+      "isAvailable": true,
+      "displayName": "QoF 1.7.0",
+      "fileName": "QoF-1.7.0.mcaddon",
+      "releaseType": 1,
+      "fileStatus": 4,
+      "hashes": [
+        {
+          "value": "209c3e8f2c1b3c4d31abe32e0556504c8a2b10c3",
+          "algo": 1
+        },
+        {
+          "value": "5fbc57f851fabae14cf4eea65b970362",
+          "algo": 2
+        }
+      ],
+      "fileDate": "2026-11-22T12:36:29.953Z",
+      "fileLength": 297693,
+      "downloadCount": 46,
+      "fileSizeOnDisk": 588736,
+      "downloadUrl": "https://edge.forgecdn.net/files/9750/494/QoF-1.7.0.mcaddon",
+      "gameVersions": [
+        "26.50",
+        "26.60"
+      ],
+      "sortableGameVersions": [
+        {
+          "gameVersionName": "26.50",
+          "gameVersionPadded": "0000000026.0000000050",
+          "gameVersion": "26.50",
+          "gameVersionReleaseDate": "2026-09-16T00:00:00Z",
+          "gameVersionTypeId": 73249
+        },
+        {
+          "gameVersionName": "26.60",
+          "gameVersionPadded": "0000000026.0000000060",
+          "gameVersion": "26.60",
+          "gameVersionReleaseDate": "2026-10-30T00:00:00Z",
+          "gameVersionTypeId": 73249
+        }
+      ],
+      "dependencies": [
+        {
+          "modId": 1598520,
+          "relationType": 2
+        }
+      ],
+      "alternateFileId": 0,
+      "isServerPack": false,
+      "fileFingerprint": 1406837749,
+      "modules": [
+        {
+          "name": "QoF_v1.7.0_behavior_packs.mcpack",
+          "fingerprint": 1992921391
+        },
+        {
+          "name": "QoF_v1.7.0_resource_packs.mcpack",
+          "fingerprint": 3244365421
+        }
+      ]
     }
   ],
   "latestFilesIndexes": [
     {
       "gameVersion": "26.50",
+      "fileId": 9750494,
+      "filename": "QoF-1.7.0.mcaddon",
+      "releaseType": 1,
+      "gameVersionTypeId": 73249
+    },
+    {
+      "gameVersion": "26.60",
+      "fileId": 9750494,
+      "filename": "QoF-1.7.0.mcaddon",
+      "releaseType": 1,
+      "gameVersionTypeId": 73249
+    },
+    {
+      "gameVersion": "26.50",
       "fileId": 9611948,
       "filename": "QoF-1.6.1.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "gameVersionTypeId": 73249
     },
     {
       "gameVersion": "26.60",
       "fileId": 9611948,
       "filename": "QoF-1.6.1.mcaddon",
-      "releaseType": 1,
+      "releaseType": 2,
       "gameVersionTypeId": 73249
     },
     {
@@ -614,10 +612,10 @@
   ],
   "latestEarlyAccessFilesIndexes": [],
   "dateCreated": "2026-03-31T13:03:36.853Z",
-  "dateModified": "2026-11-15T05:41:50.897Z",
-  "dateReleased": "2026-11-14T15:11:01.777Z",
+  "dateModified": "2026-11-22T12:39:45.197Z",
+  "dateReleased": "2026-11-22T12:36:29.953Z",
   "allowModDistribution": true,
-  "gamePopularityRank": 4721,
+  "gamePopularityRank": 4738,
   "isAvailable": true,
   "hasCommentsEnabled": true,
   "licenseType": "Custom License",
